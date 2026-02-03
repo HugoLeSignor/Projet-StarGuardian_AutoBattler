@@ -17,10 +17,8 @@ class Character
     #[ORM\Column(length: 255)]
     private ?string $name = null;
 
-    public function getId(): ?int
-    {
-        return $this->id;
-    }
+    #[ORM\ManyToOne(inversedBy: 'characters')]
+    private ?TeamCharacters $teamCharacters = null;
 
     public function getName(): ?string
     {
@@ -33,4 +31,17 @@ class Character
 
         return $this;
     }
+
+    public function getTeamCharacters(): ?TeamCharacters
+    {
+        return $this->teamCharacters;
+    }
+
+    public function setTeamCharacters(?TeamCharacters $teamCharacters): static
+    {
+        $this->teamCharacters = $teamCharacters;
+
+        return $this;
+    }
+
 }

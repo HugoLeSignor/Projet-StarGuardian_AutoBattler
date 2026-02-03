@@ -15,49 +15,90 @@ class User
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $username = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $email = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $password = null;
+
     /**
-     * @var Collection<int, team>
+     * @var Collection<int, Battle>
      */
-    #[ORM\OneToMany(targetEntity: team::class, mappedBy: 'user')]
-    private Collection $team;
+    #[ORM\OneToMany(targetEntity: Battle::class, mappedBy: 'player1')]
+    private Collection $battles;
 
     public function __construct()
     {
-        $this->team = new ArrayCollection();
+        $this->battles = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getUsername(): ?string
     {
-        return $this->id;
+        return $this->username;
+    }
+
+    public function setUsername(string $username): static
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    public function setEmail(string $email): static
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): static
+    {
+        $this->password = $password;
+
+        return $this;
     }
 
     /**
-     * @return Collection<int, team>
+     * @return Collection<int, Battle>
      */
-    public function getTeam(): Collection
+    public function getBattles(): Collection
     {
-        return $this->team;
+        return $this->battles;
     }
 
-    public function addTeam(team $team): static
+    public function addBattle(Battle $battle): static
     {
-        if (!$this->team->contains($team)) {
-            $this->team->add($team);
-            $team->setUser($this);
+        if (!$this->battles->contains($battle)) {
+            $this->battles->add($battle);
+            $battle->setPlayer1($this);
         }
 
         return $this;
     }
 
-    public function removeTeam(team $team): static
+    public function removeBattle(Battle $battle): static
     {
-        if ($this->team->removeElement($team)) {
+        if ($this->battles->removeElement($battle)) {
             // set the owning side to null (unless already changed)
-            if ($team->getUser() === $this) {
-                $team->setUser(null);
+            if ($battle->getPlayer1() === $this) {
+                $battle->setPlayer1(null);
             }
         }
 
         return $this;
     }
+    
 }
