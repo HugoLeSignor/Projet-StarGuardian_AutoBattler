@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello ChampSelectController!{% endblock %}
+
+{% block body %}
+
+
+{% for Character in Character %}
+     <h3>{{Character.name}}</h3>
+     <img src="{{ asset('asset/img/logo/' ~ Character.name  ~ '.webp' ) }}">
+{% endfor %}
+{% endblock %}
