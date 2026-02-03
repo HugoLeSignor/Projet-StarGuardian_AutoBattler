@@ -67,7 +67,7 @@ class Battle
     }
 
     public function setTeam2(?team $team2): static
-    {
+    {require
         $this->team2 = $team2;
 
         return $this;

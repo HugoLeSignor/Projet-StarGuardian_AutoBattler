@@ -20,6 +20,18 @@ class Character
     #[ORM\ManyToOne(inversedBy: 'characters')]
     private ?TeamCharacters $teamCharacters = null;
 
+    #[ORM\ManyToOne]
+    private ?role $role = null;
+
+    #[ORM\Column]
+    private ?int $healt = null;
+
+    #[ORM\Column]
+    private ?int $attack = null;
+
+    #[ORM\Column]
+    private ?int $defense = null;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -40,6 +52,54 @@ class Character
     public function setTeamCharacters(?TeamCharacters $teamCharacters): static
     {
         $this->teamCharacters = $teamCharacters;
+
+        return $this;
+    }
+
+    public function getRole(): ?role
+    {
+        return $this->role;
+    }
+
+    public function setRole(?role $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    public function getHealt(): ?int
+    {
+        return $this->healt;
+    }
+
+    public function setHealt(int $healt): static
+    {
+        $this->healt = $healt;
+
+        return $this;
+    }
+
+    public function getAttack(): ?int
+    {
+        return $this->attack;
+    }
+
+    public function setAttack(int $attack): static
+    {
+        $this->attack = $attack;
+
+        return $this;
+    }
+
+    public function getDefense(): ?int
+    {
+        return $this->defense;
+    }
+
+    public function setDefense(int $defense): static
+    {
+        $this->defense = $defense;
 
         return $this;
     }
