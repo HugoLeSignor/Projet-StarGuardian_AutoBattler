@@ -1,0 +1,17 @@
+@use "variables" as *;
+@use '../base/typographie';
+
+
+body{
+    margin: 0;
+    padding: 0;
+
+    background-color: $color-dark;
+    line-height: 1.6;
+
+    background-image: url('../../../public/asset/img/1.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 1000px;
+}

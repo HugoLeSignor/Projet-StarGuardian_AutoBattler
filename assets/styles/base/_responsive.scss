@@ -1,0 +1,32 @@
+@use "../base/variables" as *;
+
+/* Responsive pour mobiles */
+@media (max-width: $breakpoint-mobile) {
+    header {
+        nav.main-navigation {
+            .burger {
+                display: block;
+                position: absolute;
+                right: 25px;
+                top: 70px;
+                z-index: 1000;
+                background: none;
+                border: none;
+                color: $color-button;
+            }
+
+            ul {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 60px;
+                right: 0;
+                width: 150px;
+            }
+
+            &.active ul {
+                display: flex;
+            }
+        }
+    }
+}
