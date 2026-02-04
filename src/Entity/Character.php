@@ -24,13 +24,22 @@ class Character
     private ?role $role = null;
 
     #[ORM\Column]
-    private ?int $healt = null;
+    private ?int $DMG_MIN = null;
 
     #[ORM\Column]
-    private ?int $attack = null;
+    private ?int $DMG_MAX = null;
 
     #[ORM\Column]
-    private ?int $defense = null;
+    private ?int $SPEED = null;
+
+    #[ORM\Column]
+    private ?int $DODGE = null;
+
+    #[ORM\Column]
+    private ?int $CRIT = null;
+
+    #[ORM\Column]
+    private ?int $HP = null;
 
     public function getName(): ?string
     {
@@ -68,40 +77,77 @@ class Character
         return $this;
     }
 
-    public function getHealt(): ?int
+    public function getDMGMIN(): ?int
     {
-        return $this->healt;
+        return $this->DMG_MIN;
     }
 
-    public function setHealt(int $healt): static
+    public function setDMGMIN(int $DMG_MIN): static
     {
-        $this->healt = $healt;
+        $this->DMG_MIN = $DMG_MIN;
 
         return $this;
     }
 
-    public function getAttack(): ?int
+    public function getDMGMAX(): ?int
     {
-        return $this->attack;
+        return $this->DMG_MAX;
     }
 
-    public function setAttack(int $attack): static
+    public function setDMGMAX(int $DMG_MAX): static
     {
-        $this->attack = $attack;
+        $this->DMG_MAX = $DMG_MAX;
 
         return $this;
     }
 
-    public function getDefense(): ?int
+    public function getSPEED(): ?int
     {
-        return $this->defense;
+        return $this->SPEED;
     }
 
-    public function setDefense(int $defense): static
+    public function setSPEED(int $SPEED): static
     {
-        $this->defense = $defense;
+        $this->SPEED = $SPEED;
 
         return $this;
     }
 
+    public function getDODGE(): ?int
+    {
+        return $this->DODGE;
+    }
+
+    public function setDODGE(int $DODGE): static
+    {
+        $this->DODGE = $DODGE;
+
+        return $this;
+    }
+
+    public function getCRIT(): ?int
+    {
+        return $this->CRIT;
+    }
+
+    public function setCRIT(int $CRIT): static
+    {
+        $this->CRIT = $CRIT;
+
+        return $this;
+    }
+
+    public function getHP(): ?int
+    {
+        return $this->HP;
+    }
+
+    public function setHP(int $HP): static
+    {
+        $this->HP = $HP;
+
+        return $this;
+    }
+
+   
 }
