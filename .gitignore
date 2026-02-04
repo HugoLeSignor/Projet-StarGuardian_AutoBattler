@@ -25,3 +25,8 @@
 npm-debug.log
 yarn-error.log
 ###< symfony/webpack-encore-bundle ###
+
+###> Claude AI ###
+CLAUDE.md
+.claude/
+###< Claude AI ###
