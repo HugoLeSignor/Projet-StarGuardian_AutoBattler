@@ -11,14 +11,14 @@
 <div class="example-wrapper">
 <h1>Combat test</h1>
 
-    <h3>Equipe 1</h3>
+    <h3 style="color:blue;">Equipe 1</h3>
     <ul>
         {% for member in composition['Equipe 1'] %}
             <li>{{ member.name }} (PV: {{ member.hp }})</li>
         {% endfor %}
     </ul>
 
-    <h3>Equipe 2</h3>
+    <h3 style="color:red;">Equipe 2</h3>
     <ul>
         {% for member in composition['Equipe 2'] %}
             <li>{{ member.name }} (PV: {{ member.hp }})</li>
@@ -26,7 +26,7 @@
     </ul>
 
 {% for log in logs %}
-    <p>{{ log }}</p>
+    <p>{{ log |raw }}</p>
     
 {% endfor %}
 
