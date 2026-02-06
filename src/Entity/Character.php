@@ -20,6 +20,27 @@ class Character
     #[ORM\ManyToOne(inversedBy: 'characters')]
     private ?TeamCharacters $teamCharacters = null;
 
+    #[ORM\ManyToOne]
+    private ?role $role = null;
+
+    #[ORM\Column]
+    private ?int $DMG_MIN = null;
+
+    #[ORM\Column]
+    private ?int $DMG_MAX = null;
+
+    #[ORM\Column]
+    private ?int $SPEED = null;
+
+    #[ORM\Column]
+    private ?int $DODGE = null;
+
+    #[ORM\Column]
+    private ?int $CRIT = null;
+
+    #[ORM\Column]
+    private ?int $HP = null;
+
     public function getName(): ?string
     {
         return $this->name;
@@ -44,4 +65,89 @@ class Character
         return $this;
     }
 
+    public function getRole(): ?role
+    {
+        return $this->role;
+    }
+
+    public function setRole(?role $role): static
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    public function getDMGMIN(): ?int
+    {
+        return $this->DMG_MIN;
+    }
+
+    public function setDMGMIN(int $DMG_MIN): static
+    {
+        $this->DMG_MIN = $DMG_MIN;
+
+        return $this;
+    }
+
+    public function getDMGMAX(): ?int
+    {
+        return $this->DMG_MAX;
+    }
+
+    public function setDMGMAX(int $DMG_MAX): static
+    {
+        $this->DMG_MAX = $DMG_MAX;
+
+        return $this;
+    }
+
+    public function getSPEED(): ?int
+    {
+        return $this->SPEED;
+    }
+
+    public function setSPEED(int $SPEED): static
+    {
+        $this->SPEED = $SPEED;
+
+        return $this;
+    }
+
+    public function getDODGE(): ?int
+    {
+        return $this->DODGE;
+    }
+
+    public function setDODGE(int $DODGE): static
+    {
+        $this->DODGE = $DODGE;
+
+        return $this;
+    }
+
+    public function getCRIT(): ?int
+    {
+        return $this->CRIT;
+    }
+
+    public function setCRIT(int $CRIT): static
+    {
+        $this->CRIT = $CRIT;
+
+        return $this;
+    }
+
+    public function getHP(): ?int
+    {
+        return $this->HP;
+    }
+
+    public function setHP(int $HP): static
+    {
+        $this->HP = $HP;
+
+        return $this;
+    }
+
+   
 }
