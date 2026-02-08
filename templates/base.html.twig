@@ -24,12 +24,15 @@
                     </div>
                     <ul>
                         <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                        <li><a href="#">Jouer</a></li>
                         <li><a href="{{ path('app_personnages') }}">Personnages</a></li>
-                        <li><a href="#">Teams</a></li>
-                        <li><a href="#">Inscription</a></li>
-                        <li><a href="#">Connexion</a></li>
-
+                        {% if app.user %}
+                            <li><a href="{{ path('app_champ_select') }}">Jouer</a></li>
+                            <li><a href="{{ path('app_teams') }}">Teams</a></li>
+                            <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                        {% else %}
+                            <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                            <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                        {% endif %}
                     </ul>
                     <button class="burger" aria-label="Menu">
                         ☰
