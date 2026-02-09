@@ -83,8 +83,8 @@ $dd-bone: #e8dcc4;
 }
 
 .battle-stage__sprite {
-    width: 95px;
-    height: 120px;
+    width: 150px;
+    height: 180px;
     background: transparent;
     border: none;
     display: flex;
@@ -101,16 +101,12 @@ $dd-bone: #e8dcc4;
         image-rendering: pixelated;
     }
 
-    .battle-stage__team--right & {
+    .battle-stage__team--right & img.character-sprite {
         transform: scaleX(-1);
     }
 
     &:hover {
         transform: translateY(-5px);
-
-        .battle-stage__team--right & {
-            transform: scaleX(-1) translateY(-5px);
-        }
     }
 }
 
@@ -272,9 +268,9 @@ $dd-bone: #e8dcc4;
 }
 
 @keyframes attack-left {
-    0% { transform: scaleX(-1) translateX(0); }
-    30% { transform: scaleX(-1) translateX(50px); }
-    100% { transform: scaleX(-1) translateX(0); }
+    0% { transform: translateX(0); }
+    30% { transform: translateX(-50px); }
+    100% { transform: translateX(0); }
 }
 
 @keyframes hurt-anim {

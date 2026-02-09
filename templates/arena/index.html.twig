@@ -15,7 +15,7 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 1">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/sprites/' ~ member.name|lower ~ '_idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
+                    <img src="{{ asset('asset/sprites/' ~ member.name|lower|replace({' ': '_'}) ~ '_idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
@@ -34,7 +34,7 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 2">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/sprites/' ~ member.name|lower ~ '_idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
+                    <img src="{{ asset('asset/sprites/' ~ member.name|lower|replace({' ': '_'}) ~ '_idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>

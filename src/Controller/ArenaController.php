@@ -14,23 +14,50 @@ final class ArenaController extends AbstractController
     #[Route('/arena', name: 'app_arena')]
     public function test(CharacterRepository $repo, CombatEngine $engine): Response
     {
-        // Récupérer 3 personnages aléatoires pour chaque équipe
+        // Récupérer tous les personnages
         $allCharacters = $repo->findAll();
 
-        if (count($allCharacters) < 3) {
+        if (count($allCharacters) < 6) {
             throw $this->createNotFoundException("Pas assez de personnages dans la base de données. Veuillez charger les fixtures.");
         }
 
-        // Sélectionner 3 personnages aléatoires pour l'équipe 1
-        $team1Chars = array_slice($allCharacters, 0, 3);
-        $team1Ids = array_map(fn($char) => $char->getId(), $team1Chars);
+        // Grouper par rôle
+        $tanks = [];
+        $dps = [];
+        $supports = [];
 
-        // Sélectionner 3 personnages aléatoires pour l'équipe 2 (réutilisation possible)
-        $team2Chars = array_slice($allCharacters, 3, 3);
-        if (count($team2Chars) < 3) {
-            // Si pas assez de personnages, réutiliser les premiers
-            $team2Chars = array_slice($allCharacters, 0, 3);
+        foreach ($allCharacters as $char) {
+            $roleName = $char->getRole()->getName();
+            if ($roleName === 'Tank') {
+                $tanks[] = $char;
+            } elseif ($roleName === 'DPS') {
+                $dps[] = $char;
+            } else {
+                $supports[] = $char;
+            }
         }
+
+        // Mélanger chaque groupe
+        shuffle($tanks);
+        shuffle($dps);
+        shuffle($supports);
+
+        // Composer les équipes : 1 tank, 1 DPS, 1 support par équipe
+        // Equipe 1: DPS, Support, Tank (tank à la fin)
+        $team1Chars = [
+            $dps[0] ?? $allCharacters[1],
+            $supports[0] ?? $allCharacters[2],
+            $tanks[0] ?? $allCharacters[0]
+        ];
+
+        // Equipe 2: Tank, DPS, Support (tank au début)
+        $team2Chars = [
+            $tanks[1] ?? $tanks[0] ?? $allCharacters[3],
+            $dps[1] ?? $dps[0] ?? $allCharacters[4],
+            $supports[1] ?? $supports[0] ?? $allCharacters[5]
+        ];
+
+        $team1Ids = array_map(fn($char) => $char->getId(), $team1Chars);
         $team2Ids = array_map(fn($char) => $char->getId(), $team2Chars);
 
         $team1 = $this->buildTeam($team1Ids, $repo, 'Equipe 1');
