@@ -4,6 +4,8 @@ namespace App\DataFixtures;
 
 use App\Entity\Character;
 use App\Entity\Role;
+use App\Entity\Character;
+use App\Entity\Role;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 

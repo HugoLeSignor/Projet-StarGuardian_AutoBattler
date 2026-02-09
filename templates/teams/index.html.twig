@@ -20,13 +20,15 @@
             {% for hero in heroes %}
                 <div class="team-portrait"
                      data-name="{{ hero.name }}"
-                     data-role="{{ hero.role }}"
-                     data-gif="{{ asset(hero.gif) }}"
-                     data-atq="{{ hero.atq }}"
-                     data-def="{{ hero.def }}"
-                     data-vit="{{ hero.vit }}"
-                     data-desc="{{ hero.description }}">
-                    <img src="{{ asset(hero.image) }}" alt="{{ hero.name }}">
+                     data-role="{{ hero.role ? hero.role.name : '' }}"
+                     data-dmg-min="{{ hero.DMGMIN }}"
+                     data-dmg-max="{{ hero.DMGMAX }}"
+                     data-speed="{{ hero.SPEED }}"
+                     data-dodge="{{ hero.DODGE }}"
+                     data-crit="{{ hero.CRIT }}"
+                     data-hp="{{ hero.HP }}">
+                        <img src="{{ asset('asset/img/' ~ hero.name|lower|replace({' ':'_', '-':'_'}) ~ '.webp') }}" alt="{{ hero.name }} portrait">
+                    <span>{{ hero.name }}</span>
                 </div>
             {% endfor %}
         </div>
