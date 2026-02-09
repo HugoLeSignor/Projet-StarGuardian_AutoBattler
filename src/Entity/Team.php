@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\TeamRepository;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
+use App\Entity\TeamCharacters;
 
 #[ORM\Entity(repositoryClass: TeamRepository::class)]
 class Team
@@ -17,10 +19,15 @@ class Team
     private ?string $name = null;
 
     #[ORM\ManyToOne]
-    private ?user $user = null;
+    private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'team')]
     private ?TeamCharacters $teamCharacters = null;
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
 
     public function getName(): ?string
     {
@@ -30,19 +37,17 @@ class Team
     public function setName(string $name): static
     {
         $this->name = $name;
-
         return $this;
     }
 
-    public function getUser(): ?user
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function setUser(?user $user): static
+    public function setUser(?User $user): static
     {
         $this->user = $user;
-
         return $this;
     }
 
@@ -54,8 +59,6 @@ class Team
     public function setTeamCharacters(?TeamCharacters $teamCharacters): static
     {
         $this->teamCharacters = $teamCharacters;
-
         return $this;
     }
-   
 }

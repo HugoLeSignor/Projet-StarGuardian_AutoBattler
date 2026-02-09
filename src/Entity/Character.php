@@ -6,7 +6,7 @@ use App\Repository\CharacterRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
-#[ORM\Table(name: '`character`')]
+#[ORM\Table(name: '`Character`')]
 class Character
 {
     #[ORM\Id]
@@ -65,12 +65,12 @@ class Character
         return $this;
     }
 
-    public function getRole(): ?role
+    public function getRole(): ?Role
     {
         return $this->role;
     }
 
-    public function setRole(?role $role): static
+    public function setRole(?Role $role): static
     {
         $this->role = $role;
 

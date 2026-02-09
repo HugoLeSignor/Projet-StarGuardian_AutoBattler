@@ -6,6 +6,9 @@ use App\Repository\TeamCharactersRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\Team;
+use App\Entity\Character;
+
 
 #[ORM\Entity(repositoryClass: TeamCharactersRepository::class)]
 class TeamCharacters
@@ -16,18 +19,18 @@ class TeamCharacters
     private ?int $id = null;
 
     /**
-     * @var Collection<int, team>
+     * @var Collection<int, Team>
      */
-    #[ORM\OneToMany(targetEntity: team::class, mappedBy: 'teamCharacters')]
+    #[ORM\OneToMany(targetEntity: team::class, mappedBy: 'TeamCharacters')]
     private Collection $team;
 
     #[ORM\Column]
     private ?int $position = null;
 
     /**
-     * @var Collection<int, character>
+     * @var Collection<int, Character>
      */
-    #[ORM\OneToMany(targetEntity: character::class, mappedBy: 'teamCharacters')]
+    #[ORM\OneToMany(targetEntity: character::class, mappedBy: 'TeamCharacters')]
     private Collection $characters;
 
     public function __construct()
@@ -42,7 +45,7 @@ class TeamCharacters
     }
 
     /**
-     * @return Collection<int, team>
+     * @return Collection<int, Team>
      */
     public function getTeam(): Collection
     {
