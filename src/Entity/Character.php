@@ -21,7 +21,7 @@ class Character
     private ?TeamCharacters $teamCharacters = null;
 
     #[ORM\ManyToOne]
-    private ?role $role = null;
+    private ?Role $role = null;
 
     #[ORM\Column]
     private ?int $DMG_MIN = null;
@@ -65,12 +65,12 @@ class Character
         return $this;
     }
 
-    public function getRole(): ?role
+    public function getRole(): ?Role
     {
         return $this->role;
     }
 
-    public function setRole(?role $role): static
+    public function setRole(?Role $role): static
     {
         $this->role = $role;
 
@@ -149,5 +149,5 @@ class Character
         return $this;
     }
 
-   
+
 }

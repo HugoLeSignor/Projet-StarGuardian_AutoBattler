@@ -16,18 +16,18 @@ class TeamCharacters
     private ?int $id = null;
 
     /**
-     * @var Collection<int, team>
+     * @var Collection<int, Team>
      */
-    #[ORM\OneToMany(targetEntity: team::class, mappedBy: 'teamCharacters')]
+    #[ORM\OneToMany(targetEntity: Team::class, mappedBy: 'teamCharacters')]
     private Collection $team;
 
     #[ORM\Column]
     private ?int $position = null;
 
     /**
-     * @var Collection<int, character>
+     * @var Collection<int, Character>
      */
-    #[ORM\OneToMany(targetEntity: character::class, mappedBy: 'teamCharacters')]
+    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'teamCharacters')]
     private Collection $characters;
 
     public function __construct()
@@ -42,14 +42,14 @@ class TeamCharacters
     }
 
     /**
-     * @return Collection<int, team>
+     * @return Collection<int, Team>
      */
     public function getTeam(): Collection
     {
         return $this->team;
     }
 
-    public function addTeam(team $team): static
+    public function addTeam(Team $team): static
     {
         if (!$this->team->contains($team)) {
             $this->team->add($team);
@@ -59,7 +59,7 @@ class TeamCharacters
         return $this;
     }
 
-    public function removeTeam(team $team): static
+    public function removeTeam(Team $team): static
     {
         if ($this->team->removeElement($team)) {
             // set the owning side to null (unless already changed)
@@ -84,14 +84,14 @@ class TeamCharacters
     }
 
     /**
-     * @return Collection<int, character>
+     * @return Collection<int, Character>
      */
     public function getCharacters(): Collection
     {
         return $this->characters;
     }
 
-    public function addCharacter(character $character): static
+    public function addCharacter(Character $character): static
     {
         if (!$this->characters->contains($character)) {
             $this->characters->add($character);
@@ -101,7 +101,7 @@ class TeamCharacters
         return $this;
     }
 
-    public function removeCharacter(character $character): static
+    public function removeCharacter(Character $character): static
     {
         if ($this->characters->removeElement($character)) {
             // set the owning side to null (unless already changed)
