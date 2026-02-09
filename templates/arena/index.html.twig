@@ -15,13 +15,13 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 1">
                 <div class="battle-stage__sprite">
-                    {# Placeholder pour sprite #}
+                    <img src="{{ asset('asset/sprites/' ~ member.name|lower ~ '_idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
                 </div>
-                <span class="battle-stage__name">{{ member.name }}</span>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
                 </div>
                 <span class="hp-text">{{ member.hp }}/{{ member.hp }}</span>
+                <span class="battle-stage__name">{{ member.name }}</span>
             </div>
             {% endfor %}
         </div>
@@ -34,13 +34,13 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 2">
                 <div class="battle-stage__sprite">
-                    {# Placeholder pour sprite #}
+                    <img src="{{ asset('asset/sprites/' ~ member.name|lower ~ '_idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
                 </div>
-                <span class="battle-stage__name">{{ member.name }}</span>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
                 </div>
                 <span class="hp-text">{{ member.hp }}/{{ member.hp }}</span>
+                <span class="battle-stage__name">{{ member.name }}</span>
             </div>
             {% endfor %}
         </div>
