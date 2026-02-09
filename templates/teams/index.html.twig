@@ -1,20 +1,36 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello TeamsController!{% endblock %}
+{% block title %}Teams{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+<section class="teams-layout">
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
+    {# ===== GRILLE PERSONNAGES (GAUCHE) ===== #}
+    <div class="team-grid">
+        {% for hero in heroes %}
+            <div class="team-portrait"
+                 data-name="{{ hero.name }}"
+                 data-role="{{ hero.role }}"
+                 data-gif="{{ asset(hero.gif) }}"
+                 data-atq="{{ hero.atq }}"
+                 data-def="{{ hero.def }}"
+                 data-vit="{{ hero.vit }}"
+                 data-desc="{{ hero.description }}">
 
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/atyoh/Desktop/Projet-StarGuardian_AutoBattler/src/Controller/TeamsController.php</code></li>
-        <li>Your template at <code>C:/Users/atyoh/Desktop/Projet-StarGuardian_AutoBattler/templates/teams/index.html.twig</code></li>
-    </ul>
-</div>
+                <img src="{{ asset(hero.image) }}" alt="{{ hero.name }}">
+            </div>
+        {% endfor %}
+    </div>
+
+    {# ===== DETAILS (DROITE) ===== #}
+    <div class="team-details" id="teamDetails">
+        <div class="team-placeholder">
+            <h2>Sélectionnez un héros</h2>
+            <p>Cliquez sur une image pour afficher ses informations.</p>
+        </div>
+    </div>
+
+</section>
+
+<script src="{{ asset('js/team.js') }}"></script>
 {% endblock %}

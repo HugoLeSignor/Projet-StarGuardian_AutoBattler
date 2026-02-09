@@ -95,3 +95,67 @@ console.log('assets/app.js chargé ✔');
 // }
 
 
+
+
+
+/*********************************
+ * PAGE TEAMS
+ *********************************/
+document.addEventListener('DOMContentLoaded', () => {
+
+    const portraits = document.querySelectorAll('.team-portrait');
+    const details = document.getElementById('teamDetails');
+
+    // Sécurité : si on n'est pas sur la page Teams
+    if (!details || portraits.length === 0) return;
+
+    portraits.forEach(portrait => {
+        portrait.addEventListener('click', () => {
+
+            // Gestion visuelle active
+            portraits.forEach(p => p.classList.remove('active'));
+            portrait.classList.add('active');
+
+            // Injection du panneau de détails
+            details.innerHTML = `
+                <div class="team-details-content">
+                    <h2>${portrait.dataset.name}</h2>
+                    <p class="role">${portrait.dataset.role}</p>
+
+                    <div class="gif-container">
+                        <img src="${portrait.dataset.gif}" alt="${portrait.dataset.name}">
+                    </div>
+
+                    <p class="description">${portrait.dataset.desc}</p>
+
+                    <div class="stats">
+                        <div class="stat">
+                            <span>ATQ</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width:${portrait.dataset.atq}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat">
+                            <span>DEF</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width:${portrait.dataset.def}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="stat">
+                            <span>VIT</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill" style="width:${portrait.dataset.vit}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+    });
+
+});
+
+
+
