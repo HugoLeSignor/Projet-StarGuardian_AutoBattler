@@ -16,7 +16,8 @@ final class Version20260208120000 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE user ADD roles JSON NOT NULL');
+        // $this->addSql('ALTER TABLE user ADD roles JSON NOT NULL'); // Déjà existant, évite l'erreur
+        $this->addSql('ALTER TABLE user CHANGE email email VARCHAR(191) NOT NULL');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON user (email)');
     }
 
