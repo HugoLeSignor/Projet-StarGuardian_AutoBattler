@@ -6,7 +6,7 @@ use App\Repository\CharacterRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CharacterRepository::class)]
-#[ORM\Table(name: '`character`')]
+#[ORM\Table(name: '`Character`')]
 class Character
 {
     #[ORM\Id]
