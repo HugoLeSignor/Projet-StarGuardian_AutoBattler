@@ -31,6 +31,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     private ?string $password = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isSearchingMatch = false;
+
     /**
      * @var Collection<int, Battle>
      */
@@ -105,6 +108,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    public function isSearchingMatch(): bool
+    {
+        return $this->isSearchingMatch;
+    }
+
+    public function setIsSearchingMatch(bool $isSearchingMatch): static
+    {
+        $this->isSearchingMatch = $isSearchingMatch;
+
+        return $this;
     }
 
     /**
