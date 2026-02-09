@@ -1,0 +1,137 @@
+/* ===== LAYOUT GÉNÉRAL ===== */
+.teams-page {
+    padding: 15px;
+}
+
+/* ===== ZONE ÉQUIPE SÉLECTIONNÉE ===== */
+.selected-team {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.selected-team .selected-list {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.selected-team .selected-list .team-portrait {
+    width: 48px;
+    height: 48px;
+    box-shadow: 0 0 6px #f5e15e;
+}
+
+/* Boutons */
+/* ===== BOUTON SÉLECTIONNER DANS LES DETAILS ===== */
+.btn-select-right {
+    display: block;
+    margin-top: 15px;
+    padding: 8px 16px;
+    background: #c9a227;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-select-right:hover {
+    background: #f5e15e;
+}
+
+/* ===== RESTE DU CSS TEAMS (inchangé) ===== */
+/* ... (garde tout ce que tu avais déjà pour team-grid, team-portrait, details, stats, responsive) ... */
+
+.btn-launch {
+    padding: 6px 14px;
+    background: #c9a227;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-top: 6px;
+    font-weight: bold;
+}
+
+.btn-launch:disabled {
+    background: #555;
+    cursor: not-allowed;
+}
+
+/* ===== RESTE DU CSS TEAMS (déjà existant) ===== */
+.teams-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    height: calc(100vh - 80px);
+    background: #0e1015;
+    color: #fff;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, 56px);
+    gap: 8px;
+    padding: 12px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    overflow-y: auto;
+    align-content: flex-start;
+}
+
+.team-portrait {
+    width: 56px;
+    height: 56px;
+    background: #111;
+    border-radius: 4px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.team-portrait img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: contrast(1.1) saturate(1.1);
+}
+
+.team-portrait:hover { transform: scale(1.1); z-index:2; }
+.team-portrait.active {
+    box-shadow: 0 0 0 2px #f5e15e, 0 0 12px rgba(245,225,94,0.6);
+}
+
+.team-portrait::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.35);
+    opacity:0;
+    transition: opacity 0.15s ease;
+}
+.team-portrait:hover::after,
+.team-portrait.active::after { opacity:1; }
+
+.team-details { padding:25px; overflow-y:auto; }
+.team-placeholder { text-align:center; opacity:0.6; margin-top:100px; }
+
+.team-details-content { animation: fadeSlide 0.25s ease; }
+@keyframes fadeSlide { from { opacity:0; transform:translateX(10px);} to { opacity:1; transform:translateX(0); } }
+
+.team-details-content h2 { font-size:1.8rem; margin-bottom:4px; }
+.team-details-content .role { opacity:0.7; margin-bottom:15px; }
+
+.gif-container { width:100%; margin-bottom:18px; }
+.gif-container img { width:100%; max-height:260px; object-fit:contain; border-radius:12px; background:#111; }
+
+.team-details-content .description { font-size:0.95rem; line-height:1.4; margin-bottom:20px; opacity:0.85; }
+
+.stats { display:flex; flex-direction:column; gap:12px; }
+.stat span { font-size:0.75rem; opacity:0.8; margin-bottom:4px; display:block; }
+.stat-bar { width:100%; height:8px; background:rgba(255,255,255,0.15); border-radius:6px; overflow:hidden; }
+.stat-fill { height:100%; background:linear-gradient(90deg,#c9a227,#f5e15e); border-radius:6px; transition:width 0.3s ease; }
+
+@media (max-width:900px) {
+    .teams-layout { grid-template-columns:1fr; height:auto; }
+    .team-grid { grid-template-columns:repeat(auto-fill,48px); justify-content:center; border-right:none; border-bottom:1px solid rgba(255,255,255,0.1); }
+    .team-portrait { width:48px; height:48px; }
+}
