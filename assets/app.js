@@ -105,57 +105,91 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const portraits = document.querySelectorAll('.team-portrait');
     const details = document.getElementById('teamDetails');
+    const selectedList = document.querySelector('.selected-list');
+    const launchBtn = document.querySelector('.btn-launch');
 
-    // Sécurité : si on n'est pas sur la page Teams
-    if (!details || portraits.length === 0) return;
+    const maxSelection = 3;
+    let selectedHeroes = [];
 
     portraits.forEach(portrait => {
-        portrait.addEventListener('click', () => {
 
-            // Gestion visuelle active
+        // Clic sur portrait → affiche détails
+        portrait.addEventListener('click', () => {
             portraits.forEach(p => p.classList.remove('active'));
             portrait.classList.add('active');
 
-            // Injection du panneau de détails
+            // Injecter le panneau de détails + bouton sélectionner
             details.innerHTML = `
                 <div class="team-details-content">
                     <h2>${portrait.dataset.name}</h2>
                     <p class="role">${portrait.dataset.role}</p>
-
                     <div class="gif-container">
                         <img src="${portrait.dataset.gif}" alt="${portrait.dataset.name}">
                     </div>
-
                     <p class="description">${portrait.dataset.desc}</p>
-
                     <div class="stats">
-                        <div class="stat">
-                            <span>ATQ</span>
-                            <div class="stat-bar">
-                                <div class="stat-fill" style="width:${portrait.dataset.atq}%"></div>
-                            </div>
+                        <div class="stat"><span>ATQ</span>
+                            <div class="stat-bar"><div class="stat-fill" style="width:${portrait.dataset.atq}%"></div></div>
                         </div>
-
-                        <div class="stat">
-                            <span>DEF</span>
-                            <div class="stat-bar">
-                                <div class="stat-fill" style="width:${portrait.dataset.def}%"></div>
-                            </div>
+                        <div class="stat"><span>DEF</span>
+                            <div class="stat-bar"><div class="stat-fill" style="width:${portrait.dataset.def}%"></div></div>
                         </div>
-
-                        <div class="stat">
-                            <span>VIT</span>
-                            <div class="stat-bar">
-                                <div class="stat-fill" style="width:${portrait.dataset.vit}%"></div>
-                            </div>
+                        <div class="stat"><span>VIT</span>
+                            <div class="stat-bar"><div class="stat-fill" style="width:${portrait.dataset.vit}%"></div></div>
                         </div>
                     </div>
+
+                    <button class="btn-select-right">
+                        ${selectedHeroes.includes(portrait.dataset.name) ? 'Désélectionner' : 'Sélectionner'}
+                    </button>
                 </div>
             `;
+
+            // Gestion bouton Sélectionner à droite
+            const btnRight = details.querySelector('.btn-select-right');
+            btnRight.addEventListener('click', () => {
+                const heroName = portrait.dataset.name;
+
+                if (selectedHeroes.includes(heroName)) {
+                    // Désélection
+                    selectedHeroes = selectedHeroes.filter(h => h !== heroName);
+                    portrait.classList.remove('active');
+                } else {
+                    if (selectedHeroes.length < maxSelection) {
+                        selectedHeroes.push(heroName);
+                        portrait.classList.add('active');
+                    } else {
+                        alert("Vous pouvez sélectionner maximum 3 personnages !");
+                        return;
+                    }
+                }
+
+                updateSelectedTeam();
+                // Mettre à jour le texte du bouton
+                btnRight.textContent = selectedHeroes.includes(heroName) ? 'Désélectionner' : 'Sélectionner';
+            });
         });
     });
 
+    // Met à jour la zone équipe sélectionnée
+    function updateSelectedTeam() {
+        selectedList.innerHTML = '';
+        selectedHeroes.forEach(name => {
+            const hero = Array.from(portraits).find(p => p.dataset.name === name);
+            const clone = hero.cloneNode(true);
+            selectedList.appendChild(clone);
+        });
+
+        launchBtn.disabled = selectedHeroes.length === 0;
+    }
+
+    // Bouton Lancer
+    launchBtn.addEventListener('click', () => {
+        alert("Partie lancée avec : " + selectedHeroes.join(", "));
+        // ici tu peux rediriger vers la page jeu
+    });
 });
+
 
 
 

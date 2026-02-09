@@ -26,7 +26,7 @@ final class TeamsController extends AbstractController
                 'name' => 'Plague Doctor',
                 'role' => 'Soigneur • Support',
                 'image' => 'asset/img/Plague_Doctor.webp',
-                'gif' => 'asset/gif/Plague_Doctor.gif',
+                'gif' => 'asset/gif/Pd_combat.webp',
                 'atq' => 65,
                 'def' => 45,
                 'vit' => 70,
