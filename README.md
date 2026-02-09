@@ -57,7 +57,15 @@ php bin/console doctrine:database:create
 php bin/console doctrine:migrations:migrate
 ```
 
-### 6. Compiler les assets
+### 6. Charger les données initiales (fixtures)
+
+```bash
+php bin/console doctrine:fixtures:load
+```
+
+> **Note :** Cette commande va charger les rôles (Tank, DPS, Support, Soigneur, Buffer) et les personnages de Darkest Dungeon dans la base de données. Confirmez avec `yes` quand demandé.
+
+### 7. Compiler les assets
 
 Pour le développement :
 
@@ -109,7 +117,7 @@ docker-compose up -d
 
 ## 📁 Structure du projet
 
-```
+```text
 StarGuardian-AutoBattler/
 ├── assets/              # Fichiers JavaScript/CSS
 │   ├── app.js          # Point d'entrée React

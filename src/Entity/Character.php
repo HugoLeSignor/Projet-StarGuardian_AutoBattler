@@ -41,6 +41,11 @@ class Character
     #[ORM\Column]
     private ?int $HP = null;
 
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
     public function getName(): ?string
     {
         return $this->name;

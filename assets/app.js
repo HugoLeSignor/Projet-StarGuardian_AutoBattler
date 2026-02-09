@@ -6,6 +6,7 @@
  * which should already be in your base.html.twig.
  */
 import './styles/app.scss';
+import './js/combat.js';
 // menu burger
 document.addEventListener("DOMContentLoaded", () => {
     const burger = document.querySelector(".burger");
@@ -22,6 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
 document.addEventListener('DOMContentLoaded', () => {
     const characterCards = document.querySelectorAll('.character-card');
     const confirmBtn = document.querySelector('.btn-confirm');
+
+    // Vérifier si on est sur la page de sélection de personnages
+    if (!confirmBtn || characterCards.length === 0) {
+        return; // Sortir si ce n'est pas la bonne page
+    }
+
     let selectedCharacter = null;
 
     characterCards.forEach(card => {

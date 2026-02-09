@@ -14,7 +14,8 @@ class AttackAction implements ActionInterface
     public function execute(Character $user, array &$teamAllies, array &$teamEnemies, array &$logs, array &$userData): void
     {
         $initialTargetIndex = CombatEngine::getRandomAliveIndex($teamEnemies);
-        if ($initialTargetIndex === null) return;
+        if ($initialTargetIndex === null)
+            return;
 
         $initialTargetData =& $teamEnemies[$initialTargetIndex];
         $targetData =& $initialTargetData;
@@ -22,7 +23,14 @@ class AttackAction implements ActionInterface
         if (in_array('protected', $initialTargetData['statuses'], true) && isset($initialTargetData['protectedBy'])) {
             foreach ($teamEnemies as &$edata) {
                 if ($edata['char'] === $initialTargetData['protectedBy'] && $edata['char']->getHP() > 0) {
-                    $logs[] = CombatEngine::colorNameStatic($edata) . " protège " . CombatEngine::colorNameStatic($initialTargetData);
+                    $logs[] = [
+                        'type' => 'protect',
+                        'protector' => $edata['char']->getName(),
+                        'protectorTeam' => $edata['team'],
+                        'protected' => $initialTargetData['char']->getName(),
+                        'protectedTeam' => $initialTargetData['team'],
+                        'message' => CombatEngine::colorNameStatic($edata) . " protège " . CombatEngine::colorNameStatic($initialTargetData)
+                    ];
                     $targetData =& $edata;
                     break;
                 }
@@ -32,26 +40,49 @@ class AttackAction implements ActionInterface
         $target = $targetData['char'];
 
         if (rand(1, 100) <= $target->getDODGE()) {
-            $logs[] = CombatEngine::colorNameStatic($targetData) . " esquive l'attaque de " . CombatEngine::colorNameStatic($userData);
+            $logs[] = [
+                'type' => 'dodge',
+                'attacker' => $user->getName(),
+                'attackerTeam' => $userData['team'],
+                'target' => $target->getName(),
+                'targetTeam' => $targetData['team'],
+                'message' => CombatEngine::colorNameStatic($targetData) . " esquive l'attaque de " . CombatEngine::colorNameStatic($userData)
+            ];
             return;
         }
 
         $damage = rand($user->getDMGMIN(), $user->getDMGMAX());
-        $crit = '';
+        $isCrit = false;
 
         if (rand(1, 100) <= $user->getCRIT()) {
-            $damage = (int)($damage * 1.5);
-            $crit = " (CRIT!)";
+            $damage = (int) ($damage * 1.5);
+            $isCrit = true;
         }
 
         $newHP = max(0, $target->getHP() - $damage);
         $target->setHP($newHP);
 
-        $logs[] = CombatEngine::colorNameStatic($userData) . " attaque " . CombatEngine::colorNameStatic($targetData) . " → $damage dégâts (HP: $newHP)$crit";
+        $logs[] = [
+            'type' => 'attack',
+            'attacker' => $user->getName(),
+            'attackerTeam' => $userData['team'],
+            'target' => $target->getName(),
+            'targetTeam' => $targetData['team'],
+            'damage' => $damage,
+            'targetHP' => $newHP,
+            'targetMaxHP' => $targetData['HP_MAX'],
+            'isCrit' => $isCrit,
+            'message' => CombatEngine::colorNameStatic($userData) . " attaque " . CombatEngine::colorNameStatic($targetData) . " → $damage dégâts (HP: $newHP)" . ($isCrit ? " (CRIT!)" : "")
+        ];
 
         if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
             $targetData['statuses'][] = 'dead';
-            $logs[] = CombatEngine::colorNameStatic($targetData) . " est K.O !";
+            $logs[] = [
+                'type' => 'death',
+                'target' => $target->getName(),
+                'targetTeam' => $targetData['team'],
+                'message' => CombatEngine::colorNameStatic($targetData) . " est K.O !"
+            ];
         }
     }
 }
@@ -76,7 +107,8 @@ class HealAction implements ActionInterface
         }
 
         $targetIndex = $this->getLowestHPIndex($teamAllies);
-        if ($targetIndex === null) return;
+        if ($targetIndex === null)
+            return;
 
         $targetData =& $teamAllies[$targetIndex];
         $target = $targetData['char'];
@@ -90,7 +122,17 @@ class HealAction implements ActionInterface
         $healAmount = min($this->healAmount, $targetData['HP_MAX'] - $target->getHP());
         $target->setHP($target->getHP() + $healAmount);
 
-        $logs[] = CombatEngine::colorNameStatic($userData) . " soigne " . CombatEngine::colorNameStatic($targetData) . " (+$healAmount PV)";
+        $logs[] = [
+            'type' => 'heal',
+            'healer' => $user->getName(),
+            'healerTeam' => $userData['team'],
+            'target' => $target->getName(),
+            'targetTeam' => $targetData['team'],
+            'amount' => $healAmount,
+            'targetHP' => $target->getHP(),
+            'targetMaxHP' => $targetData['HP_MAX'],
+            'message' => CombatEngine::colorNameStatic($userData) . " soigne " . CombatEngine::colorNameStatic($targetData) . " (+$healAmount PV)"
+        ];
 
         $userData['cooldowns']['heal'] = $this->cooldownTurns;
     }
@@ -101,7 +143,8 @@ class HealAction implements ActionInterface
         $ratio = 999;
 
         foreach ($team as $i => $data) {
-            if ($data['char']->getHP() <= 0) continue;
+            if ($data['char']->getHP() <= 0)
+                continue;
 
             $currentRatio = $data['char']->getHP() / $data['HP_MAX'];
             if ($currentRatio < $ratio) {
@@ -146,7 +189,15 @@ class DefendAllyAction implements ActionInterface
         $targetData['protectedBy'] = $user;
         $targetData['protectTurns'] = 2;
 
-        $logs[] = CombatEngine::colorNameStatic($userData) . " protège " . CombatEngine::colorNameStatic($targetData) . " pendant 2 tours";
+        $logs[] = [
+            'type' => 'defend',
+            'defender' => $user->getName(),
+            'defenderTeam' => $userData['team'],
+            'target' => $targetData['char']->getName(),
+            'targetTeam' => $targetData['team'],
+            'duration' => 2,
+            'message' => CombatEngine::colorNameStatic($userData) . " protège " . CombatEngine::colorNameStatic($targetData) . " pendant 2 tours"
+        ];
 
         $userData['cooldowns']['defend'] = $this->cooldownTurns;
     }
@@ -165,32 +216,39 @@ class CombatEngine
 
         while ($this->teamAlive($team1) && $this->teamAlive($team2) && $round <= $maxRounds) {
 
-            $logs[] = "=== Tour $round ===";
+            $logs[] = [
+                'type' => 'round',
+                'round' => $round,
+                'message' => "=== Tour $round ==="
+            ];
 
             $this->tickTeam($team1);
             $this->tickTeam($team2);
 
             $turnOrder = $this->rollInitiative($team1, $team2);
-
-            foreach ($turnOrder as $data) {
-                if ($data['char']->getHP() > 0) {
-                    $logs[] = sprintf(
-                        "%s → Initiative %.2f | HP %d",
-                        self::colorNameStatic($data),
-                        $data['initiative'],
-                        $data['char']->getHP()
-                    );
-                }
-            }
-
             $this->attackPhase($turnOrder, $team1, $team2, $logs);
 
             $round++;
         }
 
-        if ($this->teamAlive($team1)) $logs[] = "Equipe 1 gagne !";
-        elseif ($this->teamAlive($team2)) $logs[] = "Equipe 2 gagne !";
-        else $logs[] = "Match nul !";
+        if ($this->teamAlive($team1)) {
+            $logs[] = [
+                'type' => 'victory',
+                'winner' => 'Equipe 1',
+                'message' => "Equipe 1 gagne !"
+            ];
+        } elseif ($this->teamAlive($team2)) {
+            $logs[] = [
+                'type' => 'victory',
+                'winner' => 'Equipe 2',
+                'message' => "Equipe 2 gagne !"
+            ];
+        } else {
+            $logs[] = [
+                'type' => 'draw',
+                'message' => "Match nul !"
+            ];
+        }
 
         return $logs;
     }
@@ -205,18 +263,36 @@ class CombatEngine
             $data['statuses'] = $data['statuses'] ?? [];
 
             $actions = [];
+            $roleName = $char->getRole()?->getName();
 
-            switch ($char->getRole()->getId()) {
-                case 1:
+            switch ($roleName) {
+                case 'DPS':
+                    // DPS : attaque uniquement
                     $actions[] = new AttackAction();
                     break;
-                case 2:
+                case 'Tank':
+                    // Tank : attaque + défense d'allié
                     $actions[] = new AttackAction();
                     $actions[] = new DefendAllyAction();
                     break;
-                case 3:
+                case 'Soigneur':
+                    // Soigneur : attaque + soin
                     $actions[] = new AttackAction();
                     $actions[] = new HealAction(20);
+                    break;
+                case 'Support':
+                    // Support : attaque + soin léger
+                    $actions[] = new AttackAction();
+                    $actions[] = new HealAction(15);
+                    break;
+                case 'Buffer':
+                    // Buffer : attaque + défense
+                    $actions[] = new AttackAction();
+                    $actions[] = new DefendAllyAction();
+                    break;
+                default:
+                    // Fallback : au moins l'attaque de base
+                    $actions[] = new AttackAction();
                     break;
             }
 
@@ -253,7 +329,8 @@ class CombatEngine
         foreach ($turnOrder as &$actorData) {
 
             $attacker = $actorData['char'];
-            if ($attacker->getHP() <= 0) continue;
+            if ($attacker->getHP() <= 0)
+                continue;
 
             if ($actorData['team'] === 'Equipe 1') {
                 $teamAllies =& $team1;
@@ -264,7 +341,8 @@ class CombatEngine
             }
 
             $actions = $actorData['actions'] ?? [];
-            if (empty($actions)) continue;
+            if (empty($actions))
+                continue;
 
             $action = $actions[array_rand($actions)];
             $action->execute($attacker, $teamAllies, $teamEnemies, $logs, $actorData);
@@ -281,9 +359,12 @@ class CombatEngine
 
             $data['initiative'] = $roll + $char->getSPEED() + ($char->getSPEED() / 100) + (rand(0, 99) / 1000);
 
-            if (!isset($data['HP_MAX'])) $data['HP_MAX'] = $char->getHP();
-            if (!isset($data['cooldowns'])) $data['cooldowns'] = [];
-            if (!isset($data['statuses'])) $data['statuses'] = [];
+            if (!isset($data['HP_MAX']))
+                $data['HP_MAX'] = $char->getHP();
+            if (!isset($data['cooldowns']))
+                $data['cooldowns'] = [];
+            if (!isset($data['statuses']))
+                $data['statuses'] = [];
         }
 
         usort($all, fn($a, $b) => $b['initiative'] <=> $a['initiative']);
@@ -307,7 +388,8 @@ class CombatEngine
     private function teamAlive(array $team): bool
     {
         foreach ($team as $data) {
-            if ($data['char']->getHP() > 0) return true;
+            if ($data['char']->getHP() > 0)
+                return true;
         }
         return false;
     }
