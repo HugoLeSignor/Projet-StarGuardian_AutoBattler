@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // Import FontAwesome
 @import '~@fortawesome/fontawesome-free/css/all.css';
 
@@ -8,3 +9,22 @@ body {
     padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
+=======
+@use "base/body";
+@use "base/responsive";
+@use "base/typographie";
+@use "base/variables";
+
+@use "layout/footer";
+@use "layout/hero";
+@use "layout/navbar";
+
+@use "components/button";
+@use "components/cards";
+
+@use "pages/home";
+@use "pages/personnages";
+@use "pages/auth";
+@use "pages/arena";
+@use "pages/teams";
+>>>>>>> master

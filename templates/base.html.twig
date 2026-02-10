@@ -10,10 +10,38 @@
 
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
+            
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <header>
+        {# logo du site #}
+                
+                {# barre de navigation #}
+                <nav class="main-navigation">
+                    <div class="img-logo">
+                        <img src="{{ asset('asset/img/logo.png')}}" alt="logo du site">
+                    </div>
+                    <ul>
+                        <li><a href="{{ path('app_home') }}">Accueil</a></li>
+                        <li><a href="{{ path('app_personnages') }}">Personnages</a></li>
+                        {% if app.user %}
+                            <li><a href="{{ path('app_champ_select') }}">Jouer</a></li>
+                            <li><a href="{{ path('app_teams') }}">Teams</a></li>
+                            <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
+                        {% else %}
+                            <li><a href="{{ path('app_register') }}">Inscription</a></li>
+                            <li><a href="{{ path('app_login') }}">Connexion</a></li>
+                        {% endif %}
+                    </ul>
+                    <button class="burger" aria-label="Menu">
+                        ☰
+                    </button>
+                </nav>
+        </header>
+        <main>{% block body %}{% endblock %}</main>
+        <footer>
+            <p>© Tous droit réservés au site</p>
+        </footer>
     </body>
 </html>

@@ -10,36 +10,36 @@ use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Regex;
 
 class RegistrationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', EmailType::class, [
-                'label' => 'Email',
-                'constraints' => [
-                    new NotBlank(['message' => 'Veuillez entrer un email.']),
-                    new Email(['message' => 'Email invalide.']),
-                ],
-            ])
             ->add('username', TextType::class, [
                 'label' => 'Nom d\'utilisateur',
+                'attr' => [
+                    'placeholder' => 'Entrez votre pseudo',
+                ],
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez entrer un nom d\'utilisateur.']),
                     new Length([
                         'min' => 3,
-                        'minMessage' => 'Minimum {{ limit }} caracteres.',
                         'max' => 50,
+                        'minMessage' => 'Le nom d\'utilisateur doit faire au moins {{ limit }} caractères.',
+                        'maxMessage' => 'Le nom d\'utilisateur ne peut pas dépasser {{ limit }} caractères.',
                     ]),
-                    new Regex([
-                        'pattern' => '/^[a-zA-Z0-9_]+$/',
-                        'message' => 'Lettres, chiffres et underscores uniquement.',
-                    ]),
+                ],
+            ])
+            ->add('email', EmailType::class, [
+                'label' => 'Email',
+                'attr' => [
+                    'placeholder' => 'Entrez votre email',
+                ],
+                'constraints' => [
+                    new NotBlank(['message' => 'Veuillez entrer un email.']),
                 ],
             ])
             ->add('plainPassword', RepeatedType::class, [
@@ -47,20 +47,26 @@ class RegistrationFormType extends AbstractType
                 'mapped' => false,
                 'first_options' => [
                     'label' => 'Mot de passe',
-                    'constraints' => [
-                        new NotBlank(['message' => 'Veuillez entrer un mot de passe.']),
-                        new Length([
-                            'min' => 6,
-                            'minMessage' => 'Minimum {{ limit }} caracteres.',
-                        ]),
+                    'attr' => [
+                        'placeholder' => 'Entrez votre mot de passe',
                     ],
                 ],
                 'second_options' => [
                     'label' => 'Confirmer le mot de passe',
+                    'attr' => [
+                        'placeholder' => 'Confirmez votre mot de passe',
+                    ],
                 ],
                 'invalid_message' => 'Les mots de passe ne correspondent pas.',
-            ])
-        ;
+                'constraints' => [
+                    new NotBlank(['message' => 'Veuillez entrer un mot de passe.']),
+                    new Length([
+                        'min' => 6,
+                        'max' => 4096,
+                        'minMessage' => 'Le mot de passe doit faire au moins {{ limit }} caractères.',
+                    ]),
+                ],
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

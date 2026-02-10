@@ -1,11 +1,20 @@
 security:
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
+<<<<<<< HEAD
                 property: username
+=======
+                property: email
+
+>>>>>>> master
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
@@ -16,6 +25,7 @@ security:
             form_login:
                 login_path: app_login
                 check_path: app_login
+<<<<<<< HEAD
                 enable_csrf: true
                 default_target_path: app_home
             remember_me:
@@ -30,6 +40,20 @@ security:
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/register$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_USER }
+=======
+                default_target_path: app_home
+                enable_csrf: true
+            logout:
+                path: app_logout
+                target: app_home
+
+    access_control:
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/champ, roles: ROLE_USER }
+        - { path: ^/teams, roles: ROLE_USER }
+        - { path: ^/arena, roles: ROLE_USER }
+>>>>>>> master
 
 when@test:
     security:

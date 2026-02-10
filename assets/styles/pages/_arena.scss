@@ -1,0 +1,894 @@
+@use "../base/variables" as *;
+
+// Darkest Dungeon inspired arena styles
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+$dd-parchment: #d4c4a8;
+$dd-gold: #c9a227;
+$dd-bone: #e8dcc4;
+
+.arena-container {
+    min-height: 100vh;
+    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    padding: 1rem;
+    position: relative;
+    overflow: hidden;
+
+    // Vignette effect
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.8) 100%);
+        pointer-events: none;
+        z-index: 1;
+    }
+}
+
+// ==========================================
+// SECTION HAUTE - Zone de combat animations
+// ==========================================
+.battle-stage {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 300px;
+    background: linear-gradient(180deg, #1a1411 0%, #0d0a08 100%);
+    border: 3px solid #3d3225;
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    box-sizing: border-box;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(201, 162, 39, 0.15);
+        margin: 6px;
+        pointer-events: none;
+    }
+}
+
+.battle-stage__team {
+    display: flex;
+    gap: 5rem;
+    align-items: flex-end;
+
+    &--left {
+        flex-direction: row;
+    }
+
+    &--right {
+        flex-direction: row-reverse;
+    }
+}
+
+.battle-stage__character {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    position: relative;
+}
+
+.battle-stage__sprite {
+    width: 150px;
+    height: 180px;
+    background: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, filter 0.2s ease, box-shadow 0.3s ease;
+    position: relative;
+    z-index: 1;
+
+    img.character-sprite {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        image-rendering: pixelated;
+    }
+
+    .battle-stage__team--right & img.character-sprite {
+        transform: scaleX(-1);
+    }
+
+    &:hover {
+        transform: translateY(-5px);
+    }
+}
+
+.battle-stage__name {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.75rem;
+    color: $dd-parchment;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    position: relative;
+    z-index: 10;
+}
+
+// Barre de vie
+.hp-bar {
+    width: 70px;
+    height: 6px;
+    background: #1a1411;
+    border: 1px solid #3d3225;
+    margin-top: 0.25rem;
+    overflow: hidden;
+    position: relative;
+    z-index: 10;
+}
+
+.hp-bar__fill {
+    height: 100%;
+    background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+    transition: width 0.3s ease;
+
+    &--low {
+        background: linear-gradient(180deg, #ff9800 0%, #e65100 100%);
+    }
+
+    &--critical {
+        background: linear-gradient(180deg, #f44336 0%, #b71c1c 100%);
+        animation: pulse-hp 0.5s ease-in-out infinite;
+    }
+}
+
+.hp-text {
+    font-size: 0.65rem;
+    color: $dd-bone;
+    opacity: 0.8;
+    position: relative;
+    z-index: 10;
+}
+
+@keyframes pulse-hp {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
+}
+
+// ==========================================
+// ANIMATIONS DE COMBAT
+// ==========================================
+.battle-stage__character {
+    transition: all 0.3s ease;
+
+    // Animation d'attaque
+    &.attacking {
+        animation: attack-anim 0.6s ease-out;
+
+        .battle-stage__team--left & {
+            animation-name: attack-right;
+        }
+
+        .battle-stage__team--right & {
+            animation-name: attack-left;
+        }
+    }
+
+    // Animation de dégâts
+    &.hurt {
+        animation: hurt-anim 0.4s ease-out;
+
+        .battle-stage__sprite {
+            filter: brightness(2) saturate(0.5);
+        }
+    }
+
+    // Coup critique
+    &.crit {
+        .battle-stage__sprite::after {
+            content: 'CRIT!';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: $dd-crimson;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-shadow: 0 0 10px rgba(220, 20, 60, 0.8);
+            animation: float-up 0.8s ease-out forwards;
+        }
+    }
+
+    // Animation de soin (lanceur)
+    &.healing {
+        .battle-stage__sprite {
+            box-shadow: 0 0 20px rgba(76, 175, 80, 0.8);
+        }
+    }
+
+    // Animation de soin (cible)
+    &.healed {
+        animation: heal-pulse 0.8s ease-out;
+
+        .battle-stage__sprite {
+            box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
+        }
+
+        &::after {
+            content: '+';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #4caf50;
+            font-size: 1.5rem;
+            font-weight: bold;
+            animation: float-up 0.8s ease-out forwards;
+        }
+    }
+
+    // Animation de défense
+    &.defending {
+        .battle-stage__sprite {
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.8);
+            border-color: $dd-gold;
+        }
+    }
+
+    // Animation d'esquive
+    &.dodging {
+        animation: dodge-anim 0.6s ease-out;
+    }
+
+    // Mort
+    &.dead {
+        opacity: 0.3;
+        filter: grayscale(100%);
+
+        .battle-stage__sprite {
+            transform: rotate(90deg) translateX(20px);
+        }
+
+        .hp-bar__fill {
+            width: 0 !important;
+        }
+    }
+}
+
+// Keyframes pour les animations
+@keyframes attack-right {
+    0% { transform: translateX(0); }
+    30% { transform: translateX(50px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes attack-left {
+    0% { transform: translateX(0); }
+    30% { transform: translateX(-50px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes hurt-anim {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+}
+
+@keyframes heal-pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes dodge-anim {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(30px) translateY(-10px); opacity: 0.5; }
+    100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes float-up {
+    0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+    100% { opacity: 0; transform: translateX(-50%) translateY(-30px); }
+}
+
+.battle-stage__vs {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 4rem;
+    color: $dd-blood-red;
+    text-shadow: 0 0 30px rgba(139, 0, 0, 0.8), 0 0 60px rgba(139, 0, 0, 0.4);
+    animation: pulse-vs 2s ease-in-out infinite;
+}
+
+@keyframes pulse-vs {
+    0%, 100% {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+    50% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+}
+
+// ==========================================
+// OVERLAY VAINQUEUR
+// ==========================================
+.battle-stage__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+
+    &--team1 {
+        background: linear-gradient(
+            135deg,
+            rgba(201, 162, 39, 0.9) 0%,
+            rgba(10, 10, 10, 0.85) 50%,
+            rgba(201, 162, 39, 0.9) 100%
+        );
+
+        .winner-text {
+            color: $dd-gold;
+            text-shadow: 0 0 30px rgba(201, 162, 39, 0.8),
+                         0 0 60px rgba(201, 162, 39, 0.5),
+                         0 4px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .winner-label {
+            color: $dd-parchment;
+        }
+    }
+
+    &--team2 {
+        background: linear-gradient(
+            135deg,
+            rgba(139, 0, 0, 0.9) 0%,
+            rgba(10, 10, 10, 0.85) 50%,
+            rgba(139, 0, 0, 0.9) 100%
+        );
+
+        .winner-text {
+            color: $dd-crimson;
+            text-shadow: 0 0 30px rgba(220, 20, 60, 0.8),
+                         0 0 60px rgba(220, 20, 60, 0.5),
+                         0 4px 8px rgba(0, 0, 0, 0.8);
+        }
+
+        .winner-label {
+            color: $dd-parchment;
+        }
+    }
+
+    &--draw {
+        background: linear-gradient(
+            135deg,
+            rgba(61, 50, 37, 0.9) 0%,
+            rgba(10, 10, 10, 0.85) 50%,
+            rgba(61, 50, 37, 0.9) 100%
+        );
+
+        .winner-text {
+            color: $dd-parchment;
+            text-shadow: 0 0 30px rgba(212, 196, 168, 0.5),
+                         0 4px 8px rgba(0, 0, 0, 0.8);
+        }
+    }
+}
+
+.battle-stage__winner {
+    text-align: center;
+    animation: winner-pop 0.6s ease-out 0.3s both;
+}
+
+.winner-label {
+    display: block;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5em;
+    margin-bottom: 0.5rem;
+    opacity: 0.9;
+}
+
+.winner-text {
+    display: block;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 4rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+}
+
+@keyframes overlay-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes winner-pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.5);
+    }
+    70% {
+        transform: scale(1.1);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+// Responsive overlay
+@media (max-width: 768px) {
+    .winner-text {
+        font-size: 2.5rem;
+        letter-spacing: 0.1em;
+    }
+
+    .winner-label {
+        font-size: 1rem;
+        letter-spacing: 0.3em;
+    }
+}
+
+@media (max-width: 480px) {
+    .winner-text {
+        font-size: 1.8rem;
+    }
+
+    .winner-label {
+        font-size: 0.8rem;
+    }
+}
+
+// ==========================================
+// SECTION BASSE - 3 colonnes
+// ==========================================
+.battle-info {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1.5fr 1fr;
+    gap: 1.5rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+// Panneau générique (info equipe)
+.info-panel {
+    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
+    border: 3px solid #3d3225;
+    padding: 1.5rem;
+    position: relative;
+    min-height: 350px;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(201, 162, 39, 0.15);
+        margin: 6px;
+        pointer-events: none;
+    }
+}
+
+.info-panel__title {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    text-align: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+
+    .info-panel--team1 & {
+        color: $dd-gold;
+    }
+
+    .info-panel--team2 & {
+        color: $dd-crimson;
+    }
+}
+
+.info-panel__characters {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.character-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid #3d3225;
+}
+
+.character-info__icon {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(180deg, #2a2218 0%, #1a1411 100%);
+    border: 2px solid #4a3c2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+
+    .info-panel--team1 & {
+        color: $dd-gold;
+    }
+
+    .info-panel--team2 & {
+        color: $dd-crimson;
+    }
+}
+
+.character-info__details {
+    flex: 1;
+}
+
+.character-info__name {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1rem;
+    color: $dd-parchment;
+    margin-bottom: 0.25rem;
+}
+
+.character-info__stats {
+    font-size: 0.8rem;
+    color: $dd-bone;
+    opacity: 0.8;
+
+    span {
+        color: $dd-crimson;
+        font-weight: bold;
+        transition: all 0.3s ease;
+
+        // Animation flash quand les HP changent
+        &.hp-updated {
+            color: #fff;
+            text-shadow: 0 0 10px $dd-crimson, 0 0 20px $dd-crimson;
+            transform: scale(1.2);
+        }
+    }
+}
+
+// ==========================================
+// PANNEAU CENTRAL - Combat log + boutons
+// ==========================================
+.combat-panel {
+    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
+    border: 3px solid #3d3225;
+    padding: 1.5rem;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(201, 162, 39, 0.15);
+        margin: 6px;
+        pointer-events: none;
+    }
+}
+
+.combat-panel__title {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.25rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    text-align: center;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+// Controles de combat
+.combat-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(61, 50, 37, 0.5);
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.combat-controls__playback {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.combat-controls__speed {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(61, 50, 37, 0.5);
+    border-radius: 4px;
+}
+
+.speed-label {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1rem;
+    font-weight: bold;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.speed-btn {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.9rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid #3d3225;
+    color: $dd-parchment;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 50px;
+    text-align: center;
+
+    &:hover {
+        border-color: $dd-gold;
+        color: $dd-gold;
+        background: rgba(201, 162, 39, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+    }
+
+    &.active {
+        background: rgba(201, 162, 39, 0.3);
+        border-color: $dd-gold;
+        color: $dd-gold;
+        box-shadow: 0 0 15px rgba(201, 162, 39, 0.4),
+                    inset 0 0 10px rgba(201, 162, 39, 0.2);
+        text-shadow: 0 0 5px rgba(201, 162, 39, 0.8);
+    }
+}
+
+.combat-panel__log {
+    flex: 1;
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(61, 50, 37, 0.5);
+    padding: 0.5rem;
+
+    // Custom scrollbar
+    &::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $dd-black;
+        border: 1px solid #3d3225;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: linear-gradient(180deg, #4a3c2e 0%, #3d3225 100%);
+        border: 1px solid #4a3c2e;
+
+        &:hover {
+            background: linear-gradient(180deg, #5a4c3e 0%, #4d4235 100%);
+        }
+    }
+}
+
+.combat-log__entry {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.95rem;
+    line-height: 1.8;
+    color: $dd-parchment;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(61, 50, 37, 0.3);
+    text-align: center;
+    min-height: 2.5rem;
+
+    &:last-child {
+        border-bottom: none;
+    }
+
+    strong, b {
+        color: $dd-crimson;
+        font-weight: bold;
+    }
+
+    &--round {
+        color: $dd-gold;
+        font-size: 1.1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 2px solid rgba(201, 162, 39, 0.5);
+        text-shadow: 0 0 10px rgba(201, 162, 39, 0.5);
+    }
+
+    &--victory {
+        color: $dd-gold;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-shadow: 0 0 15px rgba(201, 162, 39, 0.6);
+    }
+
+    &--defeat {
+        color: $dd-crimson;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-shadow: 0 0 15px rgba(220, 20, 60, 0.6);
+    }
+}
+
+.combat-panel__actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(201, 162, 39, 0.3);
+}
+
+.btn-arena {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+
+    &--primary {
+        color: $dd-gold;
+        border-color: $dd-gold;
+
+        &:hover {
+            background: rgba(201, 162, 39, 0.2);
+            box-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+        }
+    }
+
+    &--secondary {
+        color: $dd-parchment;
+        border-color: #3d3225;
+
+        &:hover {
+            background: rgba(61, 50, 37, 0.3);
+            border-color: $dd-parchment;
+        }
+    }
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 1024px) {
+    .battle-info {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .battle-info > .info-panel:first-child {
+        order: 1;
+    }
+
+    .battle-info > .combat-panel {
+        order: 0;
+    }
+
+    .battle-info > .info-panel:last-child {
+        order: 2;
+    }
+
+    .info-panel {
+        min-height: auto;
+    }
+
+    .info-panel__characters {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .character-info {
+        flex: 0 1 calc(50% - 0.5rem);
+    }
+}
+
+@media (max-width: 768px) {
+    .battle-stage {
+        height: 200px;
+        padding: 1rem;
+    }
+
+    .battle-stage__sprite {
+        width: 60px;
+        height: 75px;
+        font-size: 2rem;
+    }
+
+    .battle-stage__vs {
+        font-size: 2.5rem;
+    }
+
+    .battle-stage__name {
+        font-size: 0.65rem;
+    }
+
+    .character-info {
+        flex: 0 1 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .arena-container {
+        padding: 0.5rem;
+    }
+
+    .battle-stage {
+        height: 150px;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .battle-stage__team {
+        gap: 0.5rem;
+    }
+
+    .battle-stage__sprite {
+        width: 45px;
+        height: 55px;
+        font-size: 1.5rem;
+    }
+
+    .battle-stage__vs {
+        font-size: 1.5rem;
+    }
+
+    .combat-panel__actions {
+        flex-direction: column;
+    }
+
+    .btn-arena {
+        width: 100%;
+        text-align: center;
+    }
+}

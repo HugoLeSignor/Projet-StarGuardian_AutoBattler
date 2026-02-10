@@ -1,0 +1,13 @@
+@use "variables" as *;
+@use '../base/typographie';
+
+
+body{
+    margin: 0;
+    padding: 0;
+
+    background-color: $color-dark;
+    line-height: 1.6;
+
+
+}
