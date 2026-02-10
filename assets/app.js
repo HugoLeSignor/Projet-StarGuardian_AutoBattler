@@ -1,13 +1,12 @@
-
 /*
  * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
  */
 import './styles/app.scss';
 import './js/combat.js';
-// menu burger
+
+/* ======================
+   MENU BURGER
+====================== */
 document.addEventListener("DOMContentLoaded", () => {
     const burger = document.querySelector(".burger");
     const nav = document.querySelector(".main-navigation");
@@ -20,14 +19,14 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+/* =================================================
+   AUTRE PAGE (character select) — inchangé
+================================================= */
 document.addEventListener('DOMContentLoaded', () => {
     const characterCards = document.querySelectorAll('.character-card');
     const confirmBtn = document.querySelector('.btn-confirm');
 
-    // Vérifier si on est sur la page de sélection de personnages
-    if (!confirmBtn || characterCards.length === 0) {
-        return; // Sortir si ce n'est pas la bonne page
-    }
+    if (!confirmBtn || characterCards.length === 0) return;
 
     let selectedCharacter = null;
 
@@ -35,12 +34,10 @@ document.addEventListener('DOMContentLoaded', () => {
         card.addEventListener('click', (e) => {
             e.preventDefault();
 
-            // Retirer sélection précédente
             if (selectedCharacter && selectedCharacter !== card) {
                 selectedCharacter.classList.remove('selected');
             }
 
-            // Toggle sélection
             if (card.classList.contains('selected')) {
                 card.classList.remove('selected');
                 selectedCharacter = null;
@@ -56,22 +53,17 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmBtn.addEventListener('click', () => {
         if (!selectedCharacter) return;
 
-        const heroClass = selectedCharacter.dataset.class;
         const heroName = selectedCharacter.querySelector('.character-name').textContent;
 
-        console.log(`Héros sélectionné : ${heroName} (${heroClass})`);
-
-        // Animation feedback
         selectedCharacter.style.animation = 'pulse 0.4s ease';
 
         setTimeout(() => {
             alert(`Vous avez choisi : ${heroName}`);
-            // window.location.href = `/game/start/${heroClass}`;
         }, 300);
     });
 });
 
-// Animation CSS injectée
+// Animation pulse
 const style = document.createElement('style');
 style.textContent = `
 @keyframes pulse {
@@ -81,122 +73,171 @@ style.textContent = `
 }`;
 document.head.appendChild(style);
 
-console.log('assets/app.js chargé ✔');
 
+/* ================================
+   PAGE TEAMS (CORRIGÉE)
+================================ */
 
-// // Gestion du menu burger (si nécessaire sur cette page aussi)
-// const burger = document.querySelector('.burger');
-// const nav = document.querySelector('.main-navigation');
+/* 🔧 MAX DES STATS (adapter à ta BDD / équilibrage) */
+const STAT_MAX = {
+    dmg: 100,
+    speed: 100,
+    dodge: 100,
+    crit: 100,
+    hp: 200
+};
 
-// if (burger) {
-//     burger.addEventListener('click', () => {
-//         nav.classList.toggle('active');
-//     });
-
-//     // Fermer le menu en cliquant sur l'overlay
-//     nav.addEventListener('click', (e) => {
-//         if (e.target === nav && nav.classList.contains('active')) {
-//             nav.classList.remove('active');
-//         }
-//     });
-// }
-
-
-
-
-
-/*********************************
- * PAGE TEAMS
- *********************************/
 document.addEventListener('DOMContentLoaded', () => {
-
     const portraits = document.querySelectorAll('.team-portrait');
     const details = document.getElementById('teamDetails');
     const selectedList = document.querySelector('.selected-list');
     const launchBtn = document.querySelector('.btn-launch');
 
+    if (!details || portraits.length === 0) return;
+
     const maxSelection = 3;
     let selectedHeroes = [];
 
     portraits.forEach(portrait => {
-
-        // Clic sur portrait → affiche détails
         portrait.addEventListener('click', () => {
             portraits.forEach(p => p.classList.remove('active'));
             portrait.classList.add('active');
 
-            // Injecter le panneau de détails + bouton sélectionner
+            const name = portrait.dataset.name;
+            const role = portrait.dataset.role;
+            const dmgMin = Number(portrait.dataset.dmgMin);
+            const dmgMax = Number(portrait.dataset.dmgMax);
+            const speed = Number(portrait.dataset.speed);
+            const dodge = Number(portrait.dataset.dodge);
+            const crit = Number(portrait.dataset.crit);
+            const hp = Number(portrait.dataset.hp);
+            const spriteFile = portrait.dataset.sprite;
+
+            const spritePath = `/asset/sprites/${spriteFile}`;
+            const isSelected = selectedHeroes.includes(name);
+
             details.innerHTML = `
                 <div class="team-details-content">
-                    <h2>${portrait.dataset.name}</h2>
-                    <p class="role">${portrait.dataset.role}</p>
+                    <h2>${name}</h2>
+                    <p class="role">${role}</p>
+
                     <div class="gif-container">
-                        <img src="${portrait.dataset.gif}" alt="${portrait.dataset.name}">
+                        <img src="${spritePath}" alt="Sprite de ${name}">
                     </div>
-                    <p class="description">${portrait.dataset.desc}</p>
+
                     <div class="stats">
-                        <div class="stat"><span>ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width:${portrait.dataset.atq}%"></div></div>
+                        <div class="stat">
+                            <span>DMG</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill"
+                                    style="width:${Math.min((dmgMax / STAT_MAX.dmg) * 100, 100)}%">
+                                </div>
+                            </div>
+                            <span>${dmgMin} - ${dmgMax}</span>
                         </div>
-                        <div class="stat"><span>DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width:${portrait.dataset.def}%"></div></div>
+
+                        <div class="stat">
+                            <span>VIT</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill"
+                                    style="width:${Math.min((speed / STAT_MAX.speed) * 100, 100)}%">
+                                </div>
+                            </div>
+                            <span>${speed}</span>
                         </div>
-                        <div class="stat"><span>VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width:${portrait.dataset.vit}%"></div></div>
+
+                        <div class="stat">
+                            <span>DODGE</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill"
+                                    style="width:${Math.min((dodge / STAT_MAX.dodge) * 100, 100)}%">
+                                </div>
+                            </div>
+                            <span>${dodge}</span>
+                        </div>
+
+                        <div class="stat">
+                            <span>CRIT</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill"
+                                    style="width:${Math.min((crit / STAT_MAX.crit) * 100, 100)}%">
+                                </div>
+                            </div>
+                            <span>${crit}</span>
+                        </div>
+
+                        <div class="stat">
+                            <span>HP</span>
+                            <div class="stat-bar">
+                                <div class="stat-fill"
+                                    style="width:${Math.min((hp / STAT_MAX.hp) * 100, 100)}%">
+                                </div>
+                            </div>
+                            <span>${hp}</span>
                         </div>
                     </div>
 
                     <button class="btn-select-right">
-                        ${selectedHeroes.includes(portrait.dataset.name) ? 'Désélectionner' : 'Sélectionner'}
+                        ${isSelected ? 'Désélectionner' : 'Sélectionner'}
                     </button>
                 </div>
             `;
 
-            // Gestion bouton Sélectionner à droite
             const btnRight = details.querySelector('.btn-select-right');
             btnRight.addEventListener('click', () => {
-                const heroName = portrait.dataset.name;
-
-                if (selectedHeroes.includes(heroName)) {
-                    // Désélection
-                    selectedHeroes = selectedHeroes.filter(h => h !== heroName);
-                    portrait.classList.remove('active');
+                if (selectedHeroes.includes(name)) {
+                    selectedHeroes = selectedHeroes.filter(h => h !== name);
+                    portrait.classList.remove('selected');
                 } else {
-                    if (selectedHeroes.length < maxSelection) {
-                        selectedHeroes.push(heroName);
-                        portrait.classList.add('active');
-                    } else {
+                    if (selectedHeroes.length >= maxSelection) {
                         alert("Vous pouvez sélectionner maximum 3 personnages !");
                         return;
                     }
+                    selectedHeroes.push(name);
+                    portrait.classList.add('selected');
                 }
 
                 updateSelectedTeam();
-                // Mettre à jour le texte du bouton
-                btnRight.textContent = selectedHeroes.includes(heroName) ? 'Désélectionner' : 'Sélectionner';
+                btnRight.textContent = selectedHeroes.includes(name)
+                    ? 'Désélectionner'
+                    : 'Sélectionner';
             });
         });
     });
 
-    // Met à jour la zone équipe sélectionnée
+    /*  ZONE ÉQUIPE — sprites seulement */
     function updateSelectedTeam() {
         selectedList.innerHTML = '';
+
         selectedHeroes.forEach(name => {
             const hero = Array.from(portraits).find(p => p.dataset.name === name);
-            const clone = hero.cloneNode(true);
-            selectedList.appendChild(clone);
+            if (!hero) return;
+
+            const spritePath = `/asset/sprites/${hero.dataset.sprite}`;
+
+            const heroEl = document.createElement('div');
+            heroEl.classList.add('selected-hero-sprite');
+
+            heroEl.innerHTML = `
+                <img src="${spritePath}" alt="Sprite de ${name}">
+                <span>${name}</span>
+            `;
+
+            selectedList.appendChild(heroEl);
         });
 
-        launchBtn.disabled = selectedHeroes.length === 0;
+        if (launchBtn) {
+            launchBtn.disabled = selectedHeroes.length === 0;
+        }
     }
 
-    // Bouton Lancer
-    launchBtn.addEventListener('click', () => {
-        alert("Partie lancée avec : " + selectedHeroes.join(", "));
-        // ici tu peux rediriger vers la page jeu
-    });
+    if (launchBtn) {
+        launchBtn.addEventListener('click', () => {
+            if (selectedHeroes.length > 0) {
+                alert("Partie lancée avec : " + selectedHeroes.join(", "));
+            }
+        });
+    }
 });
 
-
-
-
+console.log('assets/app.js chargé ✔');
