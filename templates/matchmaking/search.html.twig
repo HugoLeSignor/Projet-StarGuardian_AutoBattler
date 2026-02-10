@@ -1,0 +1,72 @@
+{# templates/matchmaking/search.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Recherche de partie{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Recherche de partie...</h1>
+        <div class="alert alert-info mt-4">
+            Veuillez patienter pendant la recherche d'un adversaire.
+        </div>
+        <div id="matchmaking-status" class="mt-3">
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            En attente d'un autre joueur ou d'un bot...
+        </div>
+    </div>
+    <script>
+        // Polling AJAX pour vérifier l'état du matchmaking
+        let queueId = null;
+        let pollingInterval = null;
+
+        // 1. Rejoindre la file d'attente dès l'arrivée sur la page
+        fetch('/matchmaking/join', {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: ''
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.queueId) {
+                queueId = data.queueId;
+                startPolling();
+            } else {
+                document.getElementById('matchmaking-status').innerHTML = 'Erreur lors de la recherche de partie.';
+            }
+        })
+        .catch(() => {
+            document.getElementById('matchmaking-status').innerHTML = 'Erreur lors de la recherche de partie.';
+        });
+
+        // 2. Fonction de polling régulière
+        function startPolling() {
+            pollingInterval = setInterval(() => {
+                fetch('/matchmaking/search', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: 'queueId=' + encodeURIComponent(queueId)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.found && data.redirectUrl) {
+                        clearInterval(pollingInterval);
+                        window.location.href = data.redirectUrl;
+                    }
+                });
+            }, 2000); // toutes les 2 secondes
+        }
+
+        // 3. Optionnel : annuler la recherche si l'utilisateur quitte la page
+        window.addEventListener('beforeunload', function() {
+            if (queueId) {
+                navigator.sendBeacon('/matchmaking/cancel');
+            }
+        });
+    </script>
+{% endblock %}

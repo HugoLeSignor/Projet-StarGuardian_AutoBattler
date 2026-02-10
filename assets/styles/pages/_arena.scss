@@ -537,6 +537,15 @@ $dd-bone: #e8dcc4;
     justify-content: center;
     font-size: 1.5rem;
     flex-shrink: 0;
+    overflow: hidden;  // Ajouté
+
+    // Ajoutez ces règles pour les images
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;  // ou "contain" si vous voulez voir l'image entière
+        display: block;
+    }
 
     .info-panel--team1 & {
         color: $dd-gold;

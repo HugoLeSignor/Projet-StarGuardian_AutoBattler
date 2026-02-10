@@ -1,14 +1,9 @@
 /*
  * Welcome to your app's main JavaScript file!
  */
-<<<<<<< HEAD
-
-// Import SASS styles
 import './styles/app.scss';
-=======
-import './styles/app.scss';
+import '@fortawesome/fontawesome-free/css/all.css';
 import './js/combat.js';
->>>>>>> master
 
 /* ======================
    MENU BURGER
@@ -103,12 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const maxSelection = 3;
     let selectedHeroes = [];
+        let selectedHeroIds = [];
 
     portraits.forEach(portrait => {
         portrait.addEventListener('click', () => {
             portraits.forEach(p => p.classList.remove('active'));
             portrait.classList.add('active');
 
+            const id = portrait.dataset.id;
             const name = portrait.dataset.name;
             const role = portrait.dataset.role;
             const dmgMin = Number(portrait.dataset.dmgMin);
@@ -120,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const spriteFile = portrait.dataset.sprite;
 
             const spritePath = `/asset/sprites/${spriteFile}`;
-            const isSelected = selectedHeroes.includes(name);
+            const isSelected = selectedHeroIds.includes(id);
 
             details.innerHTML = `
                 <div class="team-details-content">
@@ -191,20 +188,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const btnRight = details.querySelector('.btn-select-right');
             btnRight.addEventListener('click', () => {
-                if (selectedHeroes.includes(name)) {
+                if (selectedHeroIds.includes(id)) {
+                    selectedHeroIds = selectedHeroIds.filter(hid => hid !== id);
                     selectedHeroes = selectedHeroes.filter(h => h !== name);
                     portrait.classList.remove('selected');
                 } else {
-                    if (selectedHeroes.length >= maxSelection) {
+                    if (selectedHeroIds.length >= maxSelection) {
                         alert("Vous pouvez sélectionner maximum 3 personnages !");
                         return;
                     }
+                    selectedHeroIds.push(id);
                     selectedHeroes.push(name);
                     portrait.classList.add('selected');
                 }
 
                 updateSelectedTeam();
-                btnRight.textContent = selectedHeroes.includes(name)
+                btnRight.textContent = selectedHeroIds.includes(id)
                     ? 'Désélectionner'
                     : 'Sélectionner';
             });
@@ -215,32 +214,47 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSelectedTeam() {
         selectedList.innerHTML = '';
 
-        selectedHeroes.forEach(name => {
-            const hero = Array.from(portraits).find(p => p.dataset.name === name);
+        selectedHeroIds.forEach(id => {
+            const hero = Array.from(portraits).find(p => p.dataset.id === id);
             if (!hero) return;
-
+            const name = hero.dataset.name;
             const spritePath = `/asset/sprites/${hero.dataset.sprite}`;
-
             const heroEl = document.createElement('div');
             heroEl.classList.add('selected-hero-sprite');
-
             heroEl.innerHTML = `
                 <img src="${spritePath}" alt="Sprite de ${name}">
                 <span>${name}</span>
             `;
-
             selectedList.appendChild(heroEl);
         });
-
         if (launchBtn) {
-            launchBtn.disabled = selectedHeroes.length === 0;
+            launchBtn.disabled = selectedHeroIds.length === 0;
         }
     }
 
     if (launchBtn) {
         launchBtn.addEventListener('click', () => {
-            if (selectedHeroes.length > 0) {
-                alert("Partie lancée avec : " + selectedHeroes.join(", "));
+            if (selectedHeroIds.length > 0) {
+                // Envoi POST AJAX vers /teams/select
+                fetch('/teams/select', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: selectedHeroIds.map((id, i) => `character_ids[${i}]=${encodeURIComponent(id)}`).join('&')
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    } else {
+                        // Redirige manuellement si pas de redirection
+                        window.location.href = '/matchmaking';
+                    }
+                })
+                .catch(() => {
+                    alert('Erreur lors de la sélection de l\'équipe.');
+                });
             }
         });
     }

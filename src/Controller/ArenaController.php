@@ -3,10 +3,10 @@
 namespace App\Controller;
 
 use App\Repository\CharacterRepository;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Entity\Character;
 use App\Service\CombatEngine;
 
 final class ArenaController extends AbstractController
@@ -86,6 +86,24 @@ final class ArenaController extends AbstractController
             'logsJson' => json_encode($logs),
             'winner' => $winner,
         ]);
+        return new Response('Test ArenaController');
+    }
+
+    #[Route('/arena/combat', name: 'app_arena_combat')]
+    public function combat(Request $request, CharacterRepository $repo, CombatEngine $engine): Response
+    {
+        $session = $request->getSession();
+
+        // Vérifier si on vient du matchmaking
+        if ($session->has('match_data')) {
+            // Nettoyer la session
+            $session->remove('match_data');
+            // Rediriger directement vers l'arène principale
+            return $this->redirectToRoute('app_arena');
+        }
+
+        // Sinon, rediriger vers la page d'accueil ou de sélection d'équipe
+        return $this->redirectToRoute('app_teams');
     }
 
     private function buildTeam(array $ids, CharacterRepository $repo, string $teamName): array

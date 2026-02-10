@@ -19,16 +19,17 @@
         <div class="team-grid">
             {% for hero in heroes %}
                  <div class="team-portrait"
-                     data-name="{{ hero.name }}"
-                     data-role="{{ hero.role ? hero.role.name : '' }}"
-                     data-dmg-min="{{ hero.DMGMIN }}"
-                     data-dmg-max="{{ hero.DMGMAX }}"
-                     data-speed="{{ hero.SPEED }}"
-                     data-dodge="{{ hero.DODGE }}"
-                     data-crit="{{ hero.CRIT }}"
-                     data-hp="{{ hero.HP }}"
-                     data-sprite="{{ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '_':'-'}) : 'inconnu') ~ '-idle.gif' }}">
-                    <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'_', '-':'_'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }} portrait">
+                    data-id="{{ hero.id }}"
+                    data-name="{{ hero.name }}"
+                    data-role="{{ hero.role ? hero.role.name : '' }}"
+                    data-dmg-min="{{ hero.DMGMIN }}"
+                    data-dmg-max="{{ hero.DMGMAX }}"
+                    data-speed="{{ hero.SPEED }}"
+                    data-dodge="{{ hero.DODGE }}"
+                    data-crit="{{ hero.CRIT }}"
+                    data-hp="{{ hero.HP }}"
+                    data-sprite="{{ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '_':'-'}) : 'inconnu') ~ '-idle.gif' }}">
+                    <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '-':'-'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }} portrait">
                     <span>{{ hero.name }}</span>
                  </div>
             {% endfor %}
@@ -45,5 +46,4 @@
     </div>
 </section>
 
-<script src="{{ asset('js/team.js') }}"></script>
 {% endblock %}
