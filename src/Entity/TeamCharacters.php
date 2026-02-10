@@ -21,7 +21,7 @@ class TeamCharacters
     /**
      * @var Collection<int, Team>
      */
-    #[ORM\OneToMany(targetEntity: team::class, mappedBy: 'TeamCharacters')]
+    #[ORM\OneToMany(targetEntity: Team::class, mappedBy: 'teamCharacters')]
     private Collection $team;
 
     #[ORM\Column]
@@ -30,7 +30,7 @@ class TeamCharacters
     /**
      * @var Collection<int, Character>
      */
-    #[ORM\OneToMany(targetEntity: character::class, mappedBy: 'TeamCharacters')]
+    #[ORM\OneToMany(targetEntity: Character::class, mappedBy: 'teamCharacters')]
     private Collection $characters;
 
     public function __construct()
