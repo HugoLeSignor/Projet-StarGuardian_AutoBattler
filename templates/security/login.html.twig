@@ -3,41 +3,57 @@
 {% block title %}Connexion{% endblock %}
 
 {% block body %}
-<section class="auth-page">
-    <div class="auth-container">
-        <h1>Connexion</h1>
+<div class="auth-page">
+    <div class="auth-page__vignette"></div>
+
+    <div class="auth-panel">
+        <div class="auth-panel__ornament">&#x2726;</div>
+        <h1 class="auth-panel__title">Connexion</h1>
+        <div class="auth-panel__separator">
+            <span></span>
+            <i class="fas fa-dungeon"></i>
+            <span></span>
+        </div>
 
         {% if error %}
-            <div class="auth-error">
+            <div class="auth-alert auth-alert--error">
+                <i class="fas fa-exclamation-triangle"></i>
                 {{ error.messageKey|trans(error.messageData, 'security') }}
             </div>
         {% endif %}
 
         {% for message in app.flashes('success') %}
-            <div class="auth-success">
+            <div class="auth-alert auth-alert--success">
+                <i class="fas fa-check"></i>
                 {{ message }}
             </div>
         {% endfor %}
 
         <form method="post" class="auth-form">
-            <div class="form-group">
-                <label for="inputEmail">Email</label>
-                <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" placeholder="Entrez votre email" required autofocus>
+            <div class="auth-form__group">
+                <label for="inputEmail" class="auth-form__label">Email</label>
+                <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="auth-form__input" placeholder="Entrez votre email" required autofocus>
             </div>
 
-            <div class="form-group">
-                <label for="inputPassword">Mot de passe</label>
-                <input type="password" name="_password" id="inputPassword" placeholder="Entrez votre mot de passe" required>
+            <div class="auth-form__group">
+                <label for="inputPassword" class="auth-form__label">Mot de passe</label>
+                <input type="password" name="_password" id="inputPassword" class="auth-form__input" placeholder="Entrez votre mot de passe" required>
             </div>
 
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <button type="submit" class="btn btn-auth">Se connecter</button>
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">Se connecter</button>
         </form>
 
-        <p class="auth-link">
-            Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a>
+        <div class="auth-panel__separator auth-panel__separator--small">
+            <span></span>
+            <span></span>
+        </div>
+
+        <p class="auth-panel__link">
+            Pas encore de compte ? <a href="{{ path('app_register') }}">Cr&eacute;er un compte</a>
         </p>
+        <div class="auth-panel__ornament">&#x2726;</div>
     </div>
-</section>
+</div>
 {% endblock %}

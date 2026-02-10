@@ -1,0 +1,100 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil du Guerrier{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-page__vignette"></div>
+
+    <div class="auth-panel profile-panel">
+        <div class="auth-panel__ornament">&#x2726;</div>
+        <h1 class="auth-panel__title">Profil</h1>
+        <div class="auth-panel__separator">
+            <span></span>
+            <i class="fas fa-user-shield"></i>
+            <span></span>
+        </div>
+
+        {% for message in app.flashes('success') %}
+            <div class="auth-alert auth-alert--success">
+                <i class="fas fa-check"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {# Avatar preview #}
+        <div class="profile-avatar-section">
+            <div class="profile-avatar-preview" id="avatarPreview">
+                {% if user.profileImage %}
+                    <img src="/uploads/avatars/{{ user.profileImage }}" alt="Avatar de {{ user.username }}">
+                {% else %}
+                    <i class="fas fa-user-circle"></i>
+                {% endif %}
+            </div>
+            <div class="profile-avatar-info">
+                <span class="profile-avatar-info__name">{{ user.username }}</span>
+                {% if user.motto %}
+                    <span class="profile-avatar-info__motto">&laquo; {{ user.motto }} &raquo;</span>
+                {% endif %}
+                <span class="profile-avatar-info__rating">
+                    <i class="fas fa-trophy"></i> {{ user.rating }} MMR
+                </span>
+            </div>
+        </div>
+
+        <div class="auth-panel__separator auth-panel__separator--small">
+            <span></span>
+            <span></span>
+        </div>
+
+        {{ form_start(form, {'attr': {'class': 'auth-form', 'enctype': 'multipart/form-data'}}) }}
+
+            <div class="auth-form__group">
+                {{ form_label(form.bio) }}
+                {{ form_widget(form.bio) }}
+                {{ form_errors(form.bio) }}
+            </div>
+
+            <div class="auth-form__group">
+                {{ form_label(form.motto) }}
+                {{ form_widget(form.motto) }}
+                {{ form_errors(form.motto) }}
+            </div>
+
+            <div class="auth-form__group">
+                {{ form_label(form.profileImageFile) }}
+                <div class="profile-file-upload">
+                    {{ form_widget(form.profileImageFile, {'attr': {'id': 'avatarInput'}}) }}
+                    <div class="profile-file-upload__hint">
+                        <i class="fas fa-cloud-upload-alt"></i>
+                        JPEG, PNG, WebP &mdash; max 2 Mo
+                    </div>
+                </div>
+                {{ form_errors(form.profileImageFile) }}
+            </div>
+
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">
+                <i class="fas fa-save"></i> Sauvegarder
+            </button>
+
+        {{ form_end(form) }}
+
+        <div class="auth-panel__separator auth-panel__separator--small">
+            <span></span>
+            <span></span>
+        </div>
+
+        <p class="auth-panel__link">
+            <a href="{{ path('app_home') }}"><i class="fas fa-arrow-left"></i> Retour</a>
+        </p>
+        <div class="auth-panel__ornament">&#x2726;</div>
+    </div>
+</div>
+{% endblock %}

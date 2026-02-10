@@ -34,6 +34,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean', options: ['default' => false])]
     private bool $isSearchingMatch = false;
 
+    #[ORM\Column(type: 'integer', options: ['default' => 1000])]
+    private int $rating = 1000;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $bio = null;
+
+    #[ORM\Column(length: 100, nullable: true)]
+    private ?string $motto = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $profileImage = null;
+
     /**
      * @var Collection<int, Battle>
      */
@@ -103,6 +115,50 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function eraseCredentials(): void
     {
+    }
+
+    public function getRating(): int
+    {
+        return $this->rating;
+    }
+
+    public function setRating(int $rating): static
+    {
+        $this->rating = $rating;
+        return $this;
+    }
+
+    public function getBio(): ?string
+    {
+        return $this->bio;
+    }
+
+    public function setBio(?string $bio): static
+    {
+        $this->bio = $bio;
+        return $this;
+    }
+
+    public function getMotto(): ?string
+    {
+        return $this->motto;
+    }
+
+    public function setMotto(?string $motto): static
+    {
+        $this->motto = $motto;
+        return $this;
+    }
+
+    public function getProfileImage(): ?string
+    {
+        return $this->profileImage;
+    }
+
+    public function setProfileImage(?string $profileImage): static
+    {
+        $this->profileImage = $profileImage;
+        return $this;
     }
 
     public function isSearchingMatch(): bool

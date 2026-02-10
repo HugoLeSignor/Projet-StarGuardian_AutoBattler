@@ -1,21 +1,164 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}Darkest Fight Arena{% endblock %}
 
 {% block body %}
-<div class="bg-hero">
-    <div class="hero">
-        <p>"Formez votre équipe, maîtrisez les compétences et dominez le champ de bataille avec des héros uniques et légendaires !"</p>
-        <a href="#" class="btn btn-primary">Jouez, des maintenant</a>
-    </div>
+<div class="home">
+
+    {# ====== HERO SECTION ====== #}
+    <section class="home-hero">
+        <div class="home-hero__vignette"></div>
+        <div class="home-hero__content">
+            <div class="home-hero__ornament">&#x2726;</div>
+            <div class="home-hero__logo">
+                <img src="{{ asset('asset/img/logo.png') }}" alt="Darkest Fight Arena">
+            </div>
+            <div class="home-hero__separator">
+                <span></span>
+                <i class="fas fa-skull"></i>
+                <span></span>
+            </div>
+            <p class="home-hero__tagline">Formez votre &eacute;quipe, ma&icirc;trisez les comp&eacute;tences et dominez le champ de bataille avec des h&eacute;ros uniques et l&eacute;gendaires.</p>
+            <div class="home-hero__actions">
+                {% if app.user %}
+                    <a href="{{ path('app_teams') }}" class="btn-dd btn-dd--primary">
+                        Entrer dans l'ar&egrave;ne
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_register') }}" class="btn-dd btn-dd--primary">
+                        S'enr&ocirc;ler
+                    </a>
+                    <a href="{{ path('app_login') }}" class="btn-dd btn-dd--secondary">
+                        Se connecter
+                    </a>
+                {% endif %}
+            </div>
+            <div class="home-hero__ornament">&#x2726;</div>
+        </div>
+    </section>
+
+    {# ====== HOW TO PLAY ====== #}
+    <section class="home-steps">
+        <div class="home-steps__header">
+            <h2 class="home-steps__title">Comment Jouer</h2>
+            <div class="home-steps__separator">
+                <span></span>
+                <span></span>
+            </div>
+            <p class="home-steps__subtitle">Trois &eacute;tapes vers la gloire... ou la ruine.</p>
+        </div>
+
+        <div class="home-steps__grid">
+            <div class="home-step">
+                <div class="home-step__number">I</div>
+                <div class="home-step__icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="home-step__title">Formez votre &eacute;quipe</h3>
+                <p class="home-step__desc">S&eacute;lectionnez 3 h&eacute;ros parmi 16 combattants l&eacute;gendaires. Chaque r&ocirc;le &mdash; Tank, DPS, Support &mdash; apporte des capacit&eacute;s uniques au combat.</p>
+            </div>
+
+            <div class="home-step">
+                <div class="home-step__number">II</div>
+                <div class="home-step__icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <h3 class="home-step__title">Trouvez un adversaire</h3>
+                <p class="home-step__desc">Affrontez d'autres joueurs en PvP ou combattez une &eacute;quipe g&eacute;n&eacute;r&eacute;e al&eacute;atoirement. Le matchmaking vous trouve un adversaire digne de vous.</p>
+            </div>
+
+            <div class="home-step">
+                <div class="home-step__number">III</div>
+                <div class="home-step__icon">
+                    <i class="fas fa-fist-raised"></i>
+                </div>
+                <h3 class="home-step__title">Regardez le combat</h3>
+                <p class="home-step__desc">Le combat se d&eacute;roule automatiquement, tour par tour. Esquives, coups critiques, soins et protections s'encha&icirc;nent dans une bataille &eacute;pique.</p>
+            </div>
+        </div>
+    </section>
+
+    {# ====== CHARACTER SHOWCASE ====== #}
+    <section class="home-showcase">
+        <div class="home-showcase__header">
+            <h2 class="home-showcase__title">Les H&eacute;ros</h2>
+            <div class="home-showcase__separator">
+                <span></span>
+                <span></span>
+            </div>
+            <p class="home-showcase__subtitle">Des guerriers forg&eacute;s dans les t&eacute;n&egrave;bres, pr&ecirc;ts &agrave; se battre pour votre cause.</p>
+        </div>
+
+        <div class="home-showcase__characters">
+            <div class="home-showcase__character">
+                <div class="home-showcase__sprite">
+                    <img src="{{ asset('asset/sprites/crusader-idle.gif') }}" alt="Crusader">
+                </div>
+                <span class="home-showcase__name">Crusader</span>
+                <span class="home-showcase__role">Tank</span>
+            </div>
+            <div class="home-showcase__character">
+                <div class="home-showcase__sprite">
+                    <img src="{{ asset('asset/sprites/highwayman-idle.gif') }}" alt="Highwayman">
+                </div>
+                <span class="home-showcase__name">Highwayman</span>
+                <span class="home-showcase__role">DPS</span>
+            </div>
+            <div class="home-showcase__character">
+                <div class="home-showcase__sprite">
+                    <img src="{{ asset('asset/sprites/vestal-idle.gif') }}" alt="Vestal">
+                </div>
+                <span class="home-showcase__name">Vestal</span>
+                <span class="home-showcase__role">Soigneur</span>
+            </div>
+            <div class="home-showcase__character">
+                <div class="home-showcase__sprite">
+                    <img src="{{ asset('asset/sprites/hellion-idle.gif') }}" alt="Hellion">
+                </div>
+                <span class="home-showcase__name">Hellion</span>
+                <span class="home-showcase__role">DPS</span>
+            </div>
+            <div class="home-showcase__character">
+                <div class="home-showcase__sprite">
+                    <img src="{{ asset('asset/sprites/plague-doctor-idle.gif') }}" alt="Plague Doctor">
+                </div>
+                <span class="home-showcase__name">Plague Doctor</span>
+                <span class="home-showcase__role">Support</span>
+            </div>
+            <div class="home-showcase__character">
+                <div class="home-showcase__sprite">
+                    <img src="{{ asset('asset/sprites/man-at-arms-idle.gif') }}" alt="Man-at-Arms">
+                </div>
+                <span class="home-showcase__name">Man-at-Arms</span>
+                <span class="home-showcase__role">Tank</span>
+            </div>
+        </div>
+
+        <div class="home-showcase__cta">
+            <a href="{{ path('app_personnages') }}" class="btn-dd btn-dd--secondary">
+                Voir tous les personnages
+            </a>
+        </div>
+    </section>
+
+    {# ====== FINAL CTA ====== #}
+    <section class="home-cta">
+        <div class="home-cta__panel">
+            <div class="home-cta__ornament">&#x2726;</div>
+            <h2 class="home-cta__title">Pr&ecirc;t pour le combat ?</h2>
+            <p class="home-cta__text">Les t&eacute;n&egrave;bres n'attendent pas. Rejoignez l'ar&egrave;ne et prouvez votre valeur.</p>
+            {% if app.user %}
+                <a href="{{ path('app_teams') }}" class="btn-dd btn-dd--primary btn-dd--large">
+                    Commencer une partie
+                </a>
+            {% else %}
+                <a href="{{ path('app_register') }}" class="btn-dd btn-dd--primary btn-dd--large">
+                    Cr&eacute;er un compte
+                </a>
+            {% endif %}
+            <div class="home-cta__ornament">&#x2726;</div>
+        </div>
+    </section>
+
 </div>
-
-<section class="content">
-    <h1>Comment jouer à Darkest Fight Arena</h1>
-    <p>Darkest Fight Arena est un jeu de rôle tactique au tour par tour mêlant exploration de donjons, gestion d’équipe et stress psychologique.</p>
-
-    <h2>Objectif du jeu</h2>
-    <p>Le joueur recrute et dirige une compagnie de héros chargés d ’explorer des donjons dangereux afin de vaincre des monstres, récupérer des ressources et améliorer un village central appelé le Hamlet. Les héros peuv ent  subir des traumatismes mentaux, des maladies ou mourir définitivement.</p>
-
-</section>
 {% endblock %}

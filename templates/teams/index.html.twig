@@ -1,24 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Teams{% endblock %}
+{% block title %}Composition d'&eacute;quipe{% endblock %}
 
 {% block body %}
-<section class="teams-page">
+<div class="teams-page">
+    <div class="teams-page__vignette"></div>
 
-    {# ===== ÉQUIPE SÉLECTIONNÉE EN HAUT ===== #}
+    {# ====== HEADER + EQUIPE SELECTIONNEE ====== #}
     <div class="selected-team">
-        <h3>Équipe sélectionnée (max 3)</h3>
+        <h3 class="selected-team__title">Composez votre &eacute;quipe</h3>
+        <div class="role-indicator">
+            <div class="role-slot" data-role="Tank">
+                <i class="fas fa-shield-alt"></i>
+                <span>Tank</span>
+            </div>
+            <div class="role-slot" data-role="DPS">
+                <i class="fas fa-crosshairs"></i>
+                <span>DPS</span>
+            </div>
+            <div class="role-slot" data-role="Support">
+                <i class="fas fa-heart"></i>
+                <span>Support</span>
+            </div>
+        </div>
         <div class="selected-list"></div>
         <button class="btn-launch" disabled>Lancer la partie</button>
     </div>
 
-    {# ===== LAYOUT PRINCIPAL ===== #}
+    {# ====== LAYOUT 2 COLONNES ====== #}
     <div class="teams-layout">
 
-        {# ===== GRILLE PERSONNAGES (GAUCHE) ===== #}
+        {# ===== GRILLE PORTRAITS (GAUCHE) ===== #}
         <div class="team-grid">
             {% for hero in heroes %}
-                 <div class="team-portrait"
+                <div class="team-portrait"
                     data-id="{{ hero.id }}"
                     data-name="{{ hero.name }}"
                     data-role="{{ hero.role ? hero.role.name : '' }}"
@@ -29,21 +44,23 @@
                     data-crit="{{ hero.CRIT }}"
                     data-hp="{{ hero.HP }}"
                     data-sprite="{{ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '_':'-'}) : 'inconnu') ~ '-idle.gif' }}">
-                    <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '-':'-'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }} portrait">
+                    <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '-':'-'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }}">
                     <span>{{ hero.name }}</span>
-                 </div>
+                </div>
             {% endfor %}
         </div>
 
         {# ===== DETAILS PERSONNAGE (DROITE) ===== #}
         <div class="team-details" id="teamDetails">
             <div class="team-placeholder" id="spriteDetails">
-                <h2>Sélectionnez un héros</h2>
+                <div class="team-placeholder__icon">
+                    <i class="fas fa-hand-pointer"></i>
+                </div>
+                <h2>S&eacute;lectionnez un h&eacute;ros</h2>
                 <p>Cliquez sur un portrait pour afficher ses informations.</p>
             </div>
         </div>
 
     </div>
-</section>
-
+</div>
 {% endblock %}

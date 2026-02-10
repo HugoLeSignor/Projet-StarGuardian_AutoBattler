@@ -1,549 +1,96 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Sélection de Héros{% endblock %}
+{% block title %}Personnages{% endblock %}
 
 {% block body %}
-<section class="character-selection">
-    <div class="selection-header">
-        <h1>Choisissez Votre Héros</h1>
-        <p class="subtitle">Chaque héros possède des capacités uniques. Choisissez avec sagesse.</p>
+<div class="personnages">
+    <div class="personnages__vignette"></div>
+
+    {# ====== HEADER ====== #}
+    <div class="personnages__header">
+        <div class="personnages__ornament">&#x2726;</div>
+        <h1 class="personnages__title">Les H&eacute;ros</h1>
+        <div class="personnages__separator">
+            <span></span>
+            <i class="fas fa-skull-crossbones"></i>
+            <span></span>
+        </div>
+        <p class="personnages__subtitle">16 combattants l&eacute;gendaires, forg&eacute;s dans les t&eacute;n&egrave;bres du Darkest Dungeon.</p>
     </div>
 
-    <div class="characters-grid">
+    {# ====== GRILLE DES PERSONNAGES ====== #}
+    <div class="personnages__grid">
+        {% for character in characters %}
+        <div class="char-card">
+            <div class="char-card__portrait">
+                <img src="{{ asset('asset/img/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '.webp') }}" alt="{{ character.name }}">
+                <div class="char-card__overlay"></div>
+                <span class="char-card__role-badge">{{ character.role.name }}</span>
+            </div>
+            <div class="char-card__body">
+                <h3 class="char-card__name">{{ character.name }}</h3>
+                <span class="char-card__role">{{ character.role.name }}</span>
 
-        <!-- Croisé -->
-        <div class="character-card" data-class="crusader">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Crusader.webp')}}" alt="">
-                    <div class="card-overlay"></div>
+                <div class="char-card__sprite">
+                    <img src="{{ asset('asset/sprites/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '-idle.gif') }}" alt="{{ character.name }} sprite">
                 </div>
-                <div class="card-content">
-                    <h3 class="character-name">Le Crusader</h3>
-                    <p class="character-role">Tank • Soutien</p>
 
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 75%"></div></div>
+                <div class="char-card__stats">
+                    <div class="char-stat">
+                        <span class="char-stat__label">HP</span>
+                        <div class="char-stat__bar">
+                            <div class="char-stat__fill char-stat__fill--hp" style="width: {{ (character.HP / 65 * 100)|round }}%"></div>
                         </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 85%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 60%"></div></div>
-                        </div>
+                        <span class="char-stat__value">{{ character.HP }}</span>
                     </div>
-
-                    <p class="character-description">
-                        Guerrier sacré au cœur pur, prêt à défendre ses alliés.
-                    </p>
+                    <div class="char-stat">
+                        <span class="char-stat__label">DMG</span>
+                        <div class="char-stat__bar">
+                            <div class="char-stat__fill char-stat__fill--dmg" style="width: {{ (character.DMGMAX / 26 * 100)|round }}%"></div>
+                        </div>
+                        <span class="char-stat__value">{{ character.DMGMIN }}-{{ character.DMGMAX }}</span>
+                    </div>
+                    <div class="char-stat">
+                        <span class="char-stat__label">SPD</span>
+                        <div class="char-stat__bar">
+                            <div class="char-stat__fill char-stat__fill--spd" style="width: {{ (character.SPEED / 10 * 100)|round }}%"></div>
+                        </div>
+                        <span class="char-stat__value">{{ character.SPEED }}</span>
+                    </div>
+                    <div class="char-stat">
+                        <span class="char-stat__label">DDG</span>
+                        <div class="char-stat__bar">
+                            <div class="char-stat__fill" style="width: {{ (character.DODGE / 30 * 100)|round }}%"></div>
+                        </div>
+                        <span class="char-stat__value">{{ character.DODGE }}</span>
+                    </div>
+                    <div class="char-stat">
+                        <span class="char-stat__label">CRT</span>
+                        <div class="char-stat__bar">
+                            <div class="char-stat__fill char-stat__fill--crit" style="width: {{ (character.CRIT / 10 * 100)|round }}%"></div>
+                        </div>
+                        <span class="char-stat__value">{{ character.CRIT }}%</span>
+                    </div>
                 </div>
             </div>
         </div>
-
-        <!-- Bandit -->
-        <div class="character-card" data-class="highwayman">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Highwayman.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Le Bandit</h3>
-                    <p class="character-role">DPS • Polyvalent</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 80%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 55%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 75%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Tireur d'élite et escrimeur habile, excellent en toute position.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Vestale -->
-        <div class="character-card" data-class="vestal">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Vestal.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">La Vestale</h3>
-                    <p class="character-role">Soigneuse • Soutien</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 50%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 55%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Prêtresse dévouée, maîtresse des soins et de la protection divine.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pestiféré -->
-        <div class="character-card" data-class="plague-doctor">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Abomination.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Le Pestiféré</h3>
-                    <p class="character-role">Support • DoT</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 50%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 80%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Médecin des ombres, expert en poison, maladie et débilitation.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Homme d’armes -->
-        <div class="character-card" data-class="man-at-arms">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/man-at-arms.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">L’Homme d’Armes</h3>
-                    <p class="character-role">Tank • Buffer</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 90%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 50%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Vétéran endurci, protecteur ultime de l’équipe.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Occultiste -->
-        <div class="character-card" data-class="occultist">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Occultist.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">L’Occultiste</h3>
-                    <p class="character-role">Soigneur • Debuffer</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Chercheur du savoir interdit, maître des arts sombres.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        {# Plague Doctor #}
-        <div class="character-card" data-class="plague-doctor">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Plague-Doctor.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Plague Doctor</h3>
-                    <p class="character-role">Soigneur • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Spécialiste des maladies, utile pour contrôler groupes d’ennemis et soigner des afflictions.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-    {# Maitres-chien #}
-        <div class="character-card" data-class="Houndmaster">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/houndmaster.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Houndmaster</h3>
-                    <p class="character-role">Tank • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Chasseur accompagné de son chien fidèle, excellent pour contrôler et aider l’équipe.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-    {# chasseur de prime (Bounty Hunter) #}
-        <div class="character-card" data-class="Bounty-Hunter">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/bounty-hunter.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Bount-Hunter</h3>
-                    <p class="character-role">DPS • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Tireuse experte, capable d’atteindre les ennemis que d’autres ne peuvent toucher.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        {# Hellion (furie) #}
-        <div class="character-card" data-class="Hellion">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Hellion.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Hellion</h3>
-                    <p class="character-role">DPS • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Guerrière sauvage, excelle à infliger de lourds dégâts dès le front.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-{# Grave Robber (Pilleuse de Tombe) #}
-        <div class="character-card" data-class="Grave-Robber">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Grave-Robber.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Grave-Robber</h3>
-                    <p class="character-role">DPS • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Voleuse agile et mortelle, capable de se repositionner et de surprendre.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        {# Antiquarian (Antiquaire) #}
-        <div class="character-card" data-class="Antiquarian">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Antiquarian.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Antiquarian</h3>
-                    <p class="character-role">Loot • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Peu de puissance de combat mais excellente pour accumulation de richesses.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        {# Leper (Lepreux) #}
-        <div class="character-card" data-class="Leper">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Leper.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Leper</h3>
-                    <p class="character-role">DPS • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Guerrier fort et durable, moins précis mais très robuste en mêlée.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        {# Flagellant#}
-        <div class="character-card" data-class="Flagellant">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/flagellant.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Flagellant</h3>
-                    <p class="character-role">DPS • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Fanatique capable de se soigner tout en blessant l’ennemi.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        {# Shieldbreaker (Briseuse de Bouclier) #}
-        <div class="character-card" data-class="Shieldbreaker">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/shieldbreaker.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Shieldbreaker</h3>
-                    <p class="character-role">DPS • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Guerrière agile spécialisée dans l’ouverture des lignes ennemies.
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        {# Musketeer (Arbaletriere) #}
-        <div class="character-card" data-class="Musketeer">
-            <div class="card-inner">
-                <div class="card-image">
-                    <img src="{{ asset('asset/img/Musketeer.webp')}}" alt="">
-                    <div class="card-overlay"></div>
-                </div>
-                <div class="card-content">
-                    <h3 class="character-name">Musketeer</h3>
-                    <p class="character-role">DPS a distance • Support</p>
-
-                    <div class="character-stats">
-                        <div class="stat">
-                            <span class="stat-label">ATQ</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 65%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">DEF</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 45%"></div></div>
-                        </div>
-                        <div class="stat">
-                            <span class="stat-label">VIT</span>
-                            <div class="stat-bar"><div class="stat-fill" style="width: 70%"></div></div>
-                        </div>
-                    </div>
-
-                    <p class="character-description">
-                        Tireuse experte, capable d’atteindre les ennemis que d’autres ne peuvent toucher.
-                    </p>
-                </div>
-            </div>
-        </div>
-
+        {% endfor %}
     </div>
 
-    <div class="selection-footer">
-        <a href="{{ path('app_home') }}" class="btn-back">Retour</a>
-        <button class="btn-confirm" disabled>Confirmer la Sélection</button>
+    {# ====== FOOTER CTA ====== #}
+    <div class="personnages__footer">
+        {% if app.user %}
+            <a href="{{ path('app_teams') }}" class="btn-dd btn-dd--primary">
+                Composer mon &eacute;quipe
+            </a>
+        {% else %}
+            <a href="{{ path('app_register') }}" class="btn-dd btn-dd--primary">
+                S'inscrire pour jouer
+            </a>
+        {% endif %}
+        <a href="{{ path('app_home') }}" class="btn-dd btn-dd--secondary">
+            Retour &agrave; l'accueil
+        </a>
     </div>
-</section>
+</div>
 {% endblock %}

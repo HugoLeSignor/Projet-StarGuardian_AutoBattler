@@ -9,9 +9,12 @@
 
 @use "components/button";
 @use "components/cards";
+@use "components/profile";
 
 @use "pages/home";
 @use "pages/personnages";
 @use "pages/auth";
 @use "pages/arena";
 @use "pages/teams";
+@use "pages/matchmaking";
+@use "pages/profile-page";

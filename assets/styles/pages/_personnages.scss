@@ -1,349 +1,351 @@
 @use "../base/variables" as *;
 
-.character-selection {
-    min-height: calc(100vh - 100px);
-    padding: 3rem 2rem;
+// Darkest Dungeon palette
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+$dd-parchment: #d4c4a8;
+$dd-gold: #c9a227;
+$dd-bone: #e8dcc4;
+
+// ==========================================
+// CONTENEUR PRINCIPAL
+// ==========================================
+.personnages {
+    min-height: 100vh;
+    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    padding: 2rem;
     position: relative;
     overflow: hidden;
+}
 
-    // Effet de grain pour ambiance gothique
+.personnages__vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.7) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+// ==========================================
+// HEADER
+// ==========================================
+.personnages__header {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 3rem 0 2rem;
+}
+
+.personnages__ornament {
+    color: $dd-gold;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    letter-spacing: 0.5em;
+}
+
+.personnages__title {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 3rem;
+    color: $dd-parchment;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    margin: 0.5rem 0;
+    text-shadow: 0 0 30px rgba(212, 196, 168, 0.25);
+}
+
+.personnages__separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+
+    span {
+        display: block;
+        width: 80px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, $dd-gold, transparent);
+    }
+
+    i {
+        color: $dd-blood-red;
+        font-size: 1.1rem;
+        text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+    }
+}
+
+.personnages__subtitle {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.1rem;
+    color: $dd-bone;
+    opacity: 0.7;
+    margin: 0;
+}
+
+// ==========================================
+// GRILLE DES PERSONNAGES
+// ==========================================
+.personnages__grid {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem;
+    max-width: 1300px;
+    margin: 2rem auto;
+}
+
+// ==========================================
+// CARTE PERSONNAGE
+// ==========================================
+.char-card {
+    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.97) 100%);
+    border: 2px solid #3d3225;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+
     &::before {
         content: '';
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="4"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)" opacity="0.05"/%3E%3C/svg%3E');
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(201, 162, 39, 0.08);
+        margin: 4px;
         pointer-events: none;
-        z-index: 1;
+        z-index: 3;
+        transition: border-color 0.3s ease;
     }
-
-    > * {
-        position: relative;
-        z-index: 2;
-    }
-}
-
-// Header de la page
-.selection-header {
-    text-align: center;
-    margin-bottom: 4rem;
-    animation: fadeInDown 0.8s ease-out;
-
-    h1 {
-        font-family: 'Cinzel', 'Palatino', serif;
-        font-size: 3.5rem;
-        color: $color-button;
-        text-transform: uppercase;
-        letter-spacing: 4px;
-        margin: 0 0 1rem 0;
-        font-weight: 700;
-    }
-
-    .subtitle {
-        font-family: 'Cormorant Garamond', 'Georgia', serif;
-        font-size: 1.3rem;
-        color: #c9b896;
-        font-style: italic;
-        margin: 0;
-        opacity: 0.9;
-    }
-}
-
-// Grille des personnages
-.characters-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 2.5rem;
-    max-width: 1400px;
-    margin: 0 auto 3rem;
-}
-
-// Card de personnage
-.character-card {
-    background: linear-gradient(145deg, rgba(40, 30, 20, 0.9), rgba(25, 18, 12, 0.95));
-    border-radius: 16px;
-    overflow: hidden;
-    position: relative;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    cursor: pointer;
-    border: 2px solid $color-dark;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.6),
-        inset 0 1px 0 rgba(255, 255, 255, 0.05);
 
     &:hover {
-        transform: translateY(-8px) scale(1.02);
-        border-color: rgba(212, 175, 55, 0.6);
-        box-shadow: 
-            0 16px 48px rgba(0, 0, 0, 0.8),
-            0 0 40px rgba(212, 175, 55, 0.2),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        border-color: rgba(201, 162, 39, 0.5);
+        transform: translateY(-4px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(201, 162, 39, 0.12);
 
-        .card-overlay {
-            opacity: 0.3;
+        &::before {
+            border-color: rgba(201, 162, 39, 0.2);
         }
 
-        .card-image img {
-            transform: scale(1.1);
+        .char-card__portrait img {
+            transform: scale(1.08);
         }
-    }
 
-    &.selected {
-        border-color: #d4af37;
-        box-shadow: 
-            0 0 30px rgba(212, 175, 55, 0.6),
-            0 16px 48px rgba(0, 0, 0, 0.8);
-
-        .select-btn {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            color: white;
-
-            &::before {
-                content: '✓ ';
-            }
-        }
-    }
-
-    // Animation d'apparition échelonnée
-    @for $i from 1 through 6 {
-        &:nth-child(#{$i}) {
-            animation: fadeInUp 0.6s ease-out backwards #{$i * 0.1}s;
+        .char-card__overlay {
+            opacity: 0.4;
         }
     }
 }
 
-.card-inner {
+// Portrait (image)
+.char-card__portrait {
     position: relative;
-}
-
-// Image du personnage
-.card-image {
-    position: relative;
-    height: 280px;
+    height: 180px;
     overflow: hidden;
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
 
     img {
         width: 100%;
         height: 100%;
         object-fit: cover;
-        transition: transform 0.6s ease;
-        filter: brightness(0.9) contrast(1.1);
-    }
-
-    .card-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-            to bottom,
-            transparent 0%,
-            rgba(0, 0, 0, 0.3) 50%,
-            rgba(0, 0, 0, 0.8) 100%
-        );
-        opacity: 0.5;
-        transition: opacity 0.4s ease;
+        transition: transform 0.4s ease;
+        filter: brightness(0.85) contrast(1.1);
     }
 }
 
-// Contenu de la card
-.card-content {
-    padding: 1.8rem 1.5rem;
-    background: linear-gradient(to bottom, rgba(30, 20, 10, 0.95), rgba(20, 12, 8, 0.98));
+.char-card__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, transparent 30%, rgba(10, 10, 10, 0.9) 100%);
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
 }
 
-.character-name {
-    font-family: 'Cinzel', 'Palatino', serif;
-    font-size: 1.6rem;
-    color: #d4af37;
-    margin: 0 0 0.5rem 0;
-    font-weight: 700;
-    letter-spacing: 1px;
-    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-}
-
-.character-role {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1rem;
-    color: #a89968;
-    margin: 0 0 1.2rem 0;
+.char-card__role-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.7rem;
+    color: $dd-gold;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 500;
+    letter-spacing: 0.1em;
+    padding: 0.25rem 0.6rem;
+    background: rgba(10, 10, 10, 0.8);
+    border: 1px solid rgba(201, 162, 39, 0.3);
+    z-index: 2;
 }
 
-// Stats du personnage
-.character-stats {
-    margin-bottom: 1.2rem;
+// Body (infos)
+.char-card__body {
+    padding: 1.2rem 1rem;
 }
 
-.stat {
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    margin-bottom: 0.6rem;
-
-    &:last-child {
-        margin-bottom: 0;
-    }
-}
-
-.stat-label {
-    font-family: 'Courier New', monospace;
-    font-size: 0.75rem;
-    color: #8b7355;
-    font-weight: 700;
-    width: 35px;
+.char-card__name {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.15rem;
+    color: $dd-parchment;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.2rem;
 }
 
-.stat-bar {
-    flex: 1;
-    height: 8px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 4px;
-    overflow: hidden;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-}
-
-.stat-fill {
-    height: 100%;
-    background: $color-button;
-    border-radius: 4px;
-    box-shadow: 0 0 8px $color-button;
-    transition: width 1s ease-out 0.3s;
-}
-
-.character-description {
-    font-family: 'Cormorant Garamond', 'Georgia', serif;
-    font-size: 0.95rem;
-    color: #c9b896;
-    line-height: 1.5;
-    margin: 0 0 1.5rem 0;
-    font-style: italic;
-    opacity: 0.9;
-}
-
-// Bouton de sélection
-.select-btn {
-    display: block;
-    width: 100%;
-    padding: 0.9rem 1.5rem;
-    background: linear-gradient(135deg, rgba(139, 69, 19, 0.8), rgba(101, 50, 15, 0.9));
-    color: #d4af37;
-    text-decoration: none;
-    text-align: center;
-    font-family: 'Cinzel', serif;
-    font-size: 1rem;
-    font-weight: 600;
+.char-card__role {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.8rem;
+    color: $dd-crimson;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    border: 2px solid rgba(212, 175, 55, 0.4);
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-
-    &:hover {
-        background: linear-gradient(135deg, rgba(139, 69, 19, 1), rgba(101, 50, 15, 1));
-        border-color: #d4af37;
-        color: white;
-        box-shadow: 
-            0 6px 20px rgba(0, 0, 0, 0.6),
-            0 0 20px rgba(212, 175, 55, 0.3);
-        transform: translateY(-2px);
-    }
-
-    &:active {
-        transform: translateY(0);
-    }
+    letter-spacing: 0.15em;
+    font-weight: bold;
 }
 
-// Footer avec boutons
-.selection-footer {
+// Sprite anime
+.char-card__sprite {
     display: flex;
     justify-content: center;
-    gap: 2rem;
-    max-width: 600px;
-    margin: 0 auto;
-    padding-top: 2rem;
+    align-items: center;
+    margin: 0.8rem 0;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(61, 50, 37, 0.4);
+
+    img {
+        width: 80px;
+        height: 90px;
+        object-fit: contain;
+        image-rendering: pixelated;
+    }
 }
 
-.btn-back,
-.btn-confirm {
-    padding: 1.1rem 3rem;
-    font-family: 'Cinzel', serif;
-    font-size: 1.1rem;
-    font-weight: 600;
+// Stats
+.char-card__stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.char-stat {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.char-stat__label {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.7rem;
+    color: #5a4c3e;
+    font-weight: bold;
+    width: 30px;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-decoration: none;
-    border: none;
+    letter-spacing: 0.05em;
 }
 
-.btn-back {
-    background: linear-gradient(135deg, rgba(60, 40, 30, 0.9), rgba(40, 25, 18, 0.95));
-    color: #c9b896;
-    border: 2px solid rgba(201, 184, 150, 0.3);
-
-    &:hover {
-        background: linear-gradient(135deg, rgba(80, 55, 40, 1), rgba(60, 40, 30, 1));
-        border-color: #c9b896;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-        transform: translateY(-2px);
-    }
+.char-stat__bar {
+    flex: 1;
+    height: 5px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(61, 50, 37, 0.4);
+    overflow: hidden;
 }
 
-.btn-confirm {
-    background: linear-gradient(135deg, #8b4513, #654321);
-    color: #d4af37;
-    border: 2px solid rgba(212, 175, 55, 0.4);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+.char-stat__fill {
+    height: 100%;
+    background: linear-gradient(90deg, $dd-gold, rgba(201, 162, 39, 0.6));
+    transition: width 0.8s ease-out;
 
-    &:not(:disabled):hover {
-        background: linear-gradient(135deg, #a0522d, #8b4513);
-        border-color: #d4af37;
-        color: white;
-        box-shadow: 
-            0 8px 24px rgba(0, 0, 0, 0.6),
-            0 0 30px rgba(212, 175, 55, 0.3);
-        transform: translateY(-2px);
+    &--hp {
+        background: linear-gradient(90deg, #4caf50, #2e7d32);
     }
 
-    &:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
+    &--dmg {
+        background: linear-gradient(90deg, $dd-crimson, $dd-blood-red);
+    }
+
+    &--spd {
+        background: linear-gradient(90deg, #42a5f5, #1565c0);
+    }
+
+    &--crit {
+        background: linear-gradient(90deg, #ff9800, #e65100);
     }
 }
 
-// Animations
-@keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+.char-stat__value {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.7rem;
+    color: $dd-bone;
+    opacity: 0.7;
+    width: 40px;
+    text-align: right;
+}
+
+// ==========================================
+// FOOTER
+// ==========================================
+.personnages__footer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: 3rem 0 2rem;
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 1024px) {
+    .personnages__grid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+@media (max-width: 768px) {
+    .personnages {
+        padding: 1.5rem;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .personnages__title {
+        font-size: 2rem;
+        letter-spacing: 0.15em;
+    }
+
+    .personnages__grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .char-card__portrait {
+        height: 140px;
+    }
+
+    .char-card__sprite img {
+        width: 60px;
+        height: 70px;
+    }
+
+    .personnages__footer {
+        flex-direction: column;
+        align-items: center;
     }
 }
 
+@media (max-width: 480px) {
+    .personnages__title {
+        font-size: 1.5rem;
+    }
 
+    .personnages__grid {
+        grid-template-columns: 1fr;
+        max-width: 350px;
+    }
+}

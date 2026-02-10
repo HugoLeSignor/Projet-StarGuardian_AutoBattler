@@ -36,10 +36,36 @@ class MatchmakingService
 
     public function findMatch(MatchmakingQueue $queue): ?array
     {
+        // Rafraichir depuis la BDD pour voir les changements faits par l'autre joueur
+        $this->entityManager->refresh($queue);
+
+        // Cas 1 : un autre joueur nous a deja matche
+        if (!$queue->isSearching() && $queue->getMatchedWith()) {
+            $matcher = $queue->getMatchedWith();
+            $queue->getPlayer()->setIsSearchingMatch(false);
+            $this->entityManager->flush();
+            return [
+                'type' => 'pvp',
+                'player1' => $queue->getPlayer(),
+                'player2' => $matcher->getPlayer(),
+                'team1_char_ids' => $queue->getCharacterIds(),
+                'team2_char_ids' => $matcher->getCharacterIds(),
+            ];
+        }
+
+        // Cas 2 : queue deja traitee (ne devrait pas arriver)
+        if (!$queue->isSearching()) {
+            return null;
+        }
+
+        // Cas 3 : chercher un adversaire
         /** @var MatchmakingQueueRepository $repo */
         $repo = $this->entityManager->getRepository(MatchmakingQueue::class);
         $opponent = $repo->findOpponent($queue->getPlayer()->getId());
         if ($opponent) {
+            // Lier les deux queues
+            $queue->setMatchedWith($opponent);
+            $opponent->setMatchedWith($queue);
             $queue->setIsSearching(false);
             $opponent->setIsSearching(false);
             $queue->getPlayer()->setIsSearchingMatch(false);
@@ -53,6 +79,8 @@ class MatchmakingService
                 'team2_char_ids' => $opponent->getCharacterIds(),
             ];
         }
+
+        // Cas 4 : timeout -> match contre un bot
         $waitTime = (new \DateTimeImmutable())->getTimestamp() - $queue->getJoinedAt()->getTimestamp();
         if ($waitTime >= self::MAX_SEARCH_TIME) {
             $queue->setIsSearching(false);

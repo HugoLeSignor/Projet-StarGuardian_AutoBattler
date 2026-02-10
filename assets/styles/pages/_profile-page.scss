@@ -1,0 +1,160 @@
+@use "../base/variables" as *;
+
+// Darkest Dungeon palette
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-gold: #c9a227;
+$dd-parchment: #d4c4a8;
+$dd-bone: #e8dcc4;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+
+// ==========================================
+// PANEL ELARGI POUR LE PROFIL
+// ==========================================
+.profile-panel {
+    max-width: 520px;
+}
+
+// ==========================================
+// SECTION AVATAR
+// ==========================================
+.profile-avatar-section {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem;
+    background: rgba($dd-gold, 0.04);
+    border: 1px solid rgba($dd-gold, 0.12);
+    margin-bottom: 0.5rem;
+}
+
+.profile-avatar-preview {
+    width: 80px;
+    height: 80px;
+    flex-shrink: 0;
+    border: 2px solid rgba($dd-gold, 0.3);
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    i {
+        font-size: 2.5rem;
+        color: rgba($dd-parchment, 0.25);
+    }
+}
+
+.profile-avatar-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+
+    &__name {
+        font-family: 'Times New Roman', Georgia, serif;
+        font-size: 1.3rem;
+        color: $dd-bone;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    &__motto {
+        font-family: 'Times New Roman', Georgia, serif;
+        font-size: 0.85rem;
+        color: rgba($dd-parchment, 0.6);
+        font-style: italic;
+    }
+
+    &__rating {
+        font-family: 'Times New Roman', Georgia, serif;
+        font-size: 0.85rem;
+        color: $dd-gold;
+
+        i {
+            margin-right: 0.3rem;
+            opacity: 0.7;
+        }
+    }
+}
+
+// ==========================================
+// TEXTAREA BIO
+// ==========================================
+.auth-form__textarea {
+    resize: vertical;
+    min-height: 90px;
+    max-height: 200px;
+    line-height: 1.5;
+}
+
+// ==========================================
+// FILE UPLOAD
+// ==========================================
+.profile-file-upload {
+    position: relative;
+
+    &__hint {
+        margin-top: 0.4rem;
+        font-family: 'Times New Roman', Georgia, serif;
+        font-size: 0.75rem;
+        color: rgba($dd-parchment, 0.4);
+        letter-spacing: 0.03em;
+
+        i {
+            margin-right: 0.3rem;
+            color: rgba($dd-gold, 0.4);
+        }
+    }
+}
+
+.auth-form__file {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    &::file-selector-button {
+        background: rgba($dd-gold, 0.15);
+        border: 1px solid rgba($dd-gold, 0.3);
+        color: $dd-parchment;
+        padding: 0.4rem 0.8rem;
+        margin-right: 0.8rem;
+        font-family: 'Times New Roman', Georgia, serif;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: rgba($dd-gold, 0.25);
+            border-color: $dd-gold;
+        }
+    }
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 480px) {
+    .profile-panel {
+        max-width: 100%;
+    }
+
+    .profile-avatar-section {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .profile-avatar-preview {
+        width: 70px;
+        height: 70px;
+    }
+}

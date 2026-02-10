@@ -30,6 +30,10 @@ class MatchmakingQueue
     #[ORM\Column(type: 'datetime_immutable')]
     private ?\DateTimeImmutable $joinedAt = null;
 
+    #[ORM\OneToOne(targetEntity: self::class)]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?MatchmakingQueue $matchedWith = null;
+
     public function __construct()
     {
         $this->joinedAt = new \DateTimeImmutable();
@@ -92,6 +96,17 @@ class MatchmakingQueue
     public function setJoinedAt(\DateTimeImmutable $joinedAt): static
     {
         $this->joinedAt = $joinedAt;
+        return $this;
+    }
+
+    public function getMatchedWith(): ?self
+    {
+        return $this->matchedWith;
+    }
+
+    public function setMatchedWith(?self $matchedWith): static
+    {
+        $this->matchedWith = $matchedWith;
         return $this;
     }
 }

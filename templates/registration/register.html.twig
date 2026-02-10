@@ -3,49 +3,64 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-<section class="auth-page">
-    <div class="auth-container">
-        <h1>Inscription</h1>
+<div class="auth-page">
+    <div class="auth-page__vignette"></div>
+
+    <div class="auth-panel">
+        <div class="auth-panel__ornament">&#x2726;</div>
+        <h1 class="auth-panel__title">Inscription</h1>
+        <div class="auth-panel__separator">
+            <span></span>
+            <i class="fas fa-scroll"></i>
+            <span></span>
+        </div>
+
+        {% for flashError in app.flashes('verify_email_error') %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ flashError }}
+            </div>
+        {% endfor %}
 
         {{ form_start(registrationForm, {'attr': {'class': 'auth-form'}}) }}
 
-            {% for flashError in app.flashes('verify_email_error') %}
-                <div class="auth-error">
-                    {{ flashError }}
-                </div>
-            {% endfor %}
-
-            <div class="form-group">
-                {{ form_label(registrationForm.username) }}
-                {{ form_widget(registrationForm.username) }}
+            <div class="auth-form__group">
+                {{ form_label(registrationForm.username, null, {'label_attr': {'class': 'auth-form__label'}}) }}
+                {{ form_widget(registrationForm.username, {'attr': {'class': 'auth-form__input'}}) }}
                 {{ form_errors(registrationForm.username) }}
             </div>
 
-            <div class="form-group">
-                {{ form_label(registrationForm.email) }}
-                {{ form_widget(registrationForm.email) }}
+            <div class="auth-form__group">
+                {{ form_label(registrationForm.email, null, {'label_attr': {'class': 'auth-form__label'}}) }}
+                {{ form_widget(registrationForm.email, {'attr': {'class': 'auth-form__input'}}) }}
                 {{ form_errors(registrationForm.email) }}
             </div>
 
-            <div class="form-group">
-                {{ form_label(registrationForm.plainPassword.first) }}
-                {{ form_widget(registrationForm.plainPassword.first) }}
+            <div class="auth-form__group">
+                {{ form_label(registrationForm.plainPassword.first, null, {'label_attr': {'class': 'auth-form__label'}}) }}
+                {{ form_widget(registrationForm.plainPassword.first, {'attr': {'class': 'auth-form__input'}}) }}
                 {{ form_errors(registrationForm.plainPassword.first) }}
             </div>
 
-            <div class="form-group">
-                {{ form_label(registrationForm.plainPassword.second) }}
-                {{ form_widget(registrationForm.plainPassword.second) }}
+            <div class="auth-form__group">
+                {{ form_label(registrationForm.plainPassword.second, null, {'label_attr': {'class': 'auth-form__label'}}) }}
+                {{ form_widget(registrationForm.plainPassword.second, {'attr': {'class': 'auth-form__input'}}) }}
                 {{ form_errors(registrationForm.plainPassword) }}
             </div>
 
-            <button type="submit" class="btn btn-auth">S'inscrire</button>
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">S'inscrire</button>
 
         {{ form_end(registrationForm) }}
 
-        <p class="auth-link">
-            Déjà un compte ? <a href="{{ path('app_login') }}">Se connecter</a>
+        <div class="auth-panel__separator auth-panel__separator--small">
+            <span></span>
+            <span></span>
+        </div>
+
+        <p class="auth-panel__link">
+            D&eacute;j&agrave; un compte ? <a href="{{ path('app_login') }}">Se connecter</a>
         </p>
+        <div class="auth-panel__ornament">&#x2726;</div>
     </div>
-</section>
+</div>
 {% endblock %}

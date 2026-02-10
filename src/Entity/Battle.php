@@ -14,8 +14,6 @@ class Battle
     #[ORM\Column]
     private ?int $id = null;
 
-   // Dans src/Entity/Battle.php
-
     #[ORM\ManyToOne(inversedBy: 'battles')]
     #[ORM\JoinColumn(name: "player1_id", referencedColumnName: "id", nullable: false, onDelete: "CASCADE")]
     private ?User $player1 = null;
@@ -23,14 +21,12 @@ class Battle
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(name: "player2_id", referencedColumnName: "id", nullable: true, onDelete: "SET NULL")]
     private ?User $player2 = null;
-    
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Team $team1 = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Team $team2 = null;
+    #[ORM\Column(type: Types::JSON)]
+    private array $team1CharacterIds = [];
+
+    #[ORM\Column(type: Types::JSON)]
+    private array $team2CharacterIds = [];
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $createdAt = null;
@@ -54,8 +50,6 @@ class Battle
     {
         $this->createdAt = new \DateTimeImmutable();
     }
-
-    // Getters et Setters
 
     public function getId(): ?int
     {
@@ -84,25 +78,25 @@ class Battle
         return $this;
     }
 
-    public function getTeam1(): ?Team
+    public function getTeam1CharacterIds(): array
     {
-        return $this->team1;
+        return $this->team1CharacterIds;
     }
 
-    public function setTeam1(?Team $team1): static
+    public function setTeam1CharacterIds(array $team1CharacterIds): static
     {
-        $this->team1 = $team1;
+        $this->team1CharacterIds = $team1CharacterIds;
         return $this;
     }
 
-    public function getTeam2(): ?Team
+    public function getTeam2CharacterIds(): array
     {
-        return $this->team2;
+        return $this->team2CharacterIds;
     }
 
-    public function setTeam2(?Team $team2): static
+    public function setTeam2CharacterIds(array $team2CharacterIds): static
     {
-        $this->team2 = $team2;
+        $this->team2CharacterIds = $team2CharacterIds;
         return $this;
     }
 

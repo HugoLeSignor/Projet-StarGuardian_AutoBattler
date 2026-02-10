@@ -8,7 +8,9 @@
     {# ========================================== #}
     {# SECTION HAUTE - Zone de combat animations #}
     {# ========================================== #}
-    <div class="battle-stage">
+    {% set backgrounds = ['cove.jpg', 'warrens.jpg', 'ruins.jpg', 'darkest.jpg', 'arena1.jpg', 'arena2.jpg', 'weald.webp'] %}
+    {% set bg = random(backgrounds) %}
+    <div class="battle-stage" style="background-image: url('{{ asset('asset/img/backgrounds/' ~ bg) }}');">
         <div class="battle-stage__team battle-stage__team--left">
             {% for member in composition['Equipe 1'] %}
             <div class="battle-stage__character"
@@ -51,9 +53,12 @@
             <div class="battle-stage__winner">
                 {% if winner == 'Match nul' %}
                     <span class="winner-text">Match Nul</span>
-                {% else %}
+                {% elseif winner == 'Equipe 1' %}
                     <span class="winner-label">Victoire</span>
-                    <span class="winner-text">{{ winner }}</span>
+                    <span class="winner-text">{{ team1Name|default('Equipe 1') }}</span>
+                {% elseif winner == 'Equipe 2' %}
+                    <span class="winner-label">Victoire</span>
+                    <span class="winner-text">{{ team2Name|default('Equipe 2') }}</span>
                 {% endif %}
             </div>
         </div>
@@ -64,15 +69,35 @@
     {# ========================================== #}
     <div class="battle-info">
 
-        {# Colonne gauche - Info Equipe 1 #}
+        {# Colonne gauche - Profil joueur + Equipe 1 #}
         <div class="info-panel info-panel--team1">
-            <h2 class="info-panel__title">Equipe 1</h2>
+            <h2 class="info-panel__title">{{ team1Name|default('Equipe 1') }}</h2>
+
+            {% if app.user %}
+            <div class="info-panel__player">
+                <div class="info-panel__avatar">
+                    {% if app.user.profileImage %}
+                        <img src="/uploads/avatars/{{ app.user.profileImage }}" alt="Avatar">
+                    {% else %}
+                        <i class="fas fa-user-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="info-panel__player-info">
+                    <span class="info-panel__username">{{ app.user.username }}</span>
+                    {% if app.user.motto %}
+                        <span class="info-panel__motto">&laquo; {{ app.user.motto }} &raquo;</span>
+                    {% endif %}
+                    <span class="info-panel__rating"><i class="fas fa-trophy"></i> {{ app.user.rating }} MMR</span>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="info-panel__characters">
                 {% for member in composition['Equipe 1'] %}
                 <div class="character-info">
                     <div class="character-info__icon">
-                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" 
-                             alt="{{ member.name }}" 
+                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
+                             alt="{{ member.name }}"
                              class="character-info__sprite">
                     </div>
                     <div class="character-info__details">
@@ -116,15 +141,35 @@
             </div>
         </div>
 
-        {# Colonne droite - Info Equipe 2 #}
+        {# Colonne droite - Profil adversaire + Equipe 2 #}
         <div class="info-panel info-panel--team2">
-            <h2 class="info-panel__title">Equipe 2</h2>
+            <h2 class="info-panel__title">{{ team2Name|default('Equipe 2') }}</h2>
+
+            {% if opponent is defined and opponent %}
+            <div class="info-panel__player">
+                <div class="info-panel__avatar info-panel__avatar--enemy">
+                    {% if opponent.profileImage %}
+                        <img src="/uploads/avatars/{{ opponent.profileImage }}" alt="Avatar">
+                    {% else %}
+                        <i class="fas fa-user-circle"></i>
+                    {% endif %}
+                </div>
+                <div class="info-panel__player-info">
+                    <span class="info-panel__username">{{ opponent.username }}</span>
+                    {% if opponent.motto %}
+                        <span class="info-panel__motto">&laquo; {{ opponent.motto }} &raquo;</span>
+                    {% endif %}
+                    <span class="info-panel__rating info-panel__rating--enemy"><i class="fas fa-trophy"></i> {{ opponent.rating }} MMR</span>
+                </div>
+            </div>
+            {% endif %}
+
             <div class="info-panel__characters">
                 {% for member in composition['Equipe 2'] %}
                 <div class="character-info">
                     <div class="character-info__icon">
-                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" 
-                             alt="{{ member.name }}" 
+                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
+                             alt="{{ member.name }}"
                              class="character-info__sprite">
                     </div>
                     <div class="character-info__details">

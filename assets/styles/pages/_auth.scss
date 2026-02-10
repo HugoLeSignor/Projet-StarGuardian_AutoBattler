@@ -1,126 +1,277 @@
 @use "../base/variables" as *;
 
+// Darkest Dungeon palette
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+$dd-parchment: #d4c4a8;
+$dd-gold: #c9a227;
+$dd-bone: #e8dcc4;
+
+// ==========================================
+// PAGE AUTH - FOND
+// ==========================================
 .auth-page {
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 80vh;
+    min-height: 100vh;
     padding: 2rem;
+    position: relative;
+    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    overflow: hidden;
 }
 
-.auth-container {
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 450px;
+.auth-page__vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 30%, rgba(0, 0, 0, 0.7) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
 
-    h1 {
-        color: $color-button;
-        text-align: center;
-        margin-bottom: 2rem;
-        font-size: 2rem;
+// ==========================================
+// PANNEAU AUTH (carte centrale)
+// ==========================================
+.auth-panel {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 460px;
+    padding: 2.5rem 2rem;
+    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.97) 100%);
+    border: 3px solid #3d3225;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(201, 162, 39, 0.15);
+        margin: 6px;
+        pointer-events: none;
     }
 }
 
+.auth-panel__ornament {
+    text-align: center;
+    color: $dd-gold;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    letter-spacing: 0.5em;
+}
+
+.auth-panel__title {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 2.4rem;
+    color: $dd-parchment;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    text-align: center;
+    margin: 0.5rem 0 0;
+    text-shadow: 0 0 20px rgba(212, 196, 168, 0.2);
+}
+
+.auth-panel__separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+
+    span {
+        display: block;
+        width: 60px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, $dd-gold, transparent);
+    }
+
+    i {
+        color: $dd-blood-red;
+        font-size: 1rem;
+        text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+    }
+
+    &--small {
+        margin: 1.5rem 0 1rem;
+
+        span {
+            width: 40px;
+            background: linear-gradient(90deg, transparent, #3d3225, transparent);
+        }
+    }
+}
+
+.auth-panel__link {
+    text-align: center;
+    margin: 0 0 0.5rem;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.95rem;
+    color: rgba($dd-bone, 0.6);
+
+    a {
+        color: $dd-gold;
+        text-decoration: none;
+        transition: all 0.3s ease;
+
+        &:hover {
+            text-shadow: 0 0 8px rgba(201, 162, 39, 0.5);
+        }
+    }
+}
+
+// ==========================================
+// FORMULAIRE
+// ==========================================
 .auth-form {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 1.25rem;
 }
 
-.form-group {
+.auth-form__group {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
 
-    label {
-        color: white;
-        font-size: 0.95rem;
-    }
-
-    input {
-        padding: 0.75rem 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 8px;
-        background-color: rgba(255, 255, 255, 0.08);
-        color: white;
-        font-size: 1rem;
-        transition: border-color 0.2s;
-
-        &::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        &:focus {
-            outline: none;
-            border-color: $color-button;
-        }
-    }
-
-    .error {
-        color: #ff6b6b;
-        font-size: 0.85rem;
-    }
-
+    // Gere les erreurs Symfony (listes ul)
     ul {
         list-style: none;
         padding: 0;
-        margin: 0;
+        margin: 0.25rem 0 0;
 
         li {
-            color: #ff6b6b;
-            font-size: 0.85rem;
+            font-family: 'Times New Roman', Georgia, serif;
+            font-size: 0.8rem;
+            color: $dd-crimson;
+            text-shadow: 0 0 5px rgba(220, 20, 60, 0.3);
         }
     }
 }
 
-.btn-auth {
+.auth-form__label {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.95rem;
+    color: $dd-parchment;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.auth-form__input {
+    padding: 0.8rem 1rem;
+    border: 2px solid #3d3225;
+    background: rgba(0, 0, 0, 0.4);
+    color: $dd-bone;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+
+    &::placeholder {
+        color: rgba($dd-bone, 0.3);
+        font-style: italic;
+    }
+
+    &:focus {
+        outline: none;
+        border-color: $dd-gold;
+        box-shadow: 0 0 15px rgba(201, 162, 39, 0.2), inset 0 0 8px rgba(201, 162, 39, 0.05);
+    }
+}
+
+// ==========================================
+// BOUTONS (reutilise .btn-dd de _home.scss)
+// ==========================================
+.btn-dd--full {
+    width: 100%;
+    text-align: center;
     margin-top: 0.5rem;
-    padding: 0.85rem;
-    font-size: 1.1rem;
-    cursor: pointer;
-    border: none;
-    font-weight: bold;
-    transition: opacity 0.2s;
+}
 
-    &:hover {
-        opacity: 0.85;
+// ==========================================
+// ALERTES
+// ==========================================
+.auth-alert {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem;
+    margin-bottom: 1rem;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.9rem;
+    border: 1px solid;
+
+    i {
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    &--error {
+        background: rgba(139, 0, 0, 0.15);
+        border-color: rgba(139, 0, 0, 0.4);
+        color: $dd-crimson;
+
+        i {
+            color: $dd-crimson;
+        }
+    }
+
+    &--success {
+        background: rgba(76, 175, 80, 0.1);
+        border-color: rgba(76, 175, 80, 0.3);
+        color: #6abf6e;
+
+        i {
+            color: #6abf6e;
+        }
     }
 }
 
-.auth-error {
-    background-color: rgba(255, 59, 59, 0.15);
-    border: 1px solid rgba(255, 59, 59, 0.3);
-    color: #ff6b6b;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    text-align: center;
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 768px) {
+    .auth-page {
+        padding: 1.5rem;
+    }
+
+    .auth-panel {
+        padding: 2rem 1.5rem;
+    }
+
+    .auth-panel__title {
+        font-size: 1.8rem;
+        letter-spacing: 0.15em;
+    }
 }
 
-.auth-success {
-    background-color: rgba(46, 204, 113, 0.15);
-    border: 1px solid rgba(46, 204, 113, 0.3);
-    color: #2ecc71;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    margin-bottom: 1rem;
-    text-align: center;
-}
+@media (max-width: 480px) {
+    .auth-page {
+        padding: 1rem;
+        align-items: flex-start;
+        padding-top: 2rem;
+    }
 
-.auth-link {
-    text-align: center;
-    margin-top: 1.5rem;
-    color: rgba(255, 255, 255, 0.6);
+    .auth-panel {
+        padding: 1.5rem 1.2rem;
+    }
 
-    a {
-        color: $color-button;
-        text-decoration: none;
+    .auth-panel__title {
+        font-size: 1.5rem;
+        letter-spacing: 0.1em;
+    }
 
-        &:hover {
-            text-decoration: underline;
-        }
+    .auth-panel__separator span {
+        width: 35px;
+    }
+
+    .auth-form__input {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.95rem;
     }
 }

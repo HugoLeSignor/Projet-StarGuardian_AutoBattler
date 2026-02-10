@@ -1,0 +1,405 @@
+@use "../base/variables" as *;
+
+// Darkest Dungeon palette
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-gold: #c9a227;
+$dd-parchment: #d4c4a8;
+$dd-bone: #e8dcc4;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+
+// ==========================================
+// USERNAME CLIQUABLE
+// ==========================================
+.topbar__username {
+    cursor: pointer;
+    transition: color 0.2s ease;
+
+    &:hover {
+        color: $dd-gold;
+    }
+}
+
+// ==========================================
+// BACKDROP
+// ==========================================
+.profile-popup__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &--open {
+        opacity: 1;
+    }
+}
+
+// ==========================================
+// POPUP PANEL
+// ==========================================
+.profile-popup {
+    position: fixed;
+    top: 50px;
+    left: 1rem;
+    width: 400px;
+    max-height: calc(100vh - 70px);
+    overflow-y: auto;
+    z-index: 1200;
+    background: linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+    border: 2px solid #3d3225;
+    font-family: 'Times New Roman', Georgia, serif;
+    color: $dd-parchment;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba(201, 162, 39, 0.15);
+        margin: 4px;
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    &--open {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: $dd-dark-brown; }
+    &::-webkit-scrollbar-thumb { background: rgba($dd-gold, 0.3); border-radius: 3px; }
+}
+
+// ==========================================
+// HEADER
+// ==========================================
+.profile-popup__header {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba($dd-gold, 0.2);
+}
+
+.profile-popup__title {
+    font-size: 1rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+
+    i { margin-right: 0.4rem; }
+}
+
+.profile-popup__close {
+    background: none;
+    border: none;
+    color: $dd-bone;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.6;
+    transition: opacity 0.2s, color 0.2s;
+
+    &:hover { opacity: 1; color: $dd-crimson; }
+}
+
+// ==========================================
+// CONTENT
+// ==========================================
+.profile-popup__content {
+    position: relative;
+    z-index: 5;
+    padding: 1rem;
+}
+
+.profile-popup__loading {
+    text-align: center;
+    color: rgba($dd-parchment, 0.6);
+    padding: 2rem 0;
+}
+
+// ==========================================
+// GRILLE DE STATS
+// ==========================================
+.profile-popup__stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.profile-stat {
+    text-align: center;
+    padding: 0.6rem 0.3rem;
+    background: rgba($dd-gold, 0.05);
+    border: 1px solid rgba($dd-gold, 0.15);
+
+    &__value {
+        display: block;
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: $dd-gold;
+    }
+
+    &__label {
+        display: block;
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba($dd-parchment, 0.6);
+        margin-top: 0.2rem;
+    }
+}
+
+// ==========================================
+// SECTIONS
+// ==========================================
+.profile-popup__section {
+    margin-bottom: 0.8rem;
+}
+
+.profile-popup__subtitle {
+    font-size: 0.8rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.5rem;
+    padding-bottom: 0.3rem;
+    border-bottom: 1px solid rgba($dd-gold, 0.15);
+
+    i { margin-right: 0.3rem; opacity: 0.7; }
+}
+
+// ==========================================
+// CHAMPION FAVORI
+// ==========================================
+.profile-favorite {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.6rem;
+    background: rgba($dd-gold, 0.05);
+    border: 1px solid rgba($dd-gold, 0.1);
+
+    &__name { color: $dd-bone; font-weight: bold; }
+    &__role { color: rgba($dd-parchment, 0.6); font-size: 0.8rem; }
+    &__count { margin-left: auto; color: rgba($dd-parchment, 0.5); font-size: 0.75rem; }
+}
+
+// ==========================================
+// DERNIERE EQUIPE
+// ==========================================
+.profile-last-team {
+    display: flex;
+    gap: 0.5rem;
+
+    &__member {
+        flex: 1;
+        text-align: center;
+        padding: 0.5rem 0.4rem;
+        background: rgba($dd-gold, 0.05);
+        border: 1px solid rgba($dd-gold, 0.1);
+    }
+    &__name { display: block; font-size: 0.8rem; color: $dd-bone; }
+    &__role { display: block; font-size: 0.65rem; color: rgba($dd-parchment, 0.5); text-transform: uppercase; letter-spacing: 0.05em; }
+}
+
+// ==========================================
+// HISTORIQUE DE COMBATS
+// ==========================================
+.profile-history__entry {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.75rem;
+    border-left: 3px solid transparent;
+    margin-bottom: 0.3rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: rgba($dd-gold, 0.08);
+
+        .profile-history__replay {
+            opacity: 1;
+        }
+    }
+
+    &.result--win {
+        border-left-color: #4da6ff;
+        background: rgba(77, 166, 255, 0.06);
+    }
+    &.result--loss {
+        border-left-color: $dd-crimson;
+        background: rgba($dd-crimson, 0.06);
+    }
+    &.result--draw {
+        border-left-color: $dd-parchment;
+        background: rgba($dd-parchment, 0.06);
+    }
+}
+
+.profile-history__result {
+    font-weight: bold;
+    min-width: 55px;
+
+    .result--win & { color: #4da6ff; }
+    .result--loss & { color: $dd-crimson; }
+    .result--draw & { color: $dd-parchment; }
+}
+
+.profile-history__opponent { color: $dd-bone; flex: 1; }
+.profile-history__type { color: rgba($dd-parchment, 0.4); font-size: 0.65rem; text-transform: uppercase; }
+.profile-history__date { color: rgba($dd-parchment, 0.3); font-size: 0.65rem; }
+
+.profile-history__replay {
+    color: $dd-gold;
+    font-size: 0.6rem;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    margin-left: 0.2rem;
+}
+
+// ==========================================
+// IDENTITE (avatar + bio + motto dans popup)
+// ==========================================
+.profile-popup__identity {
+    display: flex;
+    gap: 0.8rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba($dd-gold, 0.1);
+}
+
+.profile-popup__avatar {
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    border: 2px solid rgba($dd-gold, 0.3);
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    i {
+        font-size: 1.8rem;
+        color: rgba($dd-parchment, 0.25);
+    }
+}
+
+.profile-popup__info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    min-width: 0;
+}
+
+.profile-popup__username {
+    font-size: 1rem;
+    font-weight: bold;
+    color: $dd-bone;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.profile-popup__motto {
+    font-size: 0.75rem;
+    color: rgba($dd-parchment, 0.6);
+    font-style: italic;
+}
+
+.profile-popup__bio {
+    font-size: 0.75rem;
+    color: rgba($dd-parchment, 0.5);
+    margin: 0.2rem 0 0;
+    line-height: 1.4;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+// ==========================================
+// ACTIONS (lien editer)
+// ==========================================
+.profile-popup__actions {
+    text-align: center;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba($dd-gold, 0.1);
+    margin-top: 0.5rem;
+}
+
+.profile-popup__edit-link {
+    display: inline-block;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.8rem;
+    color: $dd-gold;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.4rem 1rem;
+    border: 1px solid rgba($dd-gold, 0.3);
+    transition: all 0.2s ease;
+
+    i { margin-right: 0.3rem; }
+
+    &:hover {
+        background: rgba($dd-gold, 0.1);
+        border-color: $dd-gold;
+    }
+}
+
+// ==========================================
+// ETATS VIDE / ERREUR
+// ==========================================
+.profile-popup__empty {
+    text-align: center;
+    color: rgba($dd-parchment, 0.4);
+    font-style: italic;
+    padding: 1rem 0;
+}
+
+.profile-popup__error {
+    text-align: center;
+    color: $dd-crimson;
+    padding: 1rem 0;
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 480px) {
+    .profile-popup {
+        left: 0;
+        width: 100%;
+        top: 40px;
+    }
+
+    .profile-popup__stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .profile-last-team {
+        flex-direction: column;
+    }
+}

@@ -14,31 +14,41 @@
         {% endblock %}
     </head>
     <body>
-        <header>
-        {# logo du site #}
-                
-                {# barre de navigation #}
-                <nav class="main-navigation">
-                    <div class="img-logo">
-                        <img src="{{ asset('asset/img/logo.png')}}" alt="logo du site">
-                    </div>
-                    <ul>
-                        <li><a href="{{ path('app_home') }}">Accueil</a></li>
-                        <li><a href="{{ path('app_personnages') }}">Personnages</a></li>
-                        {% if app.user %}
-                            <li><a href="{{ path('app_arena') }}">Jouer</a></li>
-                            <li><a href="{{ path('app_teams') }}">Teams</a></li>
-                            <li><a href="{{ path('app_logout') }}">Déconnexion</a></li>
-                        {% else %}
-                            <li><a href="{{ path('app_register') }}">Inscription</a></li>
-                            <li><a href="{{ path('app_login') }}">Connexion</a></li>
-                        {% endif %}
-                    </ul>
-                    <button class="burger" aria-label="Menu">
-                        ☰
-                    </button>
-                </nav>
-        </header>
+        {% if app.user %}
+        <div class="topbar">
+            <div class="topbar__user" data-profile-toggle>
+                {% if app.user.profileImage %}
+                    <img class="topbar__avatar" src="/uploads/avatars/{{ app.user.profileImage }}" alt="Avatar">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+                <span class="topbar__username">{{ app.user.username }}</span>
+            </div>
+            <a href="{{ path('app_logout') }}" class="topbar__logout">
+                <i class="fas fa-sign-out-alt"></i>
+                D&eacute;connexion
+            </a>
+        </div>
+
+        <div class="profile-popup" data-profile-popup style="display:none;">
+            <div class="profile-popup__header">
+                <h2 class="profile-popup__title">
+                    <i class="fas fa-scroll"></i>
+                    Profil du Guerrier
+                </h2>
+                <button class="profile-popup__close" data-profile-close>
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="profile-popup__content" data-profile-content>
+                <div class="profile-popup__loading">
+                    <i class="fas fa-spinner fa-spin"></i> Chargement...
+                </div>
+            </div>
+        </div>
+        <div class="profile-popup__backdrop" data-profile-backdrop style="display:none;"></div>
+        {% endif %}
+        {% block header %}{% endblock %}
         <main>{% block body %}{% endblock %}</main>
         <footer>
             <p>© Tous droit réservés au site</p>

@@ -30,6 +30,7 @@ security:
         - { path: ^/champ, roles: ROLE_USER }
         - { path: ^/teams, roles: ROLE_USER }
         - { path: ^/arena, roles: ROLE_USER }
+        - { path: ^/profile, roles: ROLE_USER }
 
 when@test:
     security:
