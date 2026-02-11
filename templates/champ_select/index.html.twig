@@ -7,6 +7,6 @@
 
 {% for Character in Character %}
      <h3>{{Character.name}}</h3>
-     <img src="{{ asset('asset/img/logo/' ~ Character.name  ~ '.webp' ) }}">
+     <img src="{{ asset('asset/img/logo/' ~ (Character.name|lower)  ~ '.webp' ) }}">
 {% endfor %}
 {% endblock %}
