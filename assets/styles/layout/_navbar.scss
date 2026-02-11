@@ -181,39 +181,40 @@
 .topbar__locale {
     display: flex;
     align-items: center;
-    gap: 0.2rem;
-    font-size: 0.75rem;
-    color: $dd-bone;
-    opacity: 0.6;
+    gap: 0.25rem;
+    font-size: 0.8rem;
+    color: $dd-parchment;
     text-decoration: none;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-weight: 600;
-    padding: 0.25rem 0.6rem;
-    border: 1px solid transparent;
+    font-weight: 700;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid rgba($dd-gold, 0.4);
+    background: rgba($dd-gold, 0.08);
+    border-radius: 3px;
     transition: all 0.3s ease;
-    margin-right: 0.5rem;
+    margin-right: 0.6rem;
 
     &:hover {
-        opacity: 1;
         color: $dd-gold;
-        border-color: rgba($dd-gold, 0.3);
-        background: rgba($dd-gold, 0.08);
+        border-color: $dd-gold;
+        background: rgba($dd-gold, 0.15);
+        box-shadow: 0 0 8px rgba($dd-gold, 0.15);
     }
 }
 
 .topbar__locale-current {
     color: $dd-gold;
-    opacity: 1;
+    font-weight: 800;
 }
 
 .topbar__locale-separator {
-    opacity: 0.3;
-    margin: 0 0.1rem;
+    color: rgba($dd-parchment, 0.35);
+    margin: 0 0.15rem;
 }
 
 .topbar__locale-other {
-    opacity: 0.5;
+    color: rgba($dd-parchment, 0.5);
 }
 
 // Anonymous pages floating toggle
@@ -228,22 +229,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
-    font-size: 0.7rem;
+    width: 40px;
+    height: 40px;
+    font-size: 0.8rem;
     font-weight: 700;
-    color: $dd-parchment;
+    color: $dd-gold;
     text-decoration: none;
     letter-spacing: 0.1em;
-    border: 1px solid rgba($dd-gold, 0.3);
-    background: rgba($dd-black, 0.85);
+    border: 1px solid rgba($dd-gold, 0.5);
+    background: rgba($dd-black, 0.9);
+    border-radius: 3px;
     backdrop-filter: blur(4px);
     transition: all 0.3s ease;
 
     &:hover {
-        color: $dd-gold;
+        color: #fff;
         border-color: $dd-gold;
-        background: rgba($dd-dark-brown, 0.95);
+        background: rgba($dd-gold, 0.2);
+        box-shadow: 0 0 10px rgba($dd-gold, 0.2);
     }
 }
 
