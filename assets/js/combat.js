@@ -37,6 +37,7 @@ class CombatController {
 
         // Map des personnages avec stockage des HP max initiaux
         this.characterMaxHP = {};
+        this.abilityCooldowns = {}; // Suivi des cooldowns en cours
         this.container.querySelectorAll('[data-character-name]').forEach(el => {
             const name = el.dataset.characterName;
             const team = el.dataset.characterTeam;
@@ -50,6 +51,24 @@ class CombatController {
                 if (match) {
                     this.characterMaxHP[key] = parseInt(match[2]);
                 }
+            }
+        });
+
+        // Map des éléments d'ability dans les info panels
+        this.abilityElements = {};
+        this.container.querySelectorAll('.character-info[data-char-name]').forEach(el => {
+            const name = el.dataset.charName;
+            const team = el.dataset.charTeam;
+            const key = `${team}-${name}`;
+            const abilityEl = el.querySelector('.character-info__ability');
+            if (abilityEl) {
+                this.abilityElements[key] = {
+                    el: abilityEl,
+                    maxCd: parseInt(abilityEl.dataset.abilityMaxCd) || 0,
+                    badge: abilityEl.querySelector('.character-info__ability-cd-badge'),
+                    nameEl: abilityEl.querySelector('.character-info__ability-name'),
+                    iconEl: abilityEl.querySelector('i'),
+                };
             }
         });
 
@@ -116,6 +135,7 @@ class CombatController {
             const log = this.logs[this.currentIndex];
             this.displayLog(log);
             this.updateHealthBars(log);
+            this.trackAbilityCooldowns(log);
             if (log.type === 'death') {
                 this.animateDeath(log.target, log.targetTeam);
             }
@@ -209,6 +229,53 @@ class CombatController {
             setTimeout(() => this.updateHealthBars(log), hpDelay / this.speed);
         } else {
             this.updateHealthBars(log);
+        }
+
+        // Suivi des cooldowns
+        this.trackAbilityCooldowns(log);
+    }
+
+    trackAbilityCooldowns(log) {
+        // Quand une compétence est utilisée, mettre en cooldown
+        if (log.type === 'ability_use' && log.caster && log.casterTeam) {
+            const key = `${log.casterTeam}-${log.caster}`;
+            const abilityData = this.abilityElements[key];
+            if (abilityData && abilityData.maxCd > 0) {
+                this.abilityCooldowns[key] = abilityData.maxCd;
+                this.updateAbilityCooldownDisplay(key);
+            }
+        }
+
+        // A chaque nouveau round, décrémenter tous les cooldowns
+        if (log.type === 'round') {
+            for (const key in this.abilityCooldowns) {
+                if (this.abilityCooldowns[key] > 0) {
+                    this.abilityCooldowns[key]--;
+                    this.updateAbilityCooldownDisplay(key);
+                }
+            }
+        }
+    }
+
+    updateAbilityCooldownDisplay(key) {
+        const abilityData = this.abilityElements[key];
+        if (!abilityData) return;
+
+        const cd = this.abilityCooldowns[key] || 0;
+
+        if (cd > 0) {
+            // En cooldown : griser + afficher badge
+            abilityData.el.classList.add('character-info__ability--on-cd');
+            if (abilityData.badge) {
+                abilityData.badge.textContent = `${cd}T`;
+                abilityData.badge.style.display = 'inline';
+            }
+        } else {
+            // Prêt : retirer le gris
+            abilityData.el.classList.remove('character-info__ability--on-cd');
+            if (abilityData.badge) {
+                abilityData.badge.style.display = 'none';
+            }
         }
     }
 

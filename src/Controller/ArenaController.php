@@ -162,6 +162,7 @@ final class ArenaController extends AbstractController
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
+                'abilityCd' => $d['char']->getAbility()?->getCooldown(),
             ], $team1),
             'Equipe 2' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
@@ -169,6 +170,7 @@ final class ArenaController extends AbstractController
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
+                'abilityCd' => $d['char']->getAbility()?->getCooldown(),
             ], $team2),
         ];
 
@@ -329,6 +331,7 @@ final class ArenaController extends AbstractController
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
+                'abilityCd' => $d['char']->getAbility()?->getCooldown(),
             ], $team1),
             'Equipe 2' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
@@ -336,6 +339,7 @@ final class ArenaController extends AbstractController
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
+                'abilityCd' => $d['char']->getAbility()?->getCooldown(),
             ], $team2),
         ];
 

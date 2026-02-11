@@ -94,7 +94,7 @@
 
             <div class="info-panel__characters">
                 {% for member in composition['Equipe 1'] %}
-                <div class="character-info">
+                <div class="character-info" data-char-name="{{ member.name }}" data-char-team="Equipe 1">
                     <div class="character-info__icon">
                         <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
@@ -104,8 +104,10 @@
                         <div class="character-info__name">{{ member.name }}</div>
                         <div class="character-info__stats">PV: <span>{{ member.hp }}</span></div>
                         {% if member.abilityName %}
-                        <div class="character-info__ability">
-                            <i class="fas fa-fire-alt"></i> {{ member.abilityName }}
+                        <div class="character-info__ability" data-ability-cd="{{ member.abilityCd }}" data-ability-max-cd="{{ member.abilityCd }}">
+                            <i class="fas fa-fire-alt"></i>
+                            <span class="character-info__ability-name">{{ member.abilityName }}</span>
+                            <span class="character-info__ability-cd-badge" style="display:none;"></span>
                         </div>
                         {% endif %}
                     </div>
@@ -180,7 +182,7 @@
 
             <div class="info-panel__characters">
                 {% for member in composition['Equipe 2'] %}
-                <div class="character-info">
+                <div class="character-info" data-char-name="{{ member.name }}" data-char-team="Equipe 2">
                     <div class="character-info__icon">
                         <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
@@ -190,8 +192,10 @@
                         <div class="character-info__name">{{ member.name }}</div>
                         <div class="character-info__stats">PV: <span>{{ member.hp }}</span></div>
                         {% if member.abilityName %}
-                        <div class="character-info__ability">
-                            <i class="fas fa-fire-alt"></i> {{ member.abilityName }}
+                        <div class="character-info__ability" data-ability-cd="{{ member.abilityCd }}" data-ability-max-cd="{{ member.abilityCd }}">
+                            <i class="fas fa-fire-alt"></i>
+                            <span class="character-info__ability-name">{{ member.abilityName }}</span>
+                            <span class="character-info__ability-cd-badge" style="display:none;"></span>
                         </div>
                         {% endif %}
                     </div>

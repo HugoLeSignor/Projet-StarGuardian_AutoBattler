@@ -825,17 +825,61 @@
 }
 
 .character-info__ability {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
     font-size: 0.78rem;
     color: $dd-gold;
     margin-top: 0.3rem;
     font-weight: bold;
     text-shadow: 0 0 6px rgba($dd-gold, 0.4);
+    transition: all 0.4s ease;
 
     i {
         font-size: 0.65rem;
-        margin-right: 0.25rem;
         text-shadow: 0 0 5px rgba($dd-gold, 0.5);
+        transition: all 0.4s ease;
     }
+
+    // État en cooldown
+    &--on-cd {
+        color: $dd-light-brown;
+        opacity: 0.5;
+        text-shadow: none;
+
+        i {
+            color: $dd-light-brown;
+            text-shadow: none;
+        }
+
+        .character-info__ability-name {
+            text-decoration: line-through;
+            text-decoration-color: rgba($dd-light-brown, 0.6);
+        }
+    }
+}
+
+.character-info__ability-name {
+    transition: all 0.4s ease;
+}
+
+.character-info__ability-cd-badge {
+    font-size: 0.65rem;
+    font-weight: bold;
+    color: $dd-crimson;
+    background: rgba($dd-crimson, 0.15);
+    border: 1px solid rgba($dd-crimson, 0.4);
+    padding: 0.05rem 0.35rem;
+    margin-left: auto;
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 4px rgba($dd-crimson, 0.5);
+    animation: cd-pulse 1s ease-in-out;
+}
+
+@keyframes cd-pulse {
+    0% { transform: scale(1.3); opacity: 0.5; }
+    50% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 // ==========================================
