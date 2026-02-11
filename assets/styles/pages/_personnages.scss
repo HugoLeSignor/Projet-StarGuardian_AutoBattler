@@ -324,9 +324,9 @@
 // ==========================================
 .char-card__ability {
     margin-top: 0.8rem;
-    padding: 0.7rem;
-    background: rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba($dd-gold, 0.2);
+    padding: 0.7rem 0.8rem;
+    background: rgba($dd-gold, 0.08);
+    border: 1px solid rgba($dd-gold, 0.3);
     border-left: 3px solid $dd-gold;
 }
 
@@ -334,26 +334,28 @@
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    margin-bottom: 0.3rem;
+    margin-bottom: 0.35rem;
 
     i {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         color: $dd-gold;
+        text-shadow: 0 0 6px rgba($dd-gold, 0.5);
     }
 }
 
 .char-card__ability-name {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: $dd-gold;
     font-weight: bold;
     letter-spacing: 0.05em;
+    text-shadow: 0 0 8px rgba($dd-gold, 0.4);
 }
 
 .char-card__ability-cd {
     margin-left: auto;
-    font-size: 0.65rem;
-    color: $dd-light-brown;
-    opacity: 0.7;
+    font-size: 0.7rem;
+    color: $dd-parchment;
+    opacity: 0.8;
 
     i {
         font-size: 0.6rem;
@@ -362,8 +364,9 @@
 }
 
 .char-card__ability-desc {
-    font-size: 0.72rem;
-    color: rgba($dd-bone, 0.7);
+    font-size: 0.75rem;
+    color: $dd-parchment;
+    opacity: 0.85;
     font-style: italic;
     line-height: 1.4;
     margin: 0;

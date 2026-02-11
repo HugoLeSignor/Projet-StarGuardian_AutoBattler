@@ -517,46 +517,50 @@
 // Competence signature (dans details)
 .ability-section {
   margin-bottom: 1.5rem;
-  padding: 0.8rem 1rem;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba($dd-gold, 0.2);
+  padding: 1rem 1.2rem;
+  background: rgba($dd-gold, 0.08);
+  border: 1px solid rgba($dd-gold, 0.35);
   border-left: 3px solid $dd-gold;
+  box-shadow: 0 0 12px rgba($dd-gold, 0.08);
 }
 
 .ability-section__header {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.5rem;
 
   i {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: $dd-gold;
+    text-shadow: 0 0 8px rgba($dd-gold, 0.6);
   }
 }
 
 .ability-section__name {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: $dd-gold;
   font-weight: bold;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  text-shadow: 0 0 10px rgba($dd-gold, 0.4);
 }
 
 .ability-section__cd {
   margin-left: auto;
-  font-size: 0.7rem;
-  color: $dd-light-brown;
-  opacity: 0.7;
+  font-size: 0.75rem;
+  color: $dd-parchment;
+  opacity: 0.85;
 
   i {
     font-size: 0.65rem;
-    margin-right: 0.15rem;
+    margin-right: 0.2rem;
   }
 }
 
 .ability-section__desc {
-  font-size: 0.8rem;
-  color: rgba($dd-bone, 0.75);
+  font-size: 0.85rem;
+  color: $dd-parchment;
+  opacity: 0.9;
   font-style: italic;
   line-height: 1.5;
   margin: 0;

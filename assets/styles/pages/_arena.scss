@@ -825,14 +825,16 @@
 }
 
 .character-info__ability {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     color: $dd-gold;
-    margin-top: 0.2rem;
-    opacity: 0.85;
+    margin-top: 0.3rem;
+    font-weight: bold;
+    text-shadow: 0 0 6px rgba($dd-gold, 0.4);
 
     i {
-        font-size: 0.6rem;
-        margin-right: 0.2rem;
+        font-size: 0.65rem;
+        margin-right: 0.25rem;
+        text-shadow: 0 0 5px rgba($dd-gold, 0.5);
     }
 }
 
