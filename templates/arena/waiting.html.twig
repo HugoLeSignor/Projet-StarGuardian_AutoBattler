@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Preparation du combat{% endblock %}
+
+{% block body %}
+<div class="matchmaking">
+    <div class="matchmaking__vignette"></div>
+
+    <div class="matchmaking__panel">
+        <div class="matchmaking__ornament">&#x2726;</div>
+
+        <h1 class="matchmaking__title">Pr&eacute;paration du combat</h1>
+
+        <div class="matchmaking__separator">
+            <span></span>
+            <i class="fas fa-crossed-swords"></i>
+            <span></span>
+        </div>
+
+        <div class="matchmaking__spinner">
+            <div class="matchmaking__ring"></div>
+            <i class="fas fa-skull"></i>
+        </div>
+
+        <p class="matchmaking__status" id="waiting-status">
+            Chargement de l'ar&egrave;ne...
+        </p>
+
+        <div class="matchmaking__dots">
+            <span></span><span></span><span></span>
+        </div>
+
+        <div class="matchmaking__ornament">&#x2726;</div>
+    </div>
+</div>
+
+<script>
+    const statusEl = document.getElementById('waiting-status');
+    let attempts = 0;
+
+    function checkBattle() {
+        attempts++;
+        fetch('{{ path('app_arena_check_battle') }}', {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.found && data.redirectUrl) {
+                statusEl.textContent = 'Combat pr\u00eat !';
+                setTimeout(() => {
+                    window.location.href = data.redirectUrl;
+                }, 300);
+            } else if (attempts < 15) {
+                setTimeout(checkBattle, 1000);
+            } else {
+                statusEl.textContent = 'Le combat n\'a pas pu \u00eatre charg\u00e9.';
+                setTimeout(() => {
+                    window.location.href = '{{ path('app_teams') }}';
+                }, 2000);
+            }
+        })
+        .catch(() => {
+            if (attempts < 15) {
+                setTimeout(checkBattle, 1000);
+            }
+        });
+    }
+
+    checkBattle();
+</script>
+{% endblock %}

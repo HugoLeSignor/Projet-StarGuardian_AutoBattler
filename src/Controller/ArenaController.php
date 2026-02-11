@@ -42,8 +42,8 @@ final class ArenaController extends AbstractController
                         return $this->redirectToRoute('app_arena_show', ['id' => $existingBattle->getId()]);
                     }
                 }
-                // Fallback si le battle n'existe pas encore (race condition)
-                return $this->renderCombat($repo, $engine, $team1Ids, $team2Ids, $matchData, null);
+                // Battle pas encore cree (race condition) : afficher page d'attente avec polling
+                return $this->render('arena/waiting.html.twig');
             }
 
             // Creator : simuler, persister, puis rediriger vers /arena/{id}
@@ -257,6 +257,28 @@ final class ArenaController extends AbstractController
             'ratingChange' => $change,
             'newRating' => $player1?->getRating(),
         ]);
+    }
+
+    /**
+     * Endpoint de polling pour le joiner : verifie si le battle existe
+     */
+    #[Route('/arena/check-battle', name: 'app_arena_check_battle', methods: ['POST'])]
+    public function checkBattle(BattleRepository $battleRepo): JsonResponse
+    {
+        $currentUser = $this->getUser();
+        if (!$currentUser) {
+            return $this->json(['found' => false]);
+        }
+
+        $battle = $battleRepo->findRecentBattleAsPlayer2($currentUser);
+        if ($battle) {
+            return $this->json([
+                'found' => true,
+                'redirectUrl' => $this->generateUrl('app_arena_show', ['id' => $battle->getId()]),
+            ]);
+        }
+
+        return $this->json(['found' => false]);
     }
 
     #[Route('/arena/combat', name: 'app_arena_combat')]
