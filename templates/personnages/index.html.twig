@@ -15,7 +15,7 @@
             <i class="fas fa-skull-crossbones"></i>
             <span></span>
         </div>
-        <p class="personnages__subtitle">16 combattants l&eacute;gendaires, forg&eacute;s dans les t&eacute;n&egrave;bres du Darkest Dungeon.</p>
+        <p class="personnages__subtitle">17 combattants l&eacute;gendaires, forg&eacute;s dans les t&eacute;n&egrave;bres du Darkest Dungeon.</p>
     </div>
 
     {# ====== PERSONNAGES PAR CATEGORIE ====== #}
@@ -85,6 +85,17 @@
                             <span class="char-stat__value">{{ character.CRIT }}%</span>
                         </div>
                     </div>
+
+                    {% if character.ability %}
+                    <div class="char-card__ability">
+                        <div class="char-card__ability-header">
+                            <i class="fas fa-fire-alt"></i>
+                            <span class="char-card__ability-name">{{ character.ability.name }}</span>
+                            <span class="char-card__ability-cd"><i class="fas fa-hourglass-half"></i> {{ character.ability.cooldown }}T</span>
+                        </div>
+                        <p class="char-card__ability-desc">{{ character.ability.description }}</p>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

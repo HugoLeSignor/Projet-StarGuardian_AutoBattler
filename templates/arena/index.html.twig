@@ -103,6 +103,11 @@
                     <div class="character-info__details">
                         <div class="character-info__name">{{ member.name }}</div>
                         <div class="character-info__stats">PV: <span>{{ member.hp }}</span></div>
+                        {% if member.abilityName %}
+                        <div class="character-info__ability">
+                            <i class="fas fa-fire-alt"></i> {{ member.abilityName }}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}
@@ -184,6 +189,11 @@
                     <div class="character-info__details">
                         <div class="character-info__name">{{ member.name }}</div>
                         <div class="character-info__stats">PV: <span>{{ member.hp }}</span></div>
+                        {% if member.abilityName %}
+                        <div class="character-info__ability">
+                            <i class="fas fa-fire-alt"></i> {{ member.abilityName }}
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endfor %}

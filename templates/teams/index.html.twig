@@ -79,7 +79,10 @@
                     data-dodge="{{ hero.DODGE }}"
                     data-crit="{{ hero.CRIT }}"
                     data-hp="{{ hero.HP }}"
-                    data-sprite="{{ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '_':'-'}) : 'inconnu') ~ '-idle.gif' }}">
+                    data-sprite="{{ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '_':'-'}) : 'inconnu') ~ '-idle.gif' }}"
+                    data-ability-name="{{ hero.ability ? hero.ability.name : '' }}"
+                    data-ability-desc="{{ hero.ability ? hero.ability.description : '' }}"
+                    data-ability-cd="{{ hero.ability ? hero.ability.cooldown : '' }}">
                     <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '-':'-'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }}" loading="lazy" width="150" height="150">
                     <span>{{ hero.name }}</span>
                 </div>

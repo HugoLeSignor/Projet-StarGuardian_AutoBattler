@@ -92,9 +92,23 @@ document.addEventListener('DOMContentLoaded', () => {
             const crit = Number(portrait.dataset.crit);
             const hp = Number(portrait.dataset.hp);
             const spriteFile = portrait.dataset.sprite;
+            const abilityName = portrait.dataset.abilityName || '';
+            const abilityDesc = portrait.dataset.abilityDesc || '';
+            const abilityCd = portrait.dataset.abilityCd || '';
 
             const spritePath = `/asset/sprites/${spriteFile}`;
             const isSelected = selectedHeroIds.includes(id);
+
+            const abilityHtml = abilityName ? `
+                    <div class="ability-section">
+                        <div class="ability-section__header">
+                            <i class="fas fa-fire-alt"></i>
+                            <span class="ability-section__name">${escapeHtml(abilityName)}</span>
+                            <span class="ability-section__cd"><i class="fas fa-hourglass-half"></i> ${escapeHtml(abilityCd)}T</span>
+                        </div>
+                        <p class="ability-section__desc">${escapeHtml(abilityDesc)}</p>
+                    </div>
+            ` : '';
 
             details.innerHTML = `
                 <div class="team-details-content">
@@ -156,6 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span>${hp}</span>
                         </div>
                     </div>
+
+                    ${abilityHtml}
 
                     <button class="btn-select-right">
                         ${isSelected ? 'Désélectionner' : 'Sélectionner'}

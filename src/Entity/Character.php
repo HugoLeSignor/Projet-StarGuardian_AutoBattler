@@ -23,6 +23,9 @@ class Character
     #[ORM\ManyToOne]
     private ?Role $role = null;
 
+    #[ORM\OneToOne(mappedBy: 'character', cascade: ['persist', 'remove'])]
+    private ?Ability $ability = null;
+
     #[ORM\Column]
     private ?int $DMG_MIN = null;
 
@@ -154,5 +157,23 @@ class Character
         return $this;
     }
 
+    public function getAbility(): ?Ability
+    {
+        return $this->ability;
+    }
 
+    public function setAbility(?Ability $ability): static
+    {
+        if ($ability === null && $this->ability !== null) {
+            $this->ability->setCharacter(null);
+        }
+
+        if ($ability !== null && $ability->getCharacter() !== $this) {
+            $ability->setCharacter($this);
+        }
+
+        $this->ability = $ability;
+
+        return $this;
+    }
 }

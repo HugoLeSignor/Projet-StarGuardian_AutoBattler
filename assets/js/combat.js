@@ -23,7 +23,7 @@ class CombatController {
             try {
                 this.logs = JSON.parse(logsData);
             } catch (e) {
-                console.error('❌ Erreur parsing logs:', e);
+                console.error('Erreur parsing logs:', e);
                 return;
             }
         }
@@ -158,17 +158,44 @@ class CombatController {
 
     getDelayForLog(log) {
         switch (log.type) {
-            case 'round': return 2000;         // 2 secondes pour les rounds
-            case 'initiative': return 400;     // 0.4 secondes pour l'initiative
-            case 'attack': return 2000;        // 2 secondes pour les attaques
-            case 'heal': return 1800;          // 1.8 secondes pour les soins
-            case 'defend': return 1500;        // 1.5 secondes pour la défense
-            case 'dodge': return 1200;         // 1.2 secondes pour l'esquive
-            case 'death': return 2500;         // 2.5 secondes pour la mort
-            case 'protect': return 1500;       // 1.5 secondes pour la protection
+            case 'round': return 2000;
+            case 'initiative': return 400;
+            case 'attack': return 2000;
+            case 'heal': return 1800;
+            case 'defend': return 1500;
+            case 'dodge': return 1200;
+            case 'death': return 2500;
+            case 'protect': return 1500;
             case 'victory':
-            case 'draw': return 1000;          // 1 seconde pour la victoire
-            default: return 800;               // 0.8 secondes par défaut
+            case 'draw': return 1000;
+            // Nouveaux types
+            case 'bleed_tick': return 800;
+            case 'blight_tick': return 800;
+            case 'stunned_skip': return 1000;
+            case 'riposte_activate': return 1200;
+            case 'ability_use': return this.getAbilityDelay(log);
+            default: return 800;
+        }
+    }
+
+    getAbilityDelay(log) {
+        switch (log.subtype) {
+            case 'bleed_attack':
+            case 'blight_attack':
+            case 'backline_strike':
+            case 'armor_pierce':
+            case 'bonus_vs_marked': return 2000;
+            case 'stun': return 1500;
+            case 'mark': return 1200;
+            case 'riposte_buff':
+            case 'self_buff':
+            case 'stealth': return 1200;
+            case 'party_heal': return 1800;
+            case 'party_buff': return 1500;
+            case 'emergency_heal': return 1800;
+            case 'protect_dodge': return 1500;
+            case 'transform_damage': return 800;
+            default: return 1200;
         }
     }
 
@@ -177,7 +204,6 @@ class CombatController {
         this.displayLog(log);
 
         // Synchroniser la mise à jour des HP avec l'animation
-        // Les barres se mettent à jour quand le personnage "prend le coup"
         const hpDelay = this.getHPUpdateDelay(log);
         if (hpDelay > 0) {
             setTimeout(() => this.updateHealthBars(log), hpDelay / this.speed);
@@ -188,9 +214,28 @@ class CombatController {
 
     getHPUpdateDelay(log) {
         switch (log.type) {
-            case 'attack': return 350;   // Après que l'attaque touche (300ms attaque + 50ms)
-            case 'heal': return 400;     // Pendant l'animation de soin
-            case 'death': return 0;      // Immédiat
+            case 'attack': return 350;
+            case 'heal': return 400;
+            case 'death': return 0;
+            case 'bleed_tick': return 200;
+            case 'blight_tick': return 200;
+            case 'riposte_activate': return 350;
+            case 'ability_use': return this.getAbilityHPDelay(log);
+            default: return 0;
+        }
+    }
+
+    getAbilityHPDelay(log) {
+        switch (log.subtype) {
+            case 'bleed_attack':
+            case 'blight_attack':
+            case 'backline_strike':
+            case 'armor_pierce':
+            case 'bonus_vs_marked':
+            case 'stun': return 350;
+            case 'party_heal':
+            case 'emergency_heal': return 400;
+            case 'transform_damage': return 200;
             default: return 0;
         }
     }
@@ -212,8 +257,157 @@ class CombatController {
             case 'death':
                 this.animateDeath(log.target, log.targetTeam);
                 break;
+            // Nouveaux types
+            case 'bleed_tick':
+                this.animateDoT(log.target, log.targetTeam, 'bleeding');
+                break;
+            case 'blight_tick':
+                this.animateDoT(log.target, log.targetTeam, 'blighted');
+                break;
+            case 'stunned_skip':
+                this.animateStunned(log.target, log.targetTeam);
+                break;
+            case 'riposte_activate':
+                this.animateAttack(log.attacker, log.attackerTeam, log.target, log.targetTeam, false);
+                break;
+            case 'ability_use':
+                this.playAbilityAnimation(log);
+                break;
         }
     }
+
+    // === NOUVELLES ANIMATIONS ===
+
+    animateDoT(targetName, targetTeam, dotClass) {
+        const target = this.getCharacterElement(targetName, targetTeam);
+        if (target) {
+            target.classList.add(dotClass);
+            setTimeout(() => target.classList.remove(dotClass), 600);
+        }
+    }
+
+    animateStunned(targetName, targetTeam) {
+        const target = this.getCharacterElement(targetName, targetTeam);
+        if (target) {
+            target.classList.add('stunned');
+            setTimeout(() => target.classList.remove('stunned'), 800);
+        }
+    }
+
+    animateMarked(targetName, targetTeam) {
+        const target = this.getCharacterElement(targetName, targetTeam);
+        if (target) {
+            target.classList.add('marked');
+            // La marque reste visible plus longtemps
+            setTimeout(() => target.classList.remove('marked'), 2000);
+        }
+    }
+
+    animateBuff(targetName, targetTeam) {
+        const target = this.getCharacterElement(targetName, targetTeam);
+        if (target) {
+            target.classList.add('buffed');
+            setTimeout(() => target.classList.remove('buffed'), 800);
+        }
+    }
+
+    animateStealth(targetName, targetTeam) {
+        const target = this.getCharacterElement(targetName, targetTeam);
+        if (target) {
+            target.classList.add('stealthed');
+            setTimeout(() => target.classList.remove('stealthed'), 1500);
+        }
+    }
+
+    playAbilityAnimation(log) {
+        switch (log.subtype) {
+            case 'bleed_attack':
+                if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, false);
+                if (log.target && log.targetTeam) {
+                    setTimeout(() => this.animateDoT(log.target, log.targetTeam, 'bleeding'), 400);
+                }
+                break;
+            case 'blight_attack':
+                if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, false);
+                if (log.target && log.targetTeam) {
+                    setTimeout(() => this.animateDoT(log.target, log.targetTeam, 'blighted'), 400);
+                }
+                break;
+            case 'stun':
+                if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, false);
+                if (log.target && log.targetTeam) {
+                    setTimeout(() => this.animateStunned(log.target, log.targetTeam), 400);
+                }
+                break;
+            case 'mark':
+                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                if (log.target && log.targetTeam) this.animateMarked(log.target, log.targetTeam);
+                break;
+            case 'riposte_buff':
+                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                break;
+            case 'self_buff':
+                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                break;
+            case 'party_heal':
+                if (log.caster && log.casterTeam) {
+                    this.animateHeal(log.caster, log.casterTeam, log.caster, log.casterTeam);
+                    // Animer tous les alliés soignés
+                    if (log.healed) {
+                        log.healed.forEach(h => {
+                            const el = this.getCharacterElement(h.name, h.team);
+                            if (el) {
+                                el.classList.add('healed');
+                                setTimeout(() => el.classList.remove('healed'), 800);
+                            }
+                        });
+                    }
+                }
+                break;
+            case 'party_buff':
+                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                // Animer tous les alliés du même côté
+                this.animateTeamBuff(log.casterTeam);
+                break;
+            case 'stealth':
+                if (log.caster && log.casterTeam) this.animateStealth(log.caster, log.casterTeam);
+                break;
+            case 'armor_pierce':
+            case 'backline_strike':
+            case 'bonus_vs_marked':
+                if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, log.isCrit || false);
+                break;
+            case 'emergency_heal':
+                if (log.caster && log.casterTeam) {
+                    this.animateHeal(log.caster, log.casterTeam, log.caster, log.casterTeam);
+                }
+                break;
+            case 'protect_dodge':
+                if (log.caster && log.casterTeam) this.animateDefend(log.caster, log.casterTeam);
+                break;
+            case 'transform_damage':
+                if (log.target && log.targetTeam) {
+                    const el = this.getCharacterElement(log.target, log.targetTeam);
+                    if (el) {
+                        el.classList.add('hurt');
+                        setTimeout(() => el.classList.remove('hurt'), 400);
+                    }
+                }
+                break;
+        }
+    }
+
+    animateTeamBuff(casterTeam) {
+        Object.keys(this.characterElements).forEach(key => {
+            if (key.startsWith(casterTeam)) {
+                const el = this.characterElements[key];
+                el.classList.add('buffed');
+                setTimeout(() => el.classList.remove('buffed'), 800);
+            }
+        });
+    }
+
+    // === ANIMATIONS EXISTANTES ===
 
     animateAttack(attackerName, attackerTeam, targetName, targetTeam, isCrit) {
         const attacker = this.getCharacterElement(attackerName, attackerTeam);
@@ -287,6 +481,16 @@ class CombatController {
             entry.classList.add('combat-log__entry--victory');
         } else if (log.type === 'draw') {
             entry.classList.add('combat-log__entry--defeat');
+        } else if (log.type === 'ability_use') {
+            entry.classList.add('combat-log__entry--ability');
+        } else if (log.type === 'bleed_tick') {
+            entry.classList.add('combat-log__entry--bleed');
+        } else if (log.type === 'blight_tick') {
+            entry.classList.add('combat-log__entry--blight');
+        } else if (log.type === 'stunned_skip') {
+            entry.classList.add('combat-log__entry--stun');
+        } else if (log.type === 'riposte_activate') {
+            entry.classList.add('combat-log__entry--riposte');
         }
 
         entry.innerHTML = log.message;
@@ -301,7 +505,7 @@ class CombatController {
         let maxHP = null;
 
         // Déterminer les données selon le type de log
-        if (log.type === 'attack') {
+        if (log.type === 'attack' || log.type === 'riposte_activate') {
             characterName = log.target;
             teamName = log.targetTeam;
             currentHP = log.targetHP;
@@ -311,6 +515,14 @@ class CombatController {
             teamName = log.targetTeam;
             currentHP = log.targetHP;
             maxHP = log.targetMaxHP;
+        } else if (log.type === 'bleed_tick' || log.type === 'blight_tick') {
+            characterName = log.target;
+            teamName = log.targetTeam;
+            currentHP = log.targetHP;
+            maxHP = log.targetMaxHP;
+        } else if (log.type === 'ability_use') {
+            this.updateAbilityHealthBars(log);
+            return;
         }
 
         // Mettre à jour si nous avons les données nécessaires
@@ -319,11 +531,29 @@ class CombatController {
         }
     }
 
+    updateAbilityHealthBars(log) {
+        // Compétences qui infligent des dégâts à une cible
+        if (log.target && log.targetHP !== undefined && log.targetMaxHP) {
+            this.updateCharacterHP(log.target, log.targetTeam, log.targetHP, log.targetMaxHP);
+        }
+
+        // Soin de groupe : mettre à jour chaque allié soigné
+        if (log.subtype === 'party_heal' && log.healed) {
+            log.healed.forEach(h => {
+                this.updateCharacterHP(h.name, h.team, h.hp, h.maxHp);
+            });
+        }
+
+        // Soin d'urgence : mettre à jour le lanceur
+        if (log.subtype === 'emergency_heal' && log.caster) {
+            this.updateCharacterHP(log.caster, log.casterTeam, log.targetHP, log.targetMaxHP);
+        }
+    }
+
     updateCharacterHP(characterName, teamName, currentHP, maxHP) {
         const target = this.getCharacterElement(characterName, teamName);
 
         if (!target) {
-            console.error('❌ Character element not found for:', characterName, 'in team:', teamName);
             return;
         }
 
