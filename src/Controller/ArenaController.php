@@ -19,7 +19,7 @@ final class ArenaController extends AbstractController
      * Point d'entree : cree le Battle en BDD puis redirige vers /arena/{id}
      */
     #[Route('/arena', name: 'app_arena')]
-    public function index(Request $request, CharacterRepository $repo, CombatEngine $engine, EntityManagerInterface $em): Response
+    public function index(Request $request, CharacterRepository $repo, CombatEngine $engine, EntityManagerInterface $em, BattleRepository $battleRepo): Response
     {
         $session = $request->getSession();
         $matchData = $session->get('match_data');
@@ -34,7 +34,15 @@ final class ArenaController extends AbstractController
 
             // Seul le creator cree le Battle (evite les doublons PvP)
             if (!$isCreator) {
-                // Joiner : simuler le combat localement sans persister
+                // Joiner : chercher le Battle cree par le creator
+                $currentUser = $this->getUser();
+                if ($currentUser) {
+                    $existingBattle = $battleRepo->findRecentBattleAsPlayer2($currentUser);
+                    if ($existingBattle) {
+                        return $this->redirectToRoute('app_arena_show', ['id' => $existingBattle->getId()]);
+                    }
+                }
+                // Fallback si le battle n'existe pas encore (race condition)
                 return $this->renderCombat($repo, $engine, $team1Ids, $team2Ids, $matchData, null);
             }
 

@@ -67,6 +67,23 @@ class BattleRepository extends ServiceEntityRepository
     }
 
     /**
+     * Trouve le combat le plus recent ou le joueur est player2 (cree dans les 60 dernieres secondes)
+     */
+    public function findRecentBattleAsPlayer2(User $user): ?Battle
+    {
+        $since = new \DateTimeImmutable('-60 seconds');
+        return $this->createQueryBuilder('b')
+            ->where('b.player2 = :user')
+            ->andWhere('b.createdAt >= :since')
+            ->setParameter('user', $user)
+            ->setParameter('since', $since)
+            ->orderBy('b.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @return array<int, int> characterId => count
      */
     public function getMostPlayedCharacterIds(User $user): array
