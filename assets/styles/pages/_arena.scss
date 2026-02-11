@@ -544,6 +544,7 @@ $dd-bone: #e8dcc4;
     margin-bottom: 1rem;
     background: rgba($dd-gold, 0.05);
     border: 1px solid rgba($dd-gold, 0.15);
+    overflow: hidden;
 }
 
 .info-panel__avatar {
@@ -587,6 +588,7 @@ $dd-bone: #e8dcc4;
 }
 
 .info-panel__motto {
+    display: block;
     font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.75rem;
     color: rgba($dd-parchment, 0.55);
@@ -594,6 +596,7 @@ $dd-bone: #e8dcc4;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 .info-panel__rating {
