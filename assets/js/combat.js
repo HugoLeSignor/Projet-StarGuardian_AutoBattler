@@ -399,6 +399,26 @@ class CombatController {
                 this.overlay.style.opacity = '1';
             }, 50);
         }
+
+        // Finaliser le MMR a la fin du combat
+        this.finalizeRating();
+    }
+
+    finalizeRating() {
+        const battleId = this.container.dataset.battleId;
+        if (!battleId) return;
+
+        fetch(`/arena/finalize/${battleId}`, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                console.log(`Rating mis a jour: ${data.ratingChange > 0 ? '+' : ''}${data.ratingChange} (nouveau: ${data.newRating})`);
+            }
+        })
+        .catch(err => console.error('Erreur finalisation rating:', err));
     }
 
     updatePlayButton() {

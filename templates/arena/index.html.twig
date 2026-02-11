@@ -3,7 +3,7 @@
 {% block title %}Arena - Combat{% endblock %}
 
 {% block body %}
-<div class="arena-container" data-combat-logs="{{ logsJson|e('html_attr') }}">
+<div class="arena-container" data-combat-logs="{{ logsJson|e('html_attr') }}"{% if battleId is defined and battleId %} data-battle-id="{{ battleId }}"{% endif %}>
 
     {# ========================================== #}
     {# SECTION HAUTE - Zone de combat animations #}
@@ -96,7 +96,7 @@
                 {% for member in composition['Equipe 1'] %}
                 <div class="character-info">
                     <div class="character-info__icon">
-                        <img src="{{ asset('asset/img/arena/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
+                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
                              class="character-info__sprite">
                     </div>
@@ -168,7 +168,7 @@
                 {% for member in composition['Equipe 2'] %}
                 <div class="character-info">
                     <div class="character-info__icon">
-                        <img src="{{ asset('asset/img/arena/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
+                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
                              class="character-info__sprite">
                     </div>

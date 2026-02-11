@@ -7,6 +7,7 @@ use App\Repository\BattleRepository;
 use App\Repository\CharacterRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -112,10 +113,14 @@ final class ArenaController extends AbstractController
         }
 
         // Persister le combat en base si vient du matchmaking
+        // Seul le "creator" (celui qui a trouve l'adversaire) cree le Battle
+        // pour eviter les doublons quand les deux joueurs arrivent sur /arena
         $currentUser = $this->getUser();
         $opponent = null;
+        $battleId = null;
+        $isCreator = $matchData['is_creator'] ?? true; // true par defaut (bot, acces direct)
 
-        if ($matchData && $currentUser) {
+        if ($matchData && $currentUser && $isCreator) {
             $battle = new Battle();
             $battle->setPlayer1($currentUser);
 
@@ -143,17 +148,30 @@ final class ArenaController extends AbstractController
             $battle->setDurationSeconds($roundCount * 6);
 
             $em->persist($battle);
+            $em->flush();
 
-            // Mise a jour du rating
+            $battleId = $battle->getId();
+
+            // Stocker le changement de rating en session (sera applique a la fin du combat)
             $ratingChange = 0;
             if ($battle->getWinner() === 'player1') {
                 $ratingChange = $matchData['type'] === 'pvp' ? 25 : 10;
             } elseif ($battle->getWinner() === 'player2') {
                 $ratingChange = $matchData['type'] === 'pvp' ? -25 : -10;
             }
-            $currentUser->setRating($currentUser->getRating() + $ratingChange);
 
-            $em->flush();
+            if ($ratingChange !== 0) {
+                $session->set('pending_rating_' . $battleId, [
+                    'player1_id' => $currentUser->getId(),
+                    'player2_id' => $opponent?->getId(),
+                    'change' => $ratingChange,
+                ]);
+            }
+        } elseif ($matchData && $currentUser && !$isCreator) {
+            // Joueur "joiner" : recuperer l'adversaire pour l'affichage, pas de creation de Battle
+            if ($matchData['player2'] ?? null) {
+                $opponent = $em->getRepository(\App\Entity\User::class)->find($matchData['player2']->getId());
+            }
         }
 
         return $this->render('arena/index.html.twig', [
@@ -163,6 +181,43 @@ final class ArenaController extends AbstractController
             'team1Name' => $team1DisplayName,
             'team2Name' => $team2DisplayName,
             'opponent' => $opponent,
+            'battleId' => $battleId,
+        ]);
+    }
+
+    #[Route('/arena/finalize/{id}', name: 'app_arena_finalize', methods: ['POST'])]
+    public function finalize(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $session = $request->getSession();
+        $key = 'pending_rating_' . $id;
+        $pendingRating = $session->get($key);
+
+        if (!$pendingRating) {
+            return $this->json(['success' => false, 'message' => 'Aucun rating en attente'], 400);
+        }
+
+        // Consommer la session pour empecher les doublons
+        $session->remove($key);
+
+        $change = $pendingRating['change'];
+        $player1 = $em->getRepository(\App\Entity\User::class)->find($pendingRating['player1_id']);
+        $player2 = $pendingRating['player2_id']
+            ? $em->getRepository(\App\Entity\User::class)->find($pendingRating['player2_id'])
+            : null;
+
+        if ($player1) {
+            $player1->setRating($player1->getRating() + $change);
+        }
+        if ($player2) {
+            $player2->setRating($player2->getRating() - $change);
+        }
+
+        $em->flush();
+
+        return $this->json([
+            'success' => true,
+            'ratingChange' => $change,
+            'newRating' => $player1?->getRating(),
         ]);
     }
 

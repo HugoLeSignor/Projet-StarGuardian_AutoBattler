@@ -46,6 +46,7 @@ class MatchmakingService
             $this->entityManager->flush();
             return [
                 'type' => 'pvp',
+                'is_creator' => false,
                 'player1' => $queue->getPlayer(),
                 'player2' => $matcher->getPlayer(),
                 'team1_char_ids' => $queue->getCharacterIds(),
@@ -73,6 +74,7 @@ class MatchmakingService
             $this->entityManager->flush();
             return [
                 'type' => 'pvp',
+                'is_creator' => true,
                 'player1' => $queue->getPlayer(),
                 'player2' => $opponent->getPlayer(),
                 'team1_char_ids' => $queue->getCharacterIds(),
