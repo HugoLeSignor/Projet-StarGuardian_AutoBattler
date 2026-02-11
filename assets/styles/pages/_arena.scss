@@ -356,7 +356,7 @@ $dd-bone: #e8dcc4;
     opacity: 0;
     transition: opacity 0.5s ease-out;
 
-    &--team1 {
+    &--victory {
         background: linear-gradient(
             135deg,
             rgba(201, 162, 39, 0.9) 0%,
@@ -376,7 +376,7 @@ $dd-bone: #e8dcc4;
         }
     }
 
-    &--team2 {
+    &--defeat {
         background: linear-gradient(
             135deg,
             rgba(139, 0, 0, 0.9) 0%,

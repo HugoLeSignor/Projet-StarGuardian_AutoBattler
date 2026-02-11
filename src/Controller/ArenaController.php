@@ -170,18 +170,15 @@ final class ArenaController extends AbstractController
 
         $currentUser = $this->getUser();
         $isPlayer1 = $battle->getPlayer1() === $currentUser;
-        $opponent = null;
 
         if ($isPlayer1) {
             $team1Name = 'Votre equipe';
             $team2Name = $battle->isVsBot()
                 ? ($battle->getBotName() ?? 'Bot')
                 : ($battle->getPlayer2()?->getUsername() ?? 'Adversaire');
-            $opponent = $battle->getPlayer2();
         } else {
             $team1Name = $battle->getPlayer1()?->getUsername() ?? 'Joueur';
             $team2Name = 'Votre equipe';
-            $opponent = $battle->getPlayer1();
         }
 
         $winner = match ($battle->getWinner()) {
@@ -189,6 +186,11 @@ final class ArenaController extends AbstractController
             'player2' => 'Equipe 2',
             default => 'Match nul',
         };
+
+        // Determiner si le joueur actuel a gagne
+        $userWon = ($isPlayer1 && $battle->getWinner() === 'player1')
+            || (!$isPlayer1 && $battle->getWinner() === 'player2');
+        $isDraw = $battle->getWinner() === 'draw';
 
         // Le rating n'a pas encore ete applique = combat frais (pas un replay)
         $needsFinalize = !$battle->isRatingApplied() && $battle->getWinner() !== 'draw';
@@ -199,7 +201,12 @@ final class ArenaController extends AbstractController
             'winner' => $winner,
             'team1Name' => $team1Name,
             'team2Name' => $team2Name,
-            'opponent' => $opponent,
+            'team1Player' => $battle->getPlayer1(),
+            'team2Player' => $battle->getPlayer2(),
+            'botName' => $battle->getBotName(),
+            'isVsBot' => $battle->isVsBot(),
+            'userWon' => $userWon,
+            'isDraw' => $isDraw,
             'finalizeUrl' => $needsFinalize ? $this->generateUrl('app_arena_finalize', ['id' => $id]) : null,
         ]);
     }
@@ -338,7 +345,6 @@ final class ArenaController extends AbstractController
 
         $team1Name = 'Equipe 1';
         $team2Name = 'Equipe 2';
-        $opponent = null;
 
         if ($matchData) {
             $team1Name = 'Votre equipe';
@@ -353,8 +359,12 @@ final class ArenaController extends AbstractController
             'winner' => $winner,
             'team1Name' => $team1Name,
             'team2Name' => $team2Name,
-            'opponent' => $opponent,
-            'battleId' => $battleId,
+            'team1Player' => $this->getUser(),
+            'team2Player' => null,
+            'botName' => $matchData['bot_name'] ?? null,
+            'isVsBot' => ($matchData['type'] ?? '') === 'bot',
+            'userWon' => $winner === 'Equipe 1',
+            'isDraw' => $winner === 'Match nul',
             'finalizeUrl' => null,
         ]);
     }
