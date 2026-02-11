@@ -36,7 +36,7 @@
             {% for character in category.characters %}
             <div class="char-card">
                 <div class="char-card__portrait">
-                    <img src="{{ asset('asset/img/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '.webp') }}" alt="{{ character.name }}" loading="lazy">
+                    <img src="{{ asset('asset/img/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '.webp') }}" alt="{{ character.name }}" loading="lazy" width="300" height="180">
                     <div class="char-card__overlay"></div>
                     <span class="char-card__role-badge">{{ character.role.name }}</span>
                 </div>
@@ -45,7 +45,7 @@
                     <span class="char-card__role">{{ character.role.name }}</span>
 
                     <div class="char-card__sprite">
-                        <img src="{{ asset('asset/sprites/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '-idle.gif') }}" alt="Sprite de {{ character.name }}" loading="lazy">
+                        <img src="{{ asset('asset/sprites/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '-idle.gif') }}" alt="Sprite de {{ character.name }}" loading="lazy" width="80" height="90">
                     </div>
 
                     <div class="char-card__stats">

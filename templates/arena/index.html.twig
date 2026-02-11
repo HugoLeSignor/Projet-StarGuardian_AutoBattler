@@ -17,7 +17,7 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 1">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite">
+                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite" width="120" height="160">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
@@ -36,7 +36,7 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 2">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite">
+                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite" width="120" height="160">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
@@ -98,7 +98,7 @@
                     <div class="character-info__icon">
                         <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
-                             class="character-info__sprite">
+                             class="character-info__sprite" width="60" height="60" loading="lazy">
                     </div>
                     <div class="character-info__details">
                         <div class="character-info__name">{{ member.name }}</div>
@@ -179,7 +179,7 @@
                     <div class="character-info__icon">
                         <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
-                             class="character-info__sprite">
+                             class="character-info__sprite" width="60" height="60" loading="lazy">
                     </div>
                     <div class="character-info__details">
                         <div class="character-info__name">{{ member.name }}</div>
