@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Profil du Guerrier{% endblock %}
+{% block title %}{{ 'profile.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="auth-page">
@@ -8,7 +8,7 @@
 
     <div class="auth-panel profile-panel">
         <div class="auth-panel__ornament">&#x2726;</div>
-        <h1 class="auth-panel__title">Profil</h1>
+        <h1 class="auth-panel__title">{{ 'profile.profile_label'|trans }}</h1>
         <div class="auth-panel__separator">
             <span></span>
             <i class="fas fa-user-shield"></i>
@@ -60,14 +60,14 @@
                     {{ form_widget(form.profileImageFile, {'attr': {'id': 'avatarInput'}}) }}
                     <div class="profile-file-upload__hint">
                         <i class="fas fa-cloud-upload-alt"></i>
-                        JPEG, PNG, WebP &mdash; max 2 Mo
+                        {{ 'profile.upload_hint'|trans }}
                     </div>
                 </div>
                 {{ form_errors(form.profileImageFile) }}
             </div>
 
             <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">
-                <i class="fas fa-save"></i> Sauvegarder
+                <i class="fas fa-save"></i> {{ 'profile.save'|trans }}
             </button>
 
         {{ form_end(form) }}
@@ -78,7 +78,7 @@
         </div>
 
         <p class="auth-panel__link">
-            <a href="{{ path('app_home') }}"><i class="fas fa-arrow-left"></i> Retour</a>
+            <a href="{{ path('app_home') }}"><i class="fas fa-arrow-left"></i> {{ 'profile.back'|trans }}</a>
         </p>
         <div class="auth-panel__ornament">&#x2726;</div>
     </div>

@@ -7,22 +7,22 @@
     <div class="admin-page__vignette"></div>
 
     <div class="admin-header">
-        <h1 class="admin-header__title"><i class="fas fa-crown"></i> Panel d'Administration</h1>
+        <h1 class="admin-header__title"><i class="fas fa-crown"></i> {{ 'admin.title'|trans }}</h1>
         <nav class="admin-nav">
             <a href="{{ path('app_admin') }}" class="admin-nav__link">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
+                <i class="fas fa-tachometer-alt"></i> {{ 'admin.dashboard'|trans }}
             </a>
             <a href="{{ path('app_admin_users') }}" class="admin-nav__link admin-nav__link--active">
-                <i class="fas fa-users"></i> Utilisateurs
+                <i class="fas fa-users"></i> {{ 'admin.users'|trans }}
             </a>
             <a href="{{ path('app_admin_reports') }}" class="admin-nav__link">
-                <i class="fas fa-flag"></i> Signalements
+                <i class="fas fa-flag"></i> {{ 'admin.reports'|trans }}
             </a>
         </nav>
     </div>
 
     <a href="{{ path('app_admin_users') }}" class="admin-back">
-        <i class="fas fa-arrow-left"></i> Retour aux utilisateurs
+        <i class="fas fa-arrow-left"></i> {{ 'admin.back_to_users'|trans }}
     </a>
 
     <div class="admin-user-profile">
@@ -38,10 +38,10 @@
                 <h2 class="admin-user-profile__name">{{ targetUser.username }}</h2>
                 <p class="admin-user-profile__email">{{ targetUser.email }}</p>
                 {% if 'ROLE_ADMIN' in targetUser.roles %}
-                    <span class="admin-badge admin-badge--gold">Admin</span>
+                    <span class="admin-badge admin-badge--gold">{{ 'admin.badge_admin'|trans }}</span>
                 {% endif %}
                 {% if targetUser.isBanned %}
-                    <span class="admin-badge admin-badge--danger">Banni</span>
+                    <span class="admin-badge admin-badge--danger">{{ 'admin.badge_banned'|trans }}</span>
                 {% endif %}
             </div>
         </div>
@@ -53,11 +53,11 @@
             </div>
             <div class="admin-stat">
                 <span class="admin-stat__value">{{ stats.total }}</span>
-                <span class="admin-stat__label">Combats</span>
+                <span class="admin-stat__label">{{ 'admin.battles'|trans }}</span>
             </div>
             <div class="admin-stat">
                 <span class="admin-stat__value">{{ stats.wins }}</span>
-                <span class="admin-stat__label">Victoires</span>
+                <span class="admin-stat__label">{{ 'admin.badge_victory'|trans }}</span>
             </div>
             <div class="admin-stat">
                 <span class="admin-stat__value">{{ stats.winRate }}%</span>
@@ -67,36 +67,36 @@
 
         {% if targetUser.bio %}
             <div class="admin-user-profile__bio">
-                <strong>Bio :</strong> {{ targetUser.bio }}
+                <strong>{{ 'admin.bio_label'|trans }}</strong> {{ targetUser.bio }}
             </div>
         {% endif %}
 
         {% if targetUser.isBanned %}
             <div class="admin-user-profile__ban-info">
                 <i class="fas fa-ban"></i>
-                <strong>Banni le :</strong> {{ targetUser.bannedAt ? targetUser.bannedAt|date('d/m/Y H:i') : '?' }}
+                <strong>{{ 'admin.banned_on'|trans }}</strong> {{ targetUser.bannedAt ? targetUser.bannedAt|date('d/m/Y H:i') : '?' }}
                 {% if targetUser.banReason %}
-                    <br><strong>Raison :</strong> {{ targetUser.banReason }}
+                    <br><strong>{{ 'admin.ban_reason'|trans }}</strong> {{ targetUser.banReason }}
                 {% endif %}
             </div>
         {% endif %}
     </div>
 
     <div class="admin-section">
-        <h2 class="admin-section__title"><i class="fas fa-gavel"></i> Actions de mod&eacute;ration</h2>
+        <h2 class="admin-section__title"><i class="fas fa-gavel"></i> {{ 'admin.moderation'|trans }}</h2>
         <div class="admin-mod-actions">
             {% if targetUser.isBanned %}
                 <form method="POST" action="{{ path('app_admin_user_unban', {id: targetUser.id}) }}" class="admin-mod-form">
                     <button type="submit" class="admin-btn admin-btn--success">
-                        <i class="fas fa-unlock"></i> D&eacute;bannir
+                        <i class="fas fa-unlock"></i> {{ 'admin.unban'|trans }}
                     </button>
                 </form>
             {% else %}
                 <form method="POST" action="{{ path('app_admin_user_ban', {id: targetUser.id}) }}" class="admin-mod-form"
-                      onsubmit="return confirm('Bannir {{ targetUser.username }} ?')">
-                    <input type="text" name="reason" placeholder="Raison du ban..." class="admin-mod-form__input">
+                      onsubmit="return confirm('{{ 'admin.ban_confirm'|trans({'%username%': targetUser.username}) }}')">
+                    <input type="text" name="reason" placeholder="{{ 'admin.ban_reason_placeholder'|trans }}" class="admin-mod-form__input">
                     <button type="submit" class="admin-btn admin-btn--danger">
-                        <i class="fas fa-ban"></i> Bannir
+                        <i class="fas fa-ban"></i> {{ 'admin.ban'|trans }}
                     </button>
                 </form>
             {% endif %}
@@ -105,14 +105,14 @@
 
     {% if recentMessages|length > 0 %}
     <div class="admin-section">
-        <h2 class="admin-section__title"><i class="fas fa-comment"></i> Messages r&eacute;cents</h2>
+        <h2 class="admin-section__title"><i class="fas fa-comment"></i> {{ 'admin.recent_messages'|trans }}</h2>
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Destinataire</th>
-                    <th>Message</th>
-                    <th>Date</th>
-                    <th>Statut</th>
+                    <th>{{ 'admin.table_recipient'|trans }}</th>
+                    <th>{{ 'admin.table_message'|trans }}</th>
+                    <th>{{ 'admin.table_date'|trans }}</th>
+                    <th>{{ 'admin.table_status'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -123,11 +123,11 @@
                         <td class="admin-table__muted">{{ msg.createdAt|date('d/m/Y H:i') }}</td>
                         <td>
                             {% if msg.isRemoved %}
-                                <span class="admin-badge admin-badge--danger">Supprim&eacute;</span>
+                                <span class="admin-badge admin-badge--danger">{{ 'admin.badge_removed'|trans }}</span>
                             {% elseif msg.isReported %}
-                                <span class="admin-badge admin-badge--warning">Signal&eacute;</span>
+                                <span class="admin-badge admin-badge--warning">{{ 'admin.badge_reported'|trans }}</span>
                             {% else %}
-                                <span class="admin-badge admin-badge--ok">OK</span>
+                                <span class="admin-badge admin-badge--ok">{{ 'admin.badge_ok'|trans }}</span>
                             {% endif %}
                         </td>
                     </tr>
@@ -139,14 +139,14 @@
 
     {% if recentBattles|length > 0 %}
     <div class="admin-section">
-        <h2 class="admin-section__title"><i class="fas fa-shield-alt"></i> Combats r&eacute;cents</h2>
+        <h2 class="admin-section__title"><i class="fas fa-shield-alt"></i> {{ 'admin.recent_battles'|trans }}</h2>
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>Adversaire</th>
-                    <th>Type</th>
-                    <th>R&eacute;sultat</th>
-                    <th>Date</th>
+                    <th>{{ 'admin.table_opponent'|trans }}</th>
+                    <th>{{ 'admin.table_type'|trans }}</th>
+                    <th>{{ 'admin.table_result'|trans }}</th>
+                    <th>{{ 'admin.table_date'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -163,11 +163,11 @@
                         <td>{{ battle.matchType|upper }}</td>
                         <td>
                             {% if battle.winner == 'draw' %}
-                                <span class="admin-badge">Nul</span>
+                                <span class="admin-badge">{{ 'admin.badge_draw'|trans }}</span>
                             {% elseif (isP1 and battle.winner == 'player1') or (not isP1 and battle.winner == 'player2') %}
-                                <span class="admin-badge admin-badge--ok">Victoire</span>
+                                <span class="admin-badge admin-badge--ok">{{ 'admin.badge_victory'|trans }}</span>
                             {% else %}
-                                <span class="admin-badge admin-badge--danger">D&eacute;faite</span>
+                                <span class="admin-badge admin-badge--danger">{{ 'admin.badge_defeat'|trans }}</span>
                             {% endif %}
                         </td>
                         <td class="admin-table__muted">{{ battle.createdAt|date('d/m/Y H:i') }}</td>

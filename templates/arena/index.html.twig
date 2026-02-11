@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Arena - Combat{% endblock %}
+{% block title %}{{ 'arena.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="arena-container" data-combat-logs="{{ logsJson|e('html_attr') }}"{% if finalizeUrl is defined and finalizeUrl %} data-finalize-url="{{ finalizeUrl }}"{% endif %}>
@@ -47,17 +47,17 @@
             {% endfor %}
         </div>
 
-        {# Overlay du vainqueur - couleur basee sur victoire/defaite du joueur actuel #}
+        {# Overlay du vainqueur #}
         <div class="battle-stage__overlay {% if isDraw is defined and isDraw %}battle-stage__overlay--draw{% elseif userWon is defined and userWon %}battle-stage__overlay--victory{% else %}battle-stage__overlay--defeat{% endif %}"
              data-combat-overlay>
             <div class="battle-stage__winner">
                 {% if isDraw is defined and isDraw %}
-                    <span class="winner-text">Match Nul</span>
+                    <span class="winner-text">{{ 'arena.draw'|trans }}</span>
                 {% elseif winner == 'Equipe 1' %}
-                    <span class="winner-label">Victoire</span>
+                    <span class="winner-label">{{ 'arena.victory'|trans }}</span>
                     <span class="winner-text">{{ team1Name|default('Equipe 1') }}</span>
                 {% elseif winner == 'Equipe 2' %}
-                    <span class="winner-label">Victoire</span>
+                    <span class="winner-label">{{ 'arena.victory'|trans }}</span>
                     <span class="winner-text">{{ team2Name|default('Equipe 2') }}</span>
                 {% endif %}
             </div>
@@ -69,7 +69,7 @@
     {# ========================================== #}
     <div class="battle-info">
 
-        {# Colonne gauche - Equipe 1 (player1) #}
+        {# Colonne gauche - Equipe 1 #}
         <div class="info-panel info-panel--team1">
             <h2 class="info-panel__title">{{ team1Name|default('Equipe 1') }}</h2>
 
@@ -77,7 +77,7 @@
             <div class="info-panel__player">
                 <div class="info-panel__avatar">
                     {% if team1Player.profileImage %}
-                        <img src="/uploads/avatars/{{ team1Player.profileImage }}" alt="Avatar de {{ team1Player.username }}">
+                        <img src="/uploads/avatars/{{ team1Player.profileImage }}" alt="{{ 'arena.avatar_alt'|trans({'%username%': team1Player.username}) }}">
                     {% else %}
                         <i class="fas fa-user-circle" aria-hidden="true"></i>
                     {% endif %}
@@ -102,7 +102,7 @@
                     </div>
                     <div class="character-info__details">
                         <div class="character-info__name">{{ member.name }}</div>
-                        <div class="character-info__stats">PV: <span>{{ member.hp }}</span></div>
+                        <div class="character-info__stats">{{ 'arena.hp_label'|trans }} <span>{{ member.hp }}</span></div>
                         {% if member.abilityName %}
                         <div class="character-info__ability" data-ability-cd="{{ member.abilityCd }}" data-ability-max-cd="{{ member.abilityCd }}">
                             <i class="fas fa-fire-alt"></i>
@@ -118,20 +118,20 @@
 
         {# Colonne centrale - Deroulement du combat #}
         <div class="combat-panel">
-            <h2 class="combat-panel__title">Deroulement du Combat</h2>
+            <h2 class="combat-panel__title">{{ 'arena.combat_title'|trans }}</h2>
 
             {# Controles #}
             <div class="combat-controls">
                 <div class="combat-controls__playback">
                     <button class="btn-arena btn-arena--primary" data-combat-play>
-                        Pause
+                        {{ 'arena.pause'|trans }}
                     </button>
                     <button class="btn-arena btn-arena--secondary" data-combat-skip>
-                        Skip
+                        {{ 'arena.skip'|trans }}
                     </button>
                 </div>
                 <div class="combat-controls__speed">
-                    <span class="speed-label">Vitesse:</span>
+                    <span class="speed-label">{{ 'arena.speed'|trans }}</span>
                     <button class="speed-btn active" data-combat-speed="1">x1</button>
                     <button class="speed-btn" data-combat-speed="2">x2</button>
                     <button class="speed-btn" data-combat-speed="3">x3</button>
@@ -139,16 +139,15 @@
             </div>
 
             <div class="combat-panel__log" data-combat-log>
-                {# Les logs seront ajoutés ici par JS #}
             </div>
 
             <div class="combat-panel__actions">
-                <a href="{{ path('app_arena') }}" class="btn-arena btn-arena--primary">Rejouer</a>
-                <a href="{{ path('app_home') }}" class="btn-arena btn-arena--secondary">Quitter</a>
+                <a href="{{ path('app_arena') }}" class="btn-arena btn-arena--primary">{{ 'arena.replay'|trans }}</a>
+                <a href="{{ path('app_home') }}" class="btn-arena btn-arena--secondary">{{ 'arena.quit'|trans }}</a>
             </div>
         </div>
 
-        {# Colonne droite - Equipe 2 (player2 ou bot) #}
+        {# Colonne droite - Equipe 2 #}
         <div class="info-panel info-panel--team2">
             <h2 class="info-panel__title">{{ team2Name|default('Equipe 2') }}</h2>
 
@@ -156,7 +155,7 @@
             <div class="info-panel__player">
                 <div class="info-panel__avatar info-panel__avatar--enemy">
                     {% if team2Player.profileImage %}
-                        <img src="/uploads/avatars/{{ team2Player.profileImage }}" alt="Avatar de {{ team2Player.username }}">
+                        <img src="/uploads/avatars/{{ team2Player.profileImage }}" alt="{{ 'arena.avatar_alt'|trans({'%username%': team2Player.username}) }}">
                     {% else %}
                         <i class="fas fa-user-circle" aria-hidden="true"></i>
                     {% endif %}
@@ -190,7 +189,7 @@
                     </div>
                     <div class="character-info__details">
                         <div class="character-info__name">{{ member.name }}</div>
-                        <div class="character-info__stats">PV: <span>{{ member.hp }}</span></div>
+                        <div class="character-info__stats">{{ 'arena.hp_label'|trans }} <span>{{ member.hp }}</span></div>
                         {% if member.abilityName %}
                         <div class="character-info__ability" data-ability-cd="{{ member.abilityCd }}" data-ability-max-cd="{{ member.abilityCd }}">
                             <i class="fas fa-fire-alt"></i>

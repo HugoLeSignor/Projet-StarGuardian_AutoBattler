@@ -11,6 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/admin')]
 class AdminController extends AbstractController
@@ -19,7 +20,8 @@ class AdminController extends AbstractController
         private EntityManagerInterface $entityManager,
         private UserRepository $userRepository,
         private BattleRepository $battleRepository,
-        private MessageRepository $messageRepository
+        private MessageRepository $messageRepository,
+        private TranslatorInterface $translator
     ) {}
 
     #[Route('', name: 'app_admin', methods: ['GET'])]
@@ -106,7 +108,7 @@ class AdminController extends AbstractController
         $user->setBannedAt(new \DateTimeImmutable());
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'Utilisateur ' . $user->getUsername() . ' banni.');
+        $this->addFlash('success', $this->translator->trans('flash.user_banned', ['%username%' => $user->getUsername()]));
         return $this->redirectToRoute('app_admin_user_detail', ['id' => $id]);
     }
 
@@ -125,7 +127,7 @@ class AdminController extends AbstractController
         $user->setBannedAt(null);
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'Utilisateur ' . $user->getUsername() . ' debanni.');
+        $this->addFlash('success', $this->translator->trans('flash.user_unbanned', ['%username%' => $user->getUsername()]));
         return $this->redirectToRoute('app_admin_user_detail', ['id' => $id]);
     }
 
@@ -154,7 +156,7 @@ class AdminController extends AbstractController
         $message->setIsRemoved(true);
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'Message supprime.');
+        $this->addFlash('success', 'flash.message_removed');
         return $this->redirectToRoute('app_admin_reports');
     }
 
@@ -174,7 +176,7 @@ class AdminController extends AbstractController
         $message->setReportedAt(null);
         $this->entityManager->flush();
 
-        $this->addFlash('success', 'Signalement rejete.');
+        $this->addFlash('success', 'flash.report_dismissed');
         return $this->redirectToRoute('app_admin_reports');
     }
 }

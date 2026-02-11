@@ -55,7 +55,7 @@ final class TeamsController extends AbstractController
         $selectedIds = $request->request->all('character_ids');
 
         if (count($selectedIds) !== 3) {
-            $this->addFlash('error', 'Veuillez sélectionner exactement 3 personnages');
+            $this->addFlash('error', 'flash.select_3');
             return $this->redirectToRoute('app_teams');
         }
 
@@ -64,7 +64,7 @@ final class TeamsController extends AbstractController
         foreach ($selectedIds as $id) {
             $character = $characterRepository->find((int) $id);
             if (!$character) {
-                $this->addFlash('error', 'Personnage introuvable.');
+                $this->addFlash('error', 'flash.char_not_found');
                 return $this->redirectToRoute('app_teams');
             }
             $roleName = $character->getRole()->getName();
@@ -78,14 +78,14 @@ final class TeamsController extends AbstractController
         }
 
         if ($roles['Tank'] !== 1 || $roles['DPS'] !== 1 || $roles['Support'] !== 1) {
-            $this->addFlash('error', 'Votre équipe doit contenir exactement 1 Tank, 1 DPS et 1 Support.');
+            $this->addFlash('error', 'flash.composition_error');
             return $this->redirectToRoute('app_teams');
         }
 
         // Stocker en session
         $request->getSession()->set('selected_team_ids', array_map('intval', $selectedIds));
 
-        $this->addFlash('success', 'Équipe sélectionnée ! Vous pouvez lancer le matchmaking.');
+        $this->addFlash('success', 'flash.team_selected');
 
         return $this->redirectToRoute('app_matchmaking');
     }

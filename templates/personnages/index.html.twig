@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Personnages{% endblock %}
+{% block title %}{{ 'chars.title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="personnages">
@@ -9,13 +9,13 @@
     {# ====== HEADER ====== #}
     <div class="personnages__header">
         <div class="personnages__ornament">&#x2726;</div>
-        <h1 class="personnages__title">Les H&eacute;ros</h1>
+        <h1 class="personnages__title">{{ 'chars.title'|trans }}</h1>
         <div class="personnages__separator">
             <span></span>
             <i class="fas fa-skull-crossbones"></i>
             <span></span>
         </div>
-        <p class="personnages__subtitle">17 combattants l&eacute;gendaires, forg&eacute;s dans les t&eacute;n&egrave;bres du Darkest Dungeon.</p>
+        <p class="personnages__subtitle">{{ 'chars.subtitle'|trans }}</p>
     </div>
 
     {# ====== PERSONNAGES PAR CATEGORIE ====== #}
@@ -108,15 +108,15 @@
     <div class="personnages__footer">
         {% if app.user %}
             <a href="{{ path('app_teams') }}" class="btn-dd btn-dd--primary">
-                Composer mon &eacute;quipe
+                {{ 'chars.compose_team'|trans }}
             </a>
         {% else %}
             <a href="{{ path('app_register') }}" class="btn-dd btn-dd--primary">
-                S'inscrire pour jouer
+                {{ 'chars.register_to_play'|trans }}
             </a>
         {% endif %}
         <a href="{{ path('app_home') }}" class="btn-dd btn-dd--secondary">
-            Retour &agrave; l'accueil
+            {{ 'chars.back_home'|trans }}
         </a>
     </div>
 </div>

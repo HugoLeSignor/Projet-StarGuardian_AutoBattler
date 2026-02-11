@@ -7,6 +7,19 @@ import './js/combat.js';
 import './js/friends.js';
 
 /* ======================
+   TRANSLATION HELPER
+====================== */
+let _translations = null;
+function _t(key) {
+    if (!_translations) {
+        try { _translations = JSON.parse(document.body.dataset.translations || '{}'); }
+        catch(e) { _translations = {}; }
+    }
+    return _translations[key] || key;
+}
+window._t = _t;
+
+/* ======================
    UTILITAIRE SECURITE XSS
 ====================== */
 function escapeHtml(str) {
@@ -174,7 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${abilityHtml}
 
                     <button class="btn-select-right">
-                        ${isSelected ? 'Désélectionner' : 'Sélectionner'}
+                        ${isSelected ? _t('deselect') : _t('select')}
                     </button>
                 </div>
             `;
@@ -186,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Désactiver le bouton si le slot de ce rôle est déjà pris
             if (!alreadySelected && !canSelectRole(role)) {
                 btnRight.disabled = true;
-                btnRight.textContent = `Slot ${roleCat} déjà pris`;
+                btnRight.textContent = _t('slot_taken').replace('%role%', roleCat);
             }
 
             btnRight.addEventListener('click', () => {
@@ -196,11 +209,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     portrait.classList.remove('selected');
                 } else {
                     if (!canSelectRole(role)) {
-                        alert(`Vous avez déjà un ${roleCat} dans votre équipe !`);
+                        alert(_t('slot_taken').replace('%role%', roleCat));
                         return;
                     }
                     if (selectedHeroIds.length >= maxSelection) {
-                        alert("Vous pouvez sélectionner maximum 3 personnages !");
+                        alert(_t('max_3'));
                         return;
                     }
                     selectedHeroIds.push(id);
@@ -210,8 +223,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 updateSelectedTeam();
                 btnRight.textContent = selectedHeroIds.includes(id)
-                    ? 'Désélectionner'
-                    : 'Sélectionner';
+                    ? _t('deselect')
+                    : _t('select');
                 btnRight.disabled = false;
             });
         });
@@ -331,15 +344,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Recharger la page pour afficher le nouveau preset
                     window.location.reload();
                 } else {
-                    alert(data.error || 'Erreur lors de la sauvegarde');
+                    alert(data.error || _t('save_error'));
                     presetConfirmBtn.disabled = false;
-                    presetConfirmBtn.textContent = 'Sauvegarder';
+                    presetConfirmBtn.textContent = _t('save');
                 }
             })
             .catch(() => {
-                alert('Erreur lors de la sauvegarde');
+                alert(_t('save_error'));
                 presetConfirmBtn.disabled = false;
-                presetConfirmBtn.textContent = 'Sauvegarder';
+                presetConfirmBtn.textContent = _t('save');
             });
         });
 
@@ -374,7 +387,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Supprimer un preset
     function deletePreset(presetId, chipEl) {
-        if (!confirm('Supprimer ce preset ?')) return;
+        if (!confirm(_t('delete_preset_confirm'))) return;
 
         fetch(`/teams/presets/${presetId}`, {
             method: 'DELETE',
@@ -391,7 +404,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         })
-        .catch(() => alert('Erreur lors de la suppression'));
+        .catch(() => alert(_t('delete_error')));
     }
 
     // Attacher les events aux chips de presets
@@ -437,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 })
                 .catch(() => {
-                    alert('Erreur lors de la sélection de l\'équipe.');
+                    alert(_t('team_select_error'));
                 });
             }
         });
@@ -491,13 +504,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 renderProfile(data);
             })
             .catch(() => {
-                content.innerHTML = '<p class="profile-popup__error">Erreur de chargement</p>';
+                content.innerHTML = `<p class="profile-popup__error">${_t('loading_error')}</p>`;
             });
     }
 
     function renderProfile(data) {
         const resultClass = (r) => r === 'win' ? 'result--win' : r === 'loss' ? 'result--loss' : 'result--draw';
-        const resultLabel = (r) => r === 'win' ? 'Victoire' : r === 'loss' ? 'D\u00e9faite' : 'Nul';
+        const resultLabel = (r) => r === 'win' ? _t('win') : r === 'loss' ? _t('loss') : _t('draw');
 
         const avatarHtml = data.profileImage
             ? `<img src="${escapeHtml(data.profileImage)}" alt="Avatar de ${escapeHtml(data.username)}">`
@@ -520,11 +533,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
                 <div class="profile-stat">
                     <span class="profile-stat__value">${escapeHtml(String(data.stats.wins))}</span>
-                    <span class="profile-stat__label">Victoires</span>
+                    <span class="profile-stat__label">${_t('victories')}</span>
                 </div>
                 <div class="profile-stat">
                     <span class="profile-stat__value">${escapeHtml(String(data.stats.losses))}</span>
-                    <span class="profile-stat__label">D\u00e9faites</span>
+                    <span class="profile-stat__label">${_t('defeats')}</span>
                 </div>
                 <div class="profile-stat">
                     <span class="profile-stat__value">${escapeHtml(String(data.stats.winRate))}%</span>
@@ -537,12 +550,12 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <div class="profile-popup__section">
                     <h3 class="profile-popup__subtitle">
-                        <i class="fas fa-star" aria-hidden="true"></i> Champion Favori
+                        <i class="fas fa-star" aria-hidden="true"></i> ${_t('favorite_champion')}
                     </h3>
                     <div class="profile-favorite">
                         <span class="profile-favorite__name">${escapeHtml(data.favoriteCharacter.name)}</span>
                         <span class="profile-favorite__role">${escapeHtml(data.favoriteCharacter.role)}</span>
-                        <span class="profile-favorite__count">${escapeHtml(String(data.favoriteCharacter.gamesPlayed))} parties</span>
+                        <span class="profile-favorite__count">${escapeHtml(String(data.favoriteCharacter.gamesPlayed))} ${_t('games')}</span>
                     </div>
                 </div>
             `;
@@ -552,7 +565,7 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <div class="profile-popup__section">
                     <h3 class="profile-popup__subtitle">
-                        <i class="fas fa-users" aria-hidden="true"></i> Derni\u00e8re \u00c9quipe
+                        <i class="fas fa-users" aria-hidden="true"></i> ${_t('last_team')}
                     </h3>
                     <div class="profile-last-team">
                         ${data.lastTeam.map(c => `
@@ -570,7 +583,7 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <div class="profile-popup__section">
                     <h3 class="profile-popup__subtitle">
-                        <i class="fas fa-shield-alt" aria-hidden="true"></i> Historique
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i> ${_t('history')}
                     </h3>
                     <div class="profile-history">
                         ${data.recentBattles.map(b => `
@@ -588,7 +601,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             html += `
                 <div class="profile-popup__section">
-                    <p class="profile-popup__empty">Aucun combat enregistr\u00e9</p>
+                    <p class="profile-popup__empty">${_t('no_battle')}</p>
                 </div>
             `;
         }
@@ -596,7 +609,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `
             <div class="profile-popup__actions">
                 <a href="/profile" class="profile-popup__edit-link">
-                    <i class="fas fa-pen" aria-hidden="true"></i> \u00c9diter le profil
+                    <i class="fas fa-pen" aria-hidden="true"></i> ${_t('edit_profile')}
                 </a>
             </div>
         `;

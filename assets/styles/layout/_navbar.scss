@@ -175,6 +175,78 @@
     }
 }
 
+// ==========================================
+// LOCALE TOGGLE (in topbar)
+// ==========================================
+.topbar__locale {
+    display: flex;
+    align-items: center;
+    gap: 0.2rem;
+    font-size: 0.75rem;
+    color: $dd-bone;
+    opacity: 0.6;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    padding: 0.25rem 0.6rem;
+    border: 1px solid transparent;
+    transition: all 0.3s ease;
+    margin-right: 0.5rem;
+
+    &:hover {
+        opacity: 1;
+        color: $dd-gold;
+        border-color: rgba($dd-gold, 0.3);
+        background: rgba($dd-gold, 0.08);
+    }
+}
+
+.topbar__locale-current {
+    color: $dd-gold;
+    opacity: 1;
+}
+
+.topbar__locale-separator {
+    opacity: 0.3;
+    margin: 0 0.1rem;
+}
+
+.topbar__locale-other {
+    opacity: 0.5;
+}
+
+// Anonymous pages floating toggle
+.locale-toggle-anon {
+    position: fixed;
+    top: 0.8rem;
+    right: 1rem;
+    z-index: 999;
+}
+
+.locale-toggle-anon__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: $dd-parchment;
+    text-decoration: none;
+    letter-spacing: 0.1em;
+    border: 1px solid rgba($dd-gold, 0.3);
+    background: rgba($dd-black, 0.85);
+    backdrop-filter: blur(4px);
+    transition: all 0.3s ease;
+
+    &:hover {
+        color: $dd-gold;
+        border-color: $dd-gold;
+        background: rgba($dd-dark-brown, 0.95);
+    }
+}
+
 // Ajouter du padding-top au body pour compenser la topbar fixe
 body:has(.topbar) {
     padding-top: 40px;

@@ -6,9 +6,12 @@ use App\Entity\User;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAccountStatusException;
 use Symfony\Component\Security\Core\User\UserCheckerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class UserChecker implements UserCheckerInterface
 {
+    public function __construct(private TranslatorInterface $translator) {}
+
     public function checkPreAuth(UserInterface $user): void
     {
         if (!$user instanceof User) {
@@ -16,8 +19,9 @@ class UserChecker implements UserCheckerInterface
         }
 
         if ($user->isBanned()) {
+            $reason = $user->getBanReason() ?? $this->translator->trans('admin.reason_default');
             throw new CustomUserMessageAccountStatusException(
-                'Votre compte a ete banni. Raison : ' . ($user->getBanReason() ?? 'Non specifiee')
+                $this->translator->trans('flash.account_banned', ['%reason%' => $reason])
             );
         }
     }

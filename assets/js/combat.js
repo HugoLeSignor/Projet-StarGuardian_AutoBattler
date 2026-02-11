@@ -751,13 +751,14 @@ class CombatController {
     updatePlayButton() {
         if (!this.playBtn) return;
 
+        const _t = window._t || (k => k);
         if (this.isPlaying && !this.isPaused) {
-            this.playBtn.textContent = 'Pause';
+            this.playBtn.textContent = _t('pause');
         } else if (this.currentIndex >= this.logs.length) {
-            this.playBtn.textContent = 'Terminé';
+            this.playBtn.textContent = _t('finished');
             this.playBtn.disabled = true;
         } else {
-            this.playBtn.textContent = this.currentIndex > 0 ? 'Reprendre' : 'Lancer';
+            this.playBtn.textContent = this.currentIndex > 0 ? _t('resume') : _t('start');
         }
     }
 }

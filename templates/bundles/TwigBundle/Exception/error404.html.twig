@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}404 - Chemin Perdu{% endblock %}
+{% block title %}{{ 'error.title_404'|trans }}{% endblock %}
 
 {% block body %}
 <div class="error-page">
@@ -22,22 +22,21 @@
                 <span></span>
             </div>
 
-            <h2 class="error-page__title">Chemin Perdu dans les T&eacute;n&egrave;bres</h2>
+            <h2 class="error-page__title">{{ 'error.heading'|trans }}</h2>
 
             <p class="error-page__text">
-                Cette route ne m&egrave;ne nulle part. Le couloir s'effondre derri&egrave;re vous,
-                ne laissant que l'obscurit&eacute; et l'&eacute;cho de vos pas.
+                {{ 'error.text'|trans }}
             </p>
 
             <div class="error-page__actions">
                 <a href="{{ path('app_home') }}" class="btn-dd btn-dd--primary">
                     <i class="fas fa-campground"></i>
-                    Retour au Hameau
+                    {{ 'error.back_home'|trans }}
                 </a>
                 {% if app.user %}
                     <a href="{{ path('app_teams') }}" class="btn-dd btn-dd--secondary">
                         <i class="fas fa-shield-alt"></i>
-                        Former une &Eacute;quipe
+                        {{ 'error.form_team'|trans }}
                     </a>
                 {% endif %}
             </div>

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Inscription{% endblock %}
+{% block title %}{{ 'auth.register_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="auth-page">
@@ -8,7 +8,7 @@
 
     <div class="auth-panel">
         <div class="auth-panel__ornament">&#x2726;</div>
-        <h1 class="auth-panel__title">Inscription</h1>
+        <h1 class="auth-panel__title">{{ 'auth.register_title'|trans }}</h1>
         <div class="auth-panel__separator">
             <span></span>
             <i class="fas fa-scroll"></i>
@@ -48,7 +48,7 @@
                 {{ form_errors(registrationForm.plainPassword) }}
             </div>
 
-            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">S'inscrire</button>
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">{{ 'auth.submit_register'|trans }}</button>
 
         {{ form_end(registrationForm) }}
 
@@ -58,7 +58,7 @@
         </div>
 
         <p class="auth-panel__link">
-            D&eacute;j&agrave; un compte ? <a href="{{ path('app_login') }}">Se connecter</a>
+            {{ 'auth.already_account'|trans }} <a href="{{ path('app_login') }}">{{ 'auth.login_link'|trans }}</a>
         </p>
         <div class="auth-panel__ornament">&#x2726;</div>
     </div>

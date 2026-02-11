@@ -1,0 +1,312 @@
+# ==========================================
+# NAVIGATION (base.html.twig)
+# ==========================================
+nav:
+    open_profile: "Open %username%'s profile"
+    admin: "Administration"
+    companions: "Companions"
+    play: "Play"
+    logout: "Logout"
+    profile_title: "Warrior Profile"
+    loading: "Loading..."
+
+# ==========================================
+# FRIENDS PANEL (base.html.twig)
+# ==========================================
+friends:
+    title: "Companions"
+    tab_friends: "Friends"
+    tab_requests: "Requests"
+    tab_search: "Search"
+    search_placeholder: "Search for a warrior..."
+    write_message: "Write a message..."
+
+# ==========================================
+# COMMON
+# ==========================================
+common:
+    back: "Back"
+    save: "Save"
+    cancel: "Cancel"
+    loading: "Loading..."
+    footer: "Darkest Fight Arena - All rights reserved"
+    site_description: "Darkest Fight Arena - Auto-battler inspired by Darkest Dungeon. Build your team of 3 heroes and fight other players in automated combat."
+
+# ==========================================
+# HOME PAGE
+# ==========================================
+home:
+    title: "Darkest Fight Arena"
+    tagline: "Build your team, master abilities and dominate the battlefield with unique and legendary heroes."
+    enter_arena: "Enter the Arena"
+    enlist: "Enlist"
+    login: "Log in"
+    how_to_play: "How to Play"
+    how_subtitle: "Three steps to glory... or ruin."
+    step1_title: "Build your team"
+    step1_desc: "Select 3 heroes from 16 legendary fighters. Each role - Tank, DPS, Support - brings unique abilities to the battle."
+    step2_title: "Find an opponent"
+    step2_desc: "Face other players in PvP or fight a randomly generated team. Matchmaking finds you a worthy opponent."
+    step3_title: "Watch the battle"
+    step3_desc: "Combat unfolds automatically, turn by turn. Dodges, critical hits, heals and protections chain together in an epic battle."
+    heroes: "The Heroes"
+    heroes_subtitle: "Warriors forged in darkness, ready to fight for your cause."
+    see_all_characters: "See all characters"
+    ready_for_combat: "Ready for combat?"
+    ready_text: "Darkness waits for no one. Join the arena and prove your worth."
+    start_game: "Start a game"
+    create_account: "Create an account"
+    role_healer: "Healer"
+
+# ==========================================
+# CHARACTERS PAGE
+# ==========================================
+chars:
+    title: "The Heroes"
+    subtitle: "17 legendary fighters, forged in the darkness of the Darkest Dungeon."
+    compose_team: "Build my team"
+    register_to_play: "Register to play"
+    back_home: "Back to home"
+    category:
+        tanks: "Tanks"
+        tanks_desc: "Indestructible bulwarks, they protect allies and absorb damage."
+        dps: "DPS"
+        dps_desc: "Blades and projectiles, they deal maximum damage."
+        supports: "Supports"
+        supports_desc: "Healers and strategists, they keep the team alive."
+        healers: "Healers"
+        healers_desc: "Masters of healing, they restore their companions' health."
+        buffers: "Buffers"
+        buffers_desc: "Inspirers of strength, they enhance the team's capabilities."
+
+# ==========================================
+# TEAMS PAGE
+# ==========================================
+teams:
+    title: "Team Composition"
+    back: "Back"
+    compose_team: "Build your team"
+    launch: "Start the game"
+    save_team: "Save"
+    presets: "Presets:"
+    load_preset: "Load this preset"
+    delete_preset: "Delete this preset"
+    select_hero: "Select a hero"
+    select_hero_hint: "Click on a portrait to display its information."
+    save_team_title: "Save the team"
+    preset_name_placeholder: "Preset name..."
+
+# ==========================================
+# ARENA PAGE
+# ==========================================
+arena:
+    title: "Arena - Combat"
+    draw: "Draw"
+    victory: "Victory"
+    combat_title: "Battle Progress"
+    pause: "Pause"
+    skip: "Skip"
+    speed: "Speed:"
+    replay: "Replay"
+    quit: "Quit"
+    hp_label: "HP:"
+    avatar_alt: "Avatar of %username%"
+
+# ==========================================
+# ARENA WAITING
+# ==========================================
+waiting:
+    title: "Preparing combat"
+    loading_arena: "Loading the arena..."
+    combat_ready: "Combat ready!"
+    combat_load_error: "Combat could not be loaded."
+
+# ==========================================
+# MATCHMAKING
+# ==========================================
+matchmaking:
+    title: "Finding a game"
+    searching: "Searching"
+    waiting_opponent: "Waiting for an opponent..."
+    hint: "An opponent will be found shortly. If no player is available, a bot will take their place."
+    cancel: "Cancel"
+    search_error: "Error during search."
+    opponent_found: "Opponent found!"
+
+# ==========================================
+# AUTH (Login + Register)
+# ==========================================
+auth:
+    login_title: "Login"
+    email: "Email"
+    email_placeholder: "Enter your email"
+    password: "Password"
+    password_placeholder: "Enter your password"
+    submit_login: "Log in"
+    no_account: "Don't have an account?"
+    create_account: "Create an account"
+    register_title: "Register"
+    submit_register: "Register"
+    already_account: "Already have an account?"
+    login_link: "Log in"
+
+# ==========================================
+# PROFILE
+# ==========================================
+profile:
+    title: "Warrior Profile"
+    profile_label: "Profile"
+    save: "Save"
+    back: "Back"
+    upload_hint: "JPEG, PNG, WebP - max 2 MB"
+    victories: "Victories"
+    defeats: "Defeats"
+    favorite_champion: "Favorite champion"
+    last_team: "Last team"
+    history: "History"
+    edit_profile: "Edit profile"
+    no_battle: "No battles"
+    games: "games"
+    win: "Victory"
+    loss: "Defeat"
+    draw: "Draw"
+
+# ==========================================
+# ADMIN
+# ==========================================
+admin:
+    title: "Administration Panel"
+    dashboard: "Dashboard"
+    users: "Users"
+    reports: "Reports"
+    users_count: "Users (%count%)"
+    search_placeholder: "Search by name or email..."
+    table_id: "ID"
+    table_user: "User"
+    table_email: "Email"
+    table_mmr: "MMR"
+    table_role: "Role"
+    table_status: "Status"
+    table_actions: "Actions"
+    badge_banned: "Banned"
+    badge_active: "Active"
+    badge_admin: "Admin"
+    badge_user: "User"
+    no_users: "No users found"
+    no_users_simple: "No users"
+    battles: "Battles"
+    messages: "Messages"
+    recent_users: "Recent registrations"
+    recent_reports: "Recent reports"
+    see_all_reports: "See all reports"
+    no_reports: "No pending reports"
+    no_reports_calm: "No pending reports. All is quiet in the dungeon."
+    table_author: "Author"
+    table_message: "Message"
+    table_reported_by: "Reported by"
+    table_reason: "Reason"
+    reason_default: "Not specified"
+    back_to_users: "Back to users"
+    bio_label: "Bio:"
+    banned_on: "Banned on:"
+    ban_reason: "Reason:"
+    moderation: "Moderation actions"
+    unban: "Unban"
+    ban: "Ban"
+    ban_reason_placeholder: "Ban reason..."
+    ban_confirm: "Ban %username%?"
+    delete_message: "Delete message"
+    delete_message_confirm: "Delete this message?"
+    dismiss_report: "Dismiss report"
+    recent_messages: "Recent messages"
+    table_recipient: "Recipient"
+    table_date: "Date"
+    badge_removed: "Removed"
+    badge_reported: "Reported"
+    badge_ok: "OK"
+    recent_battles: "Recent battles"
+    table_opponent: "Opponent"
+    table_type: "Type"
+    table_result: "Result"
+    badge_draw: "Draw"
+    badge_victory: "Victory"
+    badge_defeat: "Defeat"
+    reported_messages: "Reported messages (%count%)"
+
+# ==========================================
+# ERROR PAGE
+# ==========================================
+error:
+    title_404: "404 - Lost Path"
+    heading: "Path Lost in the Darkness"
+    text: "This route leads nowhere. The corridor collapses behind you, leaving only darkness and the echo of your footsteps."
+    back_home: "Return to the Hamlet"
+    form_team: "Form a Team"
+
+# ==========================================
+# FLASH MESSAGES
+# ==========================================
+flash:
+    team_selected: "Team selected! You can now start matchmaking."
+    select_3: "Please select exactly 3 characters."
+    char_not_found: "Character not found."
+    composition_error: "Your team must contain exactly 1 Tank, 1 DPS and 1 Support."
+    profile_updated: "Profile updated successfully!"
+    upload_error: "Error uploading the image."
+    account_created: "Your account has been created successfully! You can now log in."
+    user_banned: "User %username% banned."
+    user_unbanned: "User %username% unbanned."
+    message_removed: "Message removed."
+    report_dismissed: "Report dismissed."
+    select_team_first: "Please select a team first."
+    account_banned: "Your account has been banned. Reason: %reason%"
+
+# ==========================================
+# JS TRANSLATIONS
+# ==========================================
+js:
+    pause: "Pause"
+    resume: "Resume"
+    finished: "Finished"
+    start: "Start"
+    deselect: "Deselect"
+    slot_taken: "Slot %role% already taken!"
+    max_3: "Maximum 3 characters"
+    no_companions: "No companions... The dungeon is lonely."
+    no_requests: "No pending requests"
+    no_warrior: "No warrior found"
+    you_prefix: "You: "
+    no_message: "No messages"
+    loading_error: "Loading error"
+    friend_status: "Friend"
+    sent_status: "Sent"
+    received_status: "Received"
+    report_reason: "Report reason:"
+    reported: "Reported"
+    start_conversation: "Start of the conversation. Send the first message!"
+    delete_preset_confirm: "Delete this preset?"
+    save_error: "Error while saving"
+    delete_error: "Error while deleting"
+    team_select_error: "Error selecting the team"
+    combat_ready: "Combat ready!"
+    combat_load_error: "Combat could not be loaded."
+    search_error: "Error during search."
+    opponent_found: "Opponent found!"
+    select: "Select"
+    games: "games"
+    win: "Victory"
+    loss: "Defeat"
+    draw: "Draw"
+    edit_profile: "Edit profile"
+    no_battle: "No battles"
+    victories: "Victories"
+    defeats: "Defeats"
+    favorite_champion: "Favorite champion"
+    last_team: "Last team"
+    history: "History"
+    accept: "Accept"
+    reject: "Reject"
+    add_friend: "Add"
+    remove_friend: "Remove"
+    preset_name: "Preset name"
+    loading: "Loading..."

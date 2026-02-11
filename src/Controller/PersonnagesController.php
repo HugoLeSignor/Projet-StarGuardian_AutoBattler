@@ -6,18 +6,19 @@ use App\Repository\CharacterRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 final class PersonnagesController extends AbstractController
 {
     #[Route('/personnages', name: 'app_personnages')]
-    public function index(CharacterRepository $characterRepository): Response
+    public function index(CharacterRepository $characterRepository, TranslatorInterface $translator): Response
     {
         $characters = $characterRepository->findAll();
 
         $categories = [
-            'Tanks' => ['icon' => 'fa-shield-alt', 'desc' => 'Remparts indestructibles, ils protegent leurs allies au peril de leur vie.', 'characters' => []],
-            'DPS' => ['icon' => 'fa-crosshairs', 'desc' => 'Lames et projectiles, ils fauchent les ennemis sans pitie.', 'characters' => []],
-            'Supports' => ['icon' => 'fa-hand-holding-medical', 'desc' => 'Guerisseurs et strateges, ils maintiennent le groupe en vie.', 'characters' => []],
+            'Tanks' => ['icon' => 'fa-shield-alt', 'desc' => $translator->trans('chars.category.tanks_desc'), 'characters' => []],
+            'DPS' => ['icon' => 'fa-crosshairs', 'desc' => $translator->trans('chars.category.dps_desc'), 'characters' => []],
+            'Supports' => ['icon' => 'fa-hand-holding-medical', 'desc' => $translator->trans('chars.category.supports_desc'), 'characters' => []],
         ];
 
         foreach ($characters as $character) {
