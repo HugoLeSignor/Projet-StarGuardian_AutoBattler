@@ -1,14 +1,5 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-gold: #c9a227;
-$dd-parchment: #d4c4a8;
-$dd-bone: #e8dcc4;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-
+@use "../base/mixins" as *;
 // ==========================================
 // PANEL ELARGI POUR LE PROFIL
 // ==========================================

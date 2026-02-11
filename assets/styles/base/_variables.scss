@@ -1,6 +1,28 @@
-// variables des couleurs
+// ==========================================
+// DARKEST DUNGEON PALETTE
+// ==========================================
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-brown: #3d3225;
+$dd-light-brown: #5a4c3e;
+$dd-gold: #c9a227;
+$dd-parchment: #d4c4a8;
+$dd-bone: #e8dcc4;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+
+// Semantic aliases
 $color-button: #D92505;
 $color-dark: #090C08;
+$color-success: #6abf6e;
+$color-hp-green: #4caf50;
+$color-hp-green-dark: #2e7d32;
+$color-hp-orange: #ff9800;
+$color-hp-orange-dark: #e65100;
+$color-hp-red: #f44336;
+$color-hp-red-dark: #b71c1c;
+$color-speed-blue: #42a5f5;
+$color-speed-blue-dark: #1565c0;
 
 // Fonts
 $font-heading: 'Cinzel', Georgia, serif;

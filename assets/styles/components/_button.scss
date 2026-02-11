@@ -1,6 +1,5 @@
 @use "../base/variables" as *;
-
-
+@use "../base/mixins" as *;
 .btn{
     background-color: $color-button ;
     padding: 8px 12px;

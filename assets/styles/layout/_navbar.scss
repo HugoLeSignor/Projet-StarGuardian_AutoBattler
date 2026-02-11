@@ -1,14 +1,5 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-gold: #c9a227;
-$dd-parchment: #d4c4a8;
-$dd-bone: #e8dcc4;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-
+@use "../base/mixins" as *;
 // ==========================================
 // TOPBAR (barre utilisateur connecte)
 // ==========================================
@@ -22,8 +13,8 @@ $dd-crimson: #dc143c;
     align-items: center;
     justify-content: space-between;
     padding: 0.4rem 1.5rem;
-    background: linear-gradient(180deg, rgba(10, 10, 10, 0.95) 0%, rgba(26, 20, 17, 0.9) 100%);
-    border-bottom: 1px solid rgba(201, 162, 39, 0.2);
+    background: linear-gradient(180deg, rgba($dd-black, 0.95) 0%, rgba($dd-dark-brown, 0.9) 100%);
+    border-bottom: 1px solid rgba($dd-gold, 0.2);
     backdrop-filter: blur(6px);
 }
 
@@ -179,8 +170,8 @@ $dd-crimson: #dc143c;
     &:hover {
         opacity: 1;
         color: $dd-crimson;
-        border-color: rgba(220, 20, 60, 0.3);
-        background: rgba(220, 20, 60, 0.08);
+        border-color: rgba($dd-crimson, 0.3);
+        background: rgba($dd-crimson, 0.08);
     }
 }
 

@@ -1,13 +1,5 @@
 @use "../base/variables" as *;
-
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-$dd-parchment: #d4c4a8;
-$dd-gold: #c9a227;
-$dd-bone: #e8dcc4;
-
+@use "../base/mixins" as *;
 // ==========================================
 // CONTENEUR PRINCIPAL
 // ==========================================
@@ -51,8 +43,8 @@ $dd-bone: #e8dcc4;
     max-width: 550px;
     width: 100%;
     padding: 3rem 2.5rem;
-    background: linear-gradient(180deg, rgba($dd-dark-brown, 0.95) 0%, rgba($dd-black, 0.95) 100%);
-    border: 3px solid #3d3225;
+    @include panel-bg;
+    border: 3px solid $dd-brown;
 
     &::before {
         content: '';

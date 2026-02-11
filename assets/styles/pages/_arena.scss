@@ -1,17 +1,8 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon inspired arena styles
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-$dd-parchment: #d4c4a8;
-$dd-gold: #c9a227;
-$dd-bone: #e8dcc4;
-
+@use "../base/mixins" as *;
 .arena-container {
     min-height: 100vh;
-    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    @include page-gradient;
     padding: 1rem;
     position: relative;
     overflow: hidden;
@@ -38,11 +29,10 @@ $dd-bone: #e8dcc4;
     z-index: 2;
     width: 100%;
     height: 420px;
-    background-color: #0d0a08;
     background-size: 100% auto;
     background-position: center bottom;
     background-repeat: no-repeat;
-    border: 3px solid #3d3225;
+    border: 3px solid $dd-brown;
     margin-bottom: 1.5rem;
     display: flex;
     justify-content: space-between;
@@ -59,7 +49,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 6px;
         pointer-events: none;
         z-index: 5;
@@ -146,7 +136,7 @@ $dd-bone: #e8dcc4;
     width: 70px;
     height: 6px;
     background: #1a1411;
-    border: 1px solid #3d3225;
+    border: 1px solid $dd-brown;
     margin-top: 0.25rem;
     overflow: hidden;
     position: relative;
@@ -155,15 +145,15 @@ $dd-bone: #e8dcc4;
 
 .hp-bar__fill {
     height: 100%;
-    background: linear-gradient(180deg, #4caf50 0%, #2e7d32 100%);
+    background: linear-gradient(180deg, $color-hp-green 0%, $color-hp-green-dark 100%);
     transition: width 0.3s ease;
 
     &--low {
-        background: linear-gradient(180deg, #ff9800 0%, #e65100 100%);
+        background: linear-gradient(180deg, $color-hp-orange 0%, $color-hp-orange-dark 100%);
     }
 
     &--critical {
-        background: linear-gradient(180deg, #f44336 0%, #b71c1c 100%);
+        background: linear-gradient(180deg, $color-hp-red 0%, $color-hp-red-dark 100%);
         animation: pulse-hp 0.5s ease-in-out infinite;
     }
 }
@@ -206,7 +196,7 @@ $dd-bone: #e8dcc4;
 
         .battle-stage__sprite {
             filter: brightness(2) saturate(0.5)
-                    drop-shadow(0 0 10px rgba(220, 20, 60, 0.8));
+                    drop-shadow(0 0 10px rgba($dd-crimson, 0.8));
         }
     }
 
@@ -221,7 +211,7 @@ $dd-bone: #e8dcc4;
             color: $dd-crimson;
             font-weight: bold;
             font-size: 0.8rem;
-            text-shadow: 0 0 10px rgba(220, 20, 60, 0.8);
+            text-shadow: 0 0 10px rgba($dd-crimson, 0.8);
             animation: float-up 0.8s ease-out forwards;
         }
     }
@@ -229,8 +219,8 @@ $dd-bone: #e8dcc4;
     // Animation de soin (lanceur) - drop-shadow suit la forme du sprite
     &.healing {
         .battle-stage__sprite {
-            filter: drop-shadow(0 0 8px rgba(76, 175, 80, 0.9))
-                    drop-shadow(0 0 20px rgba(76, 175, 80, 0.5));
+            filter: drop-shadow(0 0 8px rgba($color-hp-green, 0.9))
+                    drop-shadow(0 0 20px rgba($color-hp-green, 0.5));
         }
     }
 
@@ -239,9 +229,9 @@ $dd-bone: #e8dcc4;
         animation: heal-pulse 0.8s ease-out;
 
         .battle-stage__sprite {
-            filter: drop-shadow(0 0 10px rgba(76, 175, 80, 1))
-                    drop-shadow(0 0 25px rgba(76, 175, 80, 0.6))
-                    drop-shadow(0 0 40px rgba(76, 175, 80, 0.3));
+            filter: drop-shadow(0 0 10px rgba($color-hp-green, 1))
+                    drop-shadow(0 0 25px rgba($color-hp-green, 0.6))
+                    drop-shadow(0 0 40px rgba($color-hp-green, 0.3));
         }
 
         &::after {
@@ -250,7 +240,7 @@ $dd-bone: #e8dcc4;
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            color: #4caf50;
+            color: $color-hp-green;
             font-size: 1.5rem;
             font-weight: bold;
             animation: float-up 0.8s ease-out forwards;
@@ -260,8 +250,8 @@ $dd-bone: #e8dcc4;
     // Animation de défense - drop-shadow suit la forme du sprite
     &.defending {
         .battle-stage__sprite {
-            filter: drop-shadow(0 0 8px rgba(201, 162, 39, 0.9))
-                    drop-shadow(0 0 20px rgba(201, 162, 39, 0.5));
+            filter: drop-shadow(0 0 8px rgba($dd-gold, 0.9))
+                    drop-shadow(0 0 20px rgba($dd-gold, 0.5));
         }
     }
 
@@ -330,7 +320,7 @@ $dd-bone: #e8dcc4;
     flex-shrink: 0;
     font-size: 3rem;
     color: $dd-blood-red;
-    text-shadow: 0 0 30px rgba(139, 0, 0, 0.8), 0 0 60px rgba(139, 0, 0, 0.4);
+    text-shadow: 0 0 30px rgba($dd-blood-red, 0.8), 0 0 60px rgba($dd-blood-red, 0.4);
     animation: pulse-vs 2s ease-in-out infinite;
     padding: 0 0.5rem;
 }
@@ -365,15 +355,15 @@ $dd-bone: #e8dcc4;
     &--victory {
         background: linear-gradient(
             135deg,
-            rgba(201, 162, 39, 0.9) 0%,
-            rgba(10, 10, 10, 0.85) 50%,
-            rgba(201, 162, 39, 0.9) 100%
+            rgba($dd-gold, 0.9) 0%,
+            rgba($dd-black, 0.85) 50%,
+            rgba($dd-gold, 0.9) 100%
         );
 
         .winner-text {
             color: $dd-gold;
-            text-shadow: 0 0 30px rgba(201, 162, 39, 0.8),
-                         0 0 60px rgba(201, 162, 39, 0.5),
+            text-shadow: 0 0 30px rgba($dd-gold, 0.8),
+                         0 0 60px rgba($dd-gold, 0.5),
                          0 4px 8px rgba(0, 0, 0, 0.8);
         }
 
@@ -385,15 +375,15 @@ $dd-bone: #e8dcc4;
     &--defeat {
         background: linear-gradient(
             135deg,
-            rgba(139, 0, 0, 0.9) 0%,
-            rgba(10, 10, 10, 0.85) 50%,
-            rgba(139, 0, 0, 0.9) 100%
+            rgba($dd-blood-red, 0.9) 0%,
+            rgba($dd-black, 0.85) 50%,
+            rgba($dd-blood-red, 0.9) 100%
         );
 
         .winner-text {
             color: $dd-crimson;
-            text-shadow: 0 0 30px rgba(220, 20, 60, 0.8),
-                         0 0 60px rgba(220, 20, 60, 0.5),
+            text-shadow: 0 0 30px rgba($dd-crimson, 0.8),
+                         0 0 60px rgba($dd-crimson, 0.5),
                          0 4px 8px rgba(0, 0, 0, 0.8);
         }
 
@@ -405,14 +395,14 @@ $dd-bone: #e8dcc4;
     &--draw {
         background: linear-gradient(
             135deg,
-            rgba(61, 50, 37, 0.9) 0%,
-            rgba(10, 10, 10, 0.85) 50%,
-            rgba(61, 50, 37, 0.9) 100%
+            rgba($dd-brown, 0.9) 0%,
+            rgba($dd-black, 0.85) 50%,
+            rgba($dd-brown, 0.9) 100%
         );
 
         .winner-text {
             color: $dd-parchment;
-            text-shadow: 0 0 30px rgba(212, 196, 168, 0.5),
+            text-shadow: 0 0 30px rgba($dd-parchment, 0.5),
                          0 4px 8px rgba(0, 0, 0, 0.8);
         }
     }
@@ -501,8 +491,8 @@ $dd-bone: #e8dcc4;
 
 // Panneau générique (info equipe)
 .info-panel {
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
-    border: 3px solid #3d3225;
+    @include panel-bg;
+    border: 3px solid $dd-brown;
     padding: 1.5rem;
     position: relative;
     min-height: 350px;
@@ -514,7 +504,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 6px;
         pointer-events: none;
     }
@@ -527,7 +517,7 @@ $dd-bone: #e8dcc4;
     text-align: center;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
-    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+    border-bottom: 1px solid rgba($dd-gold, 0.3);
 
     .info-panel--team1 & {
         color: $dd-gold;
@@ -637,7 +627,7 @@ $dd-bone: #e8dcc4;
     gap: 1rem;
     padding: 0.75rem;
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid #3d3225;
+    border: 1px solid $dd-brown;
 }
 
 .character-info__icon {
@@ -702,8 +692,8 @@ $dd-bone: #e8dcc4;
 // PANNEAU CENTRAL - Combat log + boutons
 // ==========================================
 .combat-panel {
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
-    border: 3px solid #3d3225;
+    @include panel-bg;
+    border: 3px solid $dd-brown;
     padding: 1.5rem;
     position: relative;
     display: flex;
@@ -716,7 +706,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 6px;
         pointer-events: none;
     }
@@ -730,7 +720,7 @@ $dd-bone: #e8dcc4;
     text-align: center;
     padding-bottom: 1rem;
     margin-bottom: 1rem;
-    border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+    border-bottom: 1px solid rgba($dd-gold, 0.3);
 }
 
 // Controles de combat
@@ -740,7 +730,7 @@ $dd-bone: #e8dcc4;
     align-items: center;
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(61, 50, 37, 0.5);
+    border-bottom: 1px solid rgba($dd-brown, 0.5);
     flex-wrap: wrap;
     gap: 1rem;
 }
@@ -756,7 +746,7 @@ $dd-bone: #e8dcc4;
     gap: 0.75rem;
     padding: 0.5rem;
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(61, 50, 37, 0.5);
+    border: 1px solid rgba($dd-brown, 0.5);
     border-radius: 4px;
 }
 
@@ -773,7 +763,7 @@ $dd-bone: #e8dcc4;
     font-weight: bold;
     padding: 0.5rem 1rem;
     background: rgba(0, 0, 0, 0.4);
-    border: 2px solid #3d3225;
+    border: 2px solid $dd-brown;
     color: $dd-parchment;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -783,18 +773,18 @@ $dd-bone: #e8dcc4;
     &:hover {
         border-color: $dd-gold;
         color: $dd-gold;
-        background: rgba(201, 162, 39, 0.1);
+        background: rgba($dd-gold, 0.1);
         transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(201, 162, 39, 0.3);
+        box-shadow: 0 2px 8px rgba($dd-gold, 0.3);
     }
 
     &.active {
-        background: rgba(201, 162, 39, 0.3);
+        background: rgba($dd-gold, 0.3);
         border-color: $dd-gold;
         color: $dd-gold;
-        box-shadow: 0 0 15px rgba(201, 162, 39, 0.4),
-                    inset 0 0 10px rgba(201, 162, 39, 0.2);
-        text-shadow: 0 0 5px rgba(201, 162, 39, 0.8);
+        box-shadow: 0 0 15px rgba($dd-gold, 0.4),
+                    inset 0 0 10px rgba($dd-gold, 0.2);
+        text-shadow: 0 0 5px rgba($dd-gold, 0.8);
     }
 }
 
@@ -804,7 +794,7 @@ $dd-bone: #e8dcc4;
     overflow-y: auto;
     margin-bottom: 1rem;
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(61, 50, 37, 0.5);
+    border: 1px solid rgba($dd-brown, 0.5);
     padding: 0.5rem;
 
     // Custom scrollbar
@@ -814,15 +804,15 @@ $dd-bone: #e8dcc4;
 
     &::-webkit-scrollbar-track {
         background: $dd-black;
-        border: 1px solid #3d3225;
+        border: 1px solid $dd-brown;
     }
 
     &::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, #4a3c2e 0%, #3d3225 100%);
+        background: linear-gradient(180deg, #4a3c2e 0%, $dd-brown 100%);
         border: 1px solid #4a3c2e;
 
         &:hover {
-            background: linear-gradient(180deg, #5a4c3e 0%, #4d4235 100%);
+            background: linear-gradient(180deg, $dd-light-brown 0%, #4d4235 100%);
         }
     }
 }
@@ -832,7 +822,7 @@ $dd-bone: #e8dcc4;
     line-height: 1.8;
     color: $dd-parchment;
     padding: 0.6rem 1rem;
-    border-bottom: 1px solid rgba(61, 50, 37, 0.3);
+    border-bottom: 1px solid rgba($dd-brown, 0.3);
     text-align: center;
     min-height: 2.5rem;
 
@@ -853,22 +843,22 @@ $dd-bone: #e8dcc4;
         letter-spacing: 0.15em;
         margin-top: 0.75rem;
         padding-top: 0.75rem;
-        border-top: 2px solid rgba(201, 162, 39, 0.5);
-        text-shadow: 0 0 10px rgba(201, 162, 39, 0.5);
+        border-top: 2px solid rgba($dd-gold, 0.5);
+        text-shadow: 0 0 10px rgba($dd-gold, 0.5);
     }
 
     &--victory {
         color: $dd-gold;
         font-size: 1.2rem;
         font-weight: bold;
-        text-shadow: 0 0 15px rgba(201, 162, 39, 0.6);
+        text-shadow: 0 0 15px rgba($dd-gold, 0.6);
     }
 
     &--defeat {
         color: $dd-crimson;
         font-size: 1.2rem;
         font-weight: bold;
-        text-shadow: 0 0 15px rgba(220, 20, 60, 0.6);
+        text-shadow: 0 0 15px rgba($dd-crimson, 0.6);
     }
 }
 
@@ -877,7 +867,7 @@ $dd-bone: #e8dcc4;
     gap: 1rem;
     justify-content: center;
     padding-top: 1rem;
-    border-top: 1px solid rgba(201, 162, 39, 0.3);
+    border-top: 1px solid rgba($dd-gold, 0.3);
 }
 
 .btn-arena {
@@ -897,17 +887,17 @@ $dd-bone: #e8dcc4;
         border-color: $dd-gold;
 
         &:hover {
-            background: rgba(201, 162, 39, 0.2);
-            box-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+            background: rgba($dd-gold, 0.2);
+            box-shadow: 0 0 20px rgba($dd-gold, 0.3);
         }
     }
 
     &--secondary {
         color: $dd-parchment;
-        border-color: #3d3225;
+        border-color: $dd-brown;
 
         &:hover {
-            background: rgba(61, 50, 37, 0.3);
+            background: rgba($dd-brown, 0.3);
             border-color: $dd-parchment;
         }
     }

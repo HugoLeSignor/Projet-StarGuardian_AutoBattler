@@ -1,14 +1,5 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-gold: #c9a227;
-$dd-parchment: #d4c4a8;
-$dd-bone: #e8dcc4;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-
+@use "../base/mixins" as *;
 // ==========================================
 // USERNAME CLIQUABLE
 // ==========================================
@@ -48,8 +39,8 @@ $dd-crimson: #dc143c;
     max-height: calc(100vh - 70px);
     overflow-y: auto;
     z-index: 1200;
-    background: linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
-    border: 2px solid #3d3225;
+    background: linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba($dd-black, 0.98) 100%);
+    border: 2px solid $dd-brown;
     color: $dd-parchment;
     opacity: 0;
     transform: translateY(-10px);
@@ -62,7 +53,7 @@ $dd-crimson: #dc143c;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 4px;
         pointer-events: none;
         z-index: 3;
@@ -238,7 +229,6 @@ $dd-crimson: #dc143c;
     }
 
     &.result--win {
-        border-left-color: #4da6ff;
         background: rgba(77, 166, 255, 0.06);
     }
     &.result--loss {
@@ -255,7 +245,6 @@ $dd-crimson: #dc143c;
     font-weight: bold;
     min-width: 55px;
 
-    .result--win & { color: #4da6ff; }
     .result--loss & { color: $dd-crimson; }
     .result--draw & { color: $dd-parchment; }
 }

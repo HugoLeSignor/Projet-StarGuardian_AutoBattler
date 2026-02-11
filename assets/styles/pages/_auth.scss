@@ -1,14 +1,5 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-$dd-parchment: #d4c4a8;
-$dd-gold: #c9a227;
-$dd-bone: #e8dcc4;
-
+@use "../base/mixins" as *;
 // ==========================================
 // PAGE AUTH - FOND
 // ==========================================
@@ -19,7 +10,7 @@ $dd-bone: #e8dcc4;
     min-height: 100vh;
     padding: 2rem;
     position: relative;
-    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    @include page-gradient;
     overflow: hidden;
 }
 
@@ -43,8 +34,8 @@ $dd-bone: #e8dcc4;
     width: 100%;
     max-width: 460px;
     padding: 2.5rem 2rem;
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.97) 100%);
-    border: 3px solid #3d3225;
+    background: linear-gradient(180deg, rgba($dd-dark-brown, 0.95) 0%, rgba($dd-black, 0.97) 100%);
+    border: 3px solid $dd-brown;
 
     &::before {
         content: '';
@@ -53,7 +44,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 6px;
         pointer-events: none;
     }
@@ -74,7 +65,7 @@ $dd-bone: #e8dcc4;
     letter-spacing: 0.25em;
     text-align: center;
     margin: 0.5rem 0 0;
-    text-shadow: 0 0 20px rgba(212, 196, 168, 0.2);
+    text-shadow: 0 0 20px rgba($dd-parchment, 0.2);
 }
 
 .auth-panel__separator {
@@ -94,7 +85,7 @@ $dd-bone: #e8dcc4;
     i {
         color: $dd-blood-red;
         font-size: 1rem;
-        text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+        text-shadow: 0 0 10px rgba($dd-blood-red, 0.6);
     }
 
     &--small {
@@ -102,7 +93,7 @@ $dd-bone: #e8dcc4;
 
         span {
             width: 40px;
-            background: linear-gradient(90deg, transparent, #3d3225, transparent);
+            background: linear-gradient(90deg, transparent, $dd-brown, transparent);
         }
     }
 }
@@ -119,7 +110,7 @@ $dd-bone: #e8dcc4;
         transition: all 0.3s ease;
 
         &:hover {
-            text-shadow: 0 0 8px rgba(201, 162, 39, 0.5);
+            text-shadow: 0 0 8px rgba($dd-gold, 0.5);
         }
     }
 }
@@ -147,7 +138,7 @@ $dd-bone: #e8dcc4;
         li {
             font-size: 0.8rem;
             color: $dd-crimson;
-            text-shadow: 0 0 5px rgba(220, 20, 60, 0.3);
+            text-shadow: 0 0 5px rgba($dd-crimson, 0.3);
         }
     }
 }
@@ -161,7 +152,7 @@ $dd-bone: #e8dcc4;
 
 .auth-form__input {
     padding: 0.8rem 1rem;
-    border: 2px solid #3d3225;
+    border: 2px solid $dd-brown;
     background: rgba(0, 0, 0, 0.4);
     color: $dd-bone;
     font-size: 1rem;
@@ -175,7 +166,7 @@ $dd-bone: #e8dcc4;
     &:focus {
         outline: none;
         border-color: $dd-gold;
-        box-shadow: 0 0 15px rgba(201, 162, 39, 0.2), inset 0 0 8px rgba(201, 162, 39, 0.05);
+        box-shadow: 0 0 15px rgba($dd-gold, 0.2), inset 0 0 8px rgba($dd-gold, 0.05);
     }
 }
 
@@ -206,8 +197,8 @@ $dd-bone: #e8dcc4;
     }
 
     &--error {
-        background: rgba(139, 0, 0, 0.15);
-        border-color: rgba(139, 0, 0, 0.4);
+        background: rgba($dd-blood-red, 0.15);
+        border-color: rgba($dd-blood-red, 0.4);
         color: $dd-crimson;
 
         i {
@@ -216,12 +207,12 @@ $dd-bone: #e8dcc4;
     }
 
     &--success {
-        background: rgba(76, 175, 80, 0.1);
-        border-color: rgba(76, 175, 80, 0.3);
-        color: #6abf6e;
+        background: rgba($color-hp-green, 0.1);
+        border-color: rgba($color-hp-green, 0.3);
+        color: $color-success;
 
         i {
-            color: #6abf6e;
+            color: $color-success;
         }
     }
 }

@@ -1,19 +1,11 @@
-@use '../base/variables' as *;
-
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-gold: #c9a227;
-$dd-parchment: #d4c4a8;
-$dd-bone: #e8dcc4;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-
+@use "../base/variables" as *;
+@use "../base/mixins" as *;
 // ==========================================
 // PAGE CONTAINER
 // ==========================================
 .admin-page {
     min-height: 100vh;
-    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    @include page-gradient;
     padding: 1.5rem;
     position: relative;
     overflow: hidden;
@@ -290,7 +282,7 @@ $dd-crimson: #dc143c;
     color: rgba($dd-parchment, 0.6);
 
     &--ok {
-        color: #6abf6e;
+        color: $color-success;
         border-color: rgba(106, 191, 110, 0.3);
     }
 
@@ -351,13 +343,13 @@ $dd-crimson: #dc143c;
     }
 
     &--success {
-        color: #6abf6e;
+        color: $color-success;
         border-color: rgba(106, 191, 110, 0.3);
 
         &:hover {
             background: rgba(106, 191, 110, 0.15);
-            border-color: #6abf6e;
-            color: #6abf6e;
+            border-color: $color-success;
+            color: $color-success;
         }
     }
 }

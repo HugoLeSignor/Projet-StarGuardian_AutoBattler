@@ -1,20 +1,11 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-$dd-parchment: #d4c4a8;
-$dd-gold: #c9a227;
-$dd-bone: #e8dcc4;
-
+@use "../base/mixins" as *;
 // ==========================================
 // CONTENEUR PRINCIPAL
 // ==========================================
 .matchmaking {
     min-height: 100vh;
-    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    @include page-gradient;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -40,8 +31,8 @@ $dd-bone: #e8dcc4;
 .matchmaking__panel {
     position: relative;
     z-index: 2;
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.97) 100%);
-    border: 3px solid #3d3225;
+    background: linear-gradient(180deg, rgba($dd-dark-brown, 0.95) 0%, rgba($dd-black, 0.97) 100%);
+    border: 3px solid $dd-brown;
     padding: 3rem 3.5rem;
     max-width: 500px;
     width: 100%;
@@ -54,7 +45,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 6px;
         pointer-events: none;
     }
@@ -79,7 +70,7 @@ $dd-bone: #e8dcc4;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     margin: 1rem 0;
-    text-shadow: 0 0 30px rgba(212, 196, 168, 0.25);
+    text-shadow: 0 0 30px rgba($dd-parchment, 0.25);
 }
 
 // ==========================================
@@ -102,7 +93,7 @@ $dd-bone: #e8dcc4;
     i {
         color: $dd-blood-red;
         font-size: 1rem;
-        text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+        text-shadow: 0 0 10px rgba($dd-blood-red, 0.6);
     }
 
     &--small {
@@ -110,7 +101,7 @@ $dd-bone: #e8dcc4;
 
         span {
             width: 40px;
-            background: linear-gradient(90deg, transparent, rgba(201, 162, 39, 0.4), transparent);
+            background: linear-gradient(90deg, transparent, rgba($dd-gold, 0.4), transparent);
         }
     }
 }
@@ -132,7 +123,7 @@ $dd-bone: #e8dcc4;
         color: $dd-crimson;
         z-index: 2;
         animation: matchmaking-pulse 2s ease-in-out infinite;
-        text-shadow: 0 0 15px rgba(220, 20, 60, 0.5);
+        text-shadow: 0 0 15px rgba($dd-crimson, 0.5);
     }
 }
 
@@ -142,7 +133,7 @@ $dd-bone: #e8dcc4;
     left: 0;
     width: 100%;
     height: 100%;
-    border: 3px solid rgba(61, 50, 37, 0.3);
+    border: 3px solid rgba($dd-brown, 0.3);
     border-top-color: $dd-gold;
     border-radius: 50%;
     animation: matchmaking-spin 1.5s linear infinite;
@@ -154,8 +145,8 @@ $dd-bone: #e8dcc4;
         left: -3px;
         right: -3px;
         bottom: -3px;
-        border: 1px solid rgba(201, 162, 39, 0.1);
-        border-top-color: rgba(201, 162, 39, 0.3);
+        border: 1px solid rgba($dd-gold, 0.1);
+        border-top-color: rgba($dd-gold, 0.3);
         border-radius: 50%;
         animation: matchmaking-spin 3s linear reverse infinite;
     }
@@ -183,12 +174,12 @@ $dd-bone: #e8dcc4;
 
     &--error {
         color: $dd-crimson;
-        text-shadow: 0 0 10px rgba(220, 20, 60, 0.3);
+        text-shadow: 0 0 10px rgba($dd-crimson, 0.3);
     }
 
     &--found {
         color: $dd-gold;
-        text-shadow: 0 0 15px rgba(201, 162, 39, 0.5);
+        text-shadow: 0 0 15px rgba($dd-gold, 0.5);
         animation: matchmaking-found-glow 0.6s ease-out;
     }
 }

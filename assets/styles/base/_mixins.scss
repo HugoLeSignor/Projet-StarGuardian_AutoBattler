@@ -1,0 +1,155 @@
+@use "variables" as *;
+
+// ==========================================
+// LAYOUT
+// ==========================================
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ==========================================
+// BACKGROUNDS
+// ==========================================
+@mixin page-gradient {
+  background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+}
+
+@mixin panel-bg($opacity: 0.95) {
+  background: linear-gradient(180deg, rgba($dd-dark-brown, $opacity) 0%, rgba($dd-black, $opacity) 100%);
+}
+
+@mixin panel-bg-reverse($opacity: 0.95) {
+  background: linear-gradient(180deg, rgba($dd-black, $opacity) 0%, rgba($dd-dark-brown, $opacity) 100%);
+}
+
+// ==========================================
+// BORDERS & PANELS
+// ==========================================
+@mixin dd-border($width: 3px) {
+  border: $width solid $dd-brown;
+}
+
+@mixin dd-panel($border-width: 3px) {
+  @include panel-bg;
+  @include dd-border($border-width);
+  position: relative;
+}
+
+@mixin inner-border($gold-opacity: 0.15, $margin: 6px) {
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 1px solid rgba($dd-gold, $gold-opacity);
+    margin: $margin;
+    pointer-events: none;
+  }
+}
+
+// ==========================================
+// OVERLAYS
+// ==========================================
+@mixin vignette($transparency: 40%, $darkness: 0.6) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(ellipse at center, transparent $transparency, rgba(0, 0, 0, $darkness) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+// ==========================================
+// SCROLLBAR
+// ==========================================
+@mixin dd-scrollbar($width: 8px) {
+  &::-webkit-scrollbar {
+    width: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: $dd-black;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #4a3c2e 0%, $dd-brown 100%);
+    border: 1px solid #4a3c2e;
+
+    &:hover {
+      background: linear-gradient(180deg, #5a4c3e 0%, #4d4235 100%);
+    }
+  }
+}
+
+// ==========================================
+// BUTTONS
+// ==========================================
+@mixin gold-hover {
+  &:hover {
+    background: rgba($dd-gold, 0.2);
+    box-shadow: 0 0 25px rgba($dd-gold, 0.4), inset 0 0 15px rgba($dd-gold, 0.1);
+    transform: translateY(-2px);
+    text-shadow: 0 0 8px rgba($dd-gold, 0.6);
+  }
+}
+
+@mixin dd-button {
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  border: 2px solid $dd-gold;
+  background: transparent;
+  color: $dd-gold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+// ==========================================
+// TEXT
+// ==========================================
+@mixin section-title {
+  color: $dd-gold;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  text-shadow: 0 0 20px rgba($dd-gold, 0.4);
+}
+
+@mixin gold-glow-text {
+  text-shadow: 0 0 15px rgba($dd-gold, 0.3);
+}
+
+// ==========================================
+// SEPARATOR
+// ==========================================
+@mixin separator($line-width: 60px, $line-color: $dd-brown) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1rem 0;
+
+  span {
+    display: block;
+    width: $line-width;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, $line-color, transparent);
+  }
+
+  i {
+    color: $dd-blood-red;
+    font-size: 1rem;
+    text-shadow: 0 0 15px rgba($dd-blood-red, 0.8);
+  }
+}
+
+// ==========================================
+// STAT BARS
+// ==========================================
+@mixin stat-bar-fill($color1, $color2) {
+  background: linear-gradient(90deg, $color1, $color2);
+}

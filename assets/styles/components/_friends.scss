@@ -1,14 +1,5 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette (same as _profile.scss)
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-gold: #c9a227;
-$dd-parchment: #d4c4a8;
-$dd-bone: #e8dcc4;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-
+@use "../base/mixins" as *;
 // ==========================================
 // BACKDROP
 // ==========================================
@@ -37,8 +28,8 @@ $dd-crimson: #dc143c;
     display: flex;
     flex-direction: column;
     z-index: 1200;
-    background: linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
-    border: 2px solid #3d3225;
+    background: linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba($dd-black, 0.98) 100%);
+    border: 2px solid $dd-brown;
     color: $dd-parchment;
     opacity: 0;
     transform: translateY(-10px);
@@ -250,12 +241,12 @@ $dd-crimson: #dc143c;
     transition: all 0.2s ease;
 
     &--accept {
-        color: #6abf6e;
+        color: $color-success;
         border-color: rgba(106, 191, 110, 0.3);
 
         &:hover {
             background: rgba(106, 191, 110, 0.15);
-            border-color: #6abf6e;
+            border-color: $color-success;
         }
     }
 

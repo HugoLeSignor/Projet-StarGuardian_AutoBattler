@@ -1,14 +1,5 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette (shared with arena)
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-$dd-parchment: #d4c4a8;
-$dd-gold: #c9a227;
-$dd-bone: #e8dcc4;
-
+@use "../base/mixins" as *;
 // ==========================================
 // CONTENEUR PRINCIPAL
 // ==========================================
@@ -38,21 +29,21 @@ $dd-bone: #e8dcc4;
         border-color: $dd-gold;
 
         &:hover {
-            background: rgba(201, 162, 39, 0.2);
-            box-shadow: 0 0 25px rgba(201, 162, 39, 0.4), inset 0 0 15px rgba(201, 162, 39, 0.1);
+            background: rgba($dd-gold, 0.2);
+            box-shadow: 0 0 25px rgba($dd-gold, 0.4), inset 0 0 15px rgba($dd-gold, 0.1);
             transform: translateY(-2px);
-            text-shadow: 0 0 8px rgba(201, 162, 39, 0.6);
+            text-shadow: 0 0 8px rgba($dd-gold, 0.6);
         }
     }
 
     &--secondary {
         color: $dd-parchment;
-        border-color: #3d3225;
+        border-color: $dd-brown;
 
         &:hover {
-            background: rgba(61, 50, 37, 0.3);
+            background: rgba($dd-brown, 0.3);
             border-color: $dd-parchment;
-            box-shadow: 0 0 15px rgba(212, 196, 168, 0.2);
+            box-shadow: 0 0 15px rgba($dd-parchment, 0.2);
             transform: translateY(-2px);
         }
     }
@@ -85,8 +76,8 @@ $dd-bone: #e8dcc4;
     right: 0;
     bottom: 0;
     background:
-        radial-gradient(ellipse at center, transparent 20%, rgba(10, 10, 10, 0.7) 70%, rgba(10, 10, 10, 0.95) 100%),
-        linear-gradient(180deg, rgba(10, 10, 10, 0.4) 0%, transparent 30%, transparent 70%, rgba(10, 10, 10, 0.8) 100%);
+        radial-gradient(ellipse at center, transparent 20%, rgba($dd-black, 0.7) 70%, rgba($dd-black, 0.95) 100%),
+        linear-gradient(180deg, rgba($dd-black, 0.4) 0%, transparent 30%, transparent 70%, rgba($dd-black, 0.8) 100%);
     pointer-events: none;
     z-index: 1;
 }
@@ -97,8 +88,8 @@ $dd-bone: #e8dcc4;
     text-align: center;
     max-width: 700px;
     padding: 3rem 2rem;
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.85) 0%, rgba(10, 10, 10, 0.9) 100%);
-    border: 3px solid #3d3225;
+    background: linear-gradient(180deg, rgba($dd-dark-brown, 0.85) 0%, rgba($dd-black, 0.9) 100%);
+    border: 3px solid $dd-brown;
 
     &::before {
         content: '';
@@ -107,7 +98,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 6px;
         pointer-events: none;
     }
@@ -127,7 +118,7 @@ $dd-bone: #e8dcc4;
         max-width: 400px;
         width: 100%;
         height: auto;
-        filter: drop-shadow(0 0 30px rgba(212, 196, 168, 0.2)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
+        filter: drop-shadow(0 0 30px rgba($dd-parchment, 0.2)) drop-shadow(0 4px 8px rgba(0, 0, 0, 0.8));
     }
 }
 
@@ -148,7 +139,7 @@ $dd-bone: #e8dcc4;
     i {
         color: $dd-blood-red;
         font-size: 1.2rem;
-        text-shadow: 0 0 15px rgba(139, 0, 0, 0.8);
+        text-shadow: 0 0 15px rgba($dd-blood-red, 0.8);
     }
 }
 
@@ -189,7 +180,7 @@ $dd-bone: #e8dcc4;
     text-transform: uppercase;
     letter-spacing: 0.3em;
     margin: 0 0 1rem;
-    text-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+    text-shadow: 0 0 20px rgba($dd-gold, 0.4);
 }
 
 .home-steps__separator {
@@ -203,7 +194,7 @@ $dd-bone: #e8dcc4;
         display: block;
         width: 60px;
         height: 1px;
-        background: linear-gradient(90deg, transparent, #3d3225, transparent);
+        background: linear-gradient(90deg, transparent, $dd-brown, transparent);
     }
 
     i {
@@ -226,8 +217,8 @@ $dd-bone: #e8dcc4;
 }
 
 .home-step {
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
-    border: 3px solid #3d3225;
+    @include panel-bg;
+    border: 3px solid $dd-brown;
     padding: 2rem 1.5rem;
     text-align: center;
     position: relative;
@@ -240,29 +231,29 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.1);
+        border: 1px solid rgba($dd-gold, 0.1);
         margin: 6px;
         pointer-events: none;
         transition: border-color 0.3s ease;
     }
 
     &:hover {
-        border-color: rgba(201, 162, 39, 0.4);
+        border-color: rgba($dd-gold, 0.4);
         transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(201, 162, 39, 0.1);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba($dd-gold, 0.1);
 
         &::before {
-            border-color: rgba(201, 162, 39, 0.25);
+            border-color: rgba($dd-gold, 0.25);
         }
 
         .home-step__number {
             color: $dd-gold;
-            text-shadow: 0 0 20px rgba(201, 162, 39, 0.6);
+            text-shadow: 0 0 20px rgba($dd-gold, 0.6);
         }
 
         .home-step__icon {
             border-color: $dd-gold;
-            box-shadow: 0 0 20px rgba(201, 162, 39, 0.3);
+            box-shadow: 0 0 20px rgba($dd-gold, 0.3);
             color: $dd-gold;
         }
     }
@@ -270,7 +261,7 @@ $dd-bone: #e8dcc4;
 
 .home-step__number {
     font-size: 2rem;
-    color: #3d3225;
+    color: $dd-brown;
     font-weight: bold;
     margin-bottom: 1rem;
     transition: all 0.3s ease;
@@ -283,7 +274,7 @@ $dd-bone: #e8dcc4;
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px solid #3d3225;
+    border: 2px solid $dd-brown;
     background: rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
 
@@ -330,7 +321,7 @@ $dd-bone: #e8dcc4;
     text-transform: uppercase;
     letter-spacing: 0.3em;
     margin: 0 0 1rem;
-    text-shadow: 0 0 20px rgba(201, 162, 39, 0.4);
+    text-shadow: 0 0 20px rgba($dd-gold, 0.4);
 }
 
 .home-showcase__separator {
@@ -344,7 +335,7 @@ $dd-bone: #e8dcc4;
         display: block;
         width: 60px;
         height: 1px;
-        background: linear-gradient(90deg, transparent, #3d3225, transparent);
+        background: linear-gradient(90deg, transparent, $dd-brown, transparent);
     }
 }
 
@@ -368,8 +359,8 @@ $dd-bone: #e8dcc4;
     align-items: center;
     gap: 0.5rem;
     padding: 1.5rem 1rem;
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.9) 0%, rgba(10, 10, 10, 0.9) 100%);
-    border: 2px solid #3d3225;
+    @include panel-bg(0.9);
+    border: 2px solid $dd-brown;
     transition: all 0.3s ease;
     position: relative;
 
@@ -380,19 +371,19 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.08);
+        border: 1px solid rgba($dd-gold, 0.08);
         margin: 4px;
         pointer-events: none;
         transition: border-color 0.3s ease;
     }
 
     &:hover {
-        border-color: rgba(201, 162, 39, 0.5);
+        border-color: rgba($dd-gold, 0.5);
         transform: translateY(-6px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba(201, 162, 39, 0.15);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 25px rgba($dd-gold, 0.15);
 
         &::before {
-            border-color: rgba(201, 162, 39, 0.2);
+            border-color: rgba($dd-gold, 0.2);
         }
 
         .home-showcase__sprite img {
@@ -401,7 +392,7 @@ $dd-bone: #e8dcc4;
 
         .home-showcase__name {
             color: $dd-gold;
-            text-shadow: 0 0 10px rgba(201, 162, 39, 0.4);
+            text-shadow: 0 0 10px rgba($dd-gold, 0.4);
         }
     }
 }
@@ -457,8 +448,8 @@ $dd-bone: #e8dcc4;
     max-width: 600px;
     width: 100%;
     padding: 3rem 2rem;
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.95) 100%);
-    border: 3px solid #3d3225;
+    @include panel-bg;
+    border: 3px solid $dd-brown;
     position: relative;
 
     &::before {
@@ -468,7 +459,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.15);
+        border: 1px solid rgba($dd-gold, 0.15);
         margin: 6px;
         pointer-events: none;
     }
@@ -487,7 +478,7 @@ $dd-bone: #e8dcc4;
     text-transform: uppercase;
     letter-spacing: 0.2em;
     margin: 0.5rem 0 1rem;
-    text-shadow: 0 0 20px rgba(212, 196, 168, 0.2);
+    text-shadow: 0 0 20px rgba($dd-parchment, 0.2);
 }
 
 .home-cta__text {

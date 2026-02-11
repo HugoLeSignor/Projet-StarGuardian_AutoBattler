@@ -1,20 +1,11 @@
 @use "../base/variables" as *;
-
-// Darkest Dungeon palette
-$dd-black: #0a0a0a;
-$dd-dark-brown: #1a1411;
-$dd-blood-red: #8b0000;
-$dd-crimson: #dc143c;
-$dd-parchment: #d4c4a8;
-$dd-gold: #c9a227;
-$dd-bone: #e8dcc4;
-
+@use "../base/mixins" as *;
 // ==========================================
 // CONTENEUR PRINCIPAL
 // ==========================================
 .personnages {
     min-height: 100vh;
-    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    @include page-gradient;
     padding: 2rem;
     position: relative;
     overflow: hidden;
@@ -54,7 +45,7 @@ $dd-bone: #e8dcc4;
     text-transform: uppercase;
     letter-spacing: 0.3em;
     margin: 0.5rem 0;
-    text-shadow: 0 0 30px rgba(212, 196, 168, 0.25);
+    text-shadow: 0 0 30px rgba($dd-parchment, 0.25);
 }
 
 .personnages__separator {
@@ -74,7 +65,7 @@ $dd-bone: #e8dcc4;
     i {
         color: $dd-blood-red;
         font-size: 1.1rem;
-        text-shadow: 0 0 10px rgba(139, 0, 0, 0.6);
+        text-shadow: 0 0 10px rgba($dd-blood-red, 0.6);
     }
 }
 
@@ -149,8 +140,8 @@ $dd-bone: #e8dcc4;
 // CARTE PERSONNAGE
 // ==========================================
 .char-card {
-    background: linear-gradient(180deg, rgba(26, 20, 17, 0.95) 0%, rgba(10, 10, 10, 0.97) 100%);
-    border: 2px solid #3d3225;
+    background: linear-gradient(180deg, rgba($dd-dark-brown, 0.95) 0%, rgba($dd-black, 0.97) 100%);
+    border: 2px solid $dd-brown;
     position: relative;
     transition: all 0.3s ease;
     overflow: hidden;
@@ -162,7 +153,7 @@ $dd-bone: #e8dcc4;
         left: 0;
         right: 0;
         bottom: 0;
-        border: 1px solid rgba(201, 162, 39, 0.08);
+        border: 1px solid rgba($dd-gold, 0.08);
         margin: 4px;
         pointer-events: none;
         z-index: 3;
@@ -170,12 +161,12 @@ $dd-bone: #e8dcc4;
     }
 
     &:hover {
-        border-color: rgba(201, 162, 39, 0.5);
+        border-color: rgba($dd-gold, 0.5);
         transform: translateY(-4px);
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(201, 162, 39, 0.12);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba($dd-gold, 0.12);
 
         &::before {
-            border-color: rgba(201, 162, 39, 0.2);
+            border-color: rgba($dd-gold, 0.2);
         }
 
         .char-card__portrait img {
@@ -209,7 +200,7 @@ $dd-bone: #e8dcc4;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, transparent 30%, rgba(10, 10, 10, 0.9) 100%);
+    background: linear-gradient(180deg, transparent 30%, rgba($dd-black, 0.9) 100%);
     opacity: 0.6;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -224,8 +215,8 @@ $dd-bone: #e8dcc4;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     padding: 0.25rem 0.6rem;
-    background: rgba(10, 10, 10, 0.8);
-    border: 1px solid rgba(201, 162, 39, 0.3);
+    background: rgba($dd-black, 0.8);
+    border: 1px solid rgba($dd-gold, 0.3);
     z-index: 2;
 }
 
@@ -258,7 +249,7 @@ $dd-bone: #e8dcc4;
     margin: 0.8rem 0;
     padding: 0.5rem;
     background: rgba(0, 0, 0, 0.3);
-    border: 1px solid rgba(61, 50, 37, 0.4);
+    border: 1px solid rgba($dd-brown, 0.4);
 
     img {
         width: 80px;
@@ -283,7 +274,7 @@ $dd-bone: #e8dcc4;
 
 .char-stat__label {
     font-size: 0.7rem;
-    color: #5a4c3e;
+    color: $dd-light-brown;
     font-weight: bold;
     width: 30px;
     text-transform: uppercase;
@@ -294,17 +285,17 @@ $dd-bone: #e8dcc4;
     flex: 1;
     height: 5px;
     background: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(61, 50, 37, 0.4);
+    border: 1px solid rgba($dd-brown, 0.4);
     overflow: hidden;
 }
 
 .char-stat__fill {
     height: 100%;
-    background: linear-gradient(90deg, $dd-gold, rgba(201, 162, 39, 0.6));
+    background: linear-gradient(90deg, $dd-gold, rgba($dd-gold, 0.6));
     transition: width 0.8s ease-out;
 
     &--hp {
-        background: linear-gradient(90deg, #4caf50, #2e7d32);
+        background: linear-gradient(90deg, $color-hp-green, $color-hp-green-dark);
     }
 
     &--dmg {
@@ -312,11 +303,11 @@ $dd-bone: #e8dcc4;
     }
 
     &--spd {
-        background: linear-gradient(90deg, #42a5f5, #1565c0);
+        background: linear-gradient(90deg, $color-speed-blue, $color-speed-blue-dark);
     }
 
     &--crit {
-        background: linear-gradient(90deg, #ff9800, #e65100);
+        background: linear-gradient(90deg, $color-hp-orange, $color-hp-orange-dark);
     }
 }
 
