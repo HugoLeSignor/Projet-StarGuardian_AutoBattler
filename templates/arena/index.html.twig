@@ -17,7 +17,7 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 1">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/sprites/' ~ member.name|lower|replace({' ': '-'}) ~ '-idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
+                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
@@ -36,7 +36,7 @@
                  data-character-name="{{ member.name }}"
                  data-character-team="Equipe 2">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/sprites/' ~ member.name|lower|replace({' ': '-'}) ~ '-idle.gif') }}" alt="{{ member.name }}" class="character-sprite">
+                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
@@ -96,7 +96,7 @@
                 {% for member in composition['Equipe 1'] %}
                 <div class="character-info">
                     <div class="character-info__icon">
-                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
+                        <img src="{{ asset('asset/img/arena/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
                              class="character-info__sprite">
                     </div>
@@ -168,7 +168,7 @@
                 {% for member in composition['Equipe 2'] %}
                 <div class="character-info">
                     <div class="character-info__icon">
-                        <img src="{{ asset('asset/img/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
+                        <img src="{{ asset('asset/img/arena/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}"
                              alt="{{ member.name }}"
                              class="character-info__sprite">
                     </div>
