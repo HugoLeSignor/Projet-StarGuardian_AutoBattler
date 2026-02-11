@@ -251,6 +251,38 @@ $dd-bone: #e8dcc4;
 }
 
 // ==========================================
+// CATEGORY HEADER (dans la grille)
+// ==========================================
+.team-grid__category-header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.4rem 0.3rem;
+  border-bottom: 1px solid rgba($dd-gold, 0.25);
+  margin-top: 0.3rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  i {
+    font-size: 0.75rem;
+    color: $dd-gold;
+    opacity: 0.8;
+  }
+
+  span {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.8rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-weight: bold;
+  }
+}
+
+// ==========================================
 // PORTRAIT INDIVIDUEL
 // ==========================================
 .team-portrait {

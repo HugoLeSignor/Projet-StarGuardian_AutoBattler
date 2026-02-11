@@ -62,7 +62,13 @@
 
         {# ===== GRILLE PORTRAITS (GAUCHE) ===== #}
         <div class="team-grid">
-            {% for hero in heroes %}
+            {% for catName, category in categories %}
+            {% if category.characters|length > 0 %}
+                <div class="team-grid__category-header">
+                    <i class="fas {{ category.icon }}"></i>
+                    <span>{{ catName }}</span>
+                </div>
+                {% for hero in category.characters %}
                 <div class="team-portrait"
                     data-id="{{ hero.id }}"
                     data-name="{{ hero.name }}"
@@ -77,6 +83,8 @@
                     <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '-':'-'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }}">
                     <span>{{ hero.name }}</span>
                 </div>
+                {% endfor %}
+            {% endif %}
             {% endfor %}
         </div>
 

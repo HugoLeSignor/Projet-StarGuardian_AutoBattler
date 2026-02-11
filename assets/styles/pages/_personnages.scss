@@ -88,6 +88,55 @@ $dd-bone: #e8dcc4;
 }
 
 // ==========================================
+// CATEGORIES
+// ==========================================
+.personnages__category {
+    position: relative;
+    z-index: 2;
+    max-width: 1300px;
+    margin: 0 auto 1rem;
+}
+
+.personnages__category-header {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.personnages__category-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba($dd-gold, 0.4), transparent);
+}
+
+.personnages__category-title {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.6rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    margin: 0;
+    white-space: nowrap;
+    text-shadow: 0 0 20px rgba($dd-gold, 0.3);
+
+    i {
+        margin-right: 0.5rem;
+        font-size: 1.2rem;
+        opacity: 0.8;
+    }
+}
+
+.personnages__category-desc {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.9rem;
+    color: rgba($dd-parchment, 0.5);
+    font-style: italic;
+    text-align: center;
+    margin: 0 0 0.5rem;
+}
+
+// ==========================================
 // GRILLE DES PERSONNAGES
 // ==========================================
 .personnages__grid {
@@ -97,7 +146,7 @@ $dd-bone: #e8dcc4;
     grid-template-columns: repeat(4, 1fr);
     gap: 1.5rem;
     max-width: 1300px;
-    margin: 2rem auto;
+    margin: 0 auto 2.5rem;
 }
 
 // ==========================================

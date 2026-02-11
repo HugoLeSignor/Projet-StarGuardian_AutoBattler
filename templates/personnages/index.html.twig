@@ -18,64 +18,80 @@
         <p class="personnages__subtitle">16 combattants l&eacute;gendaires, forg&eacute;s dans les t&eacute;n&egrave;bres du Darkest Dungeon.</p>
     </div>
 
-    {# ====== GRILLE DES PERSONNAGES ====== #}
-    <div class="personnages__grid">
-        {% for character in characters %}
-        <div class="char-card">
-            <div class="char-card__portrait">
-                <img src="{{ asset('asset/img/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '.webp') }}" alt="{{ character.name }}">
-                <div class="char-card__overlay"></div>
-                <span class="char-card__role-badge">{{ character.role.name }}</span>
-            </div>
-            <div class="char-card__body">
-                <h3 class="char-card__name">{{ character.name }}</h3>
-                <span class="char-card__role">{{ character.role.name }}</span>
-
-                <div class="char-card__sprite">
-                    <img src="{{ asset('asset/sprites/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '-idle.gif') }}" alt="{{ character.name }} sprite">
-                </div>
-
-                <div class="char-card__stats">
-                    <div class="char-stat">
-                        <span class="char-stat__label">HP</span>
-                        <div class="char-stat__bar">
-                            <div class="char-stat__fill char-stat__fill--hp" style="width: {{ (character.HP / 65 * 100)|round }}%"></div>
-                        </div>
-                        <span class="char-stat__value">{{ character.HP }}</span>
-                    </div>
-                    <div class="char-stat">
-                        <span class="char-stat__label">DMG</span>
-                        <div class="char-stat__bar">
-                            <div class="char-stat__fill char-stat__fill--dmg" style="width: {{ (character.DMGMAX / 26 * 100)|round }}%"></div>
-                        </div>
-                        <span class="char-stat__value">{{ character.DMGMIN }}-{{ character.DMGMAX }}</span>
-                    </div>
-                    <div class="char-stat">
-                        <span class="char-stat__label">SPD</span>
-                        <div class="char-stat__bar">
-                            <div class="char-stat__fill char-stat__fill--spd" style="width: {{ (character.SPEED / 10 * 100)|round }}%"></div>
-                        </div>
-                        <span class="char-stat__value">{{ character.SPEED }}</span>
-                    </div>
-                    <div class="char-stat">
-                        <span class="char-stat__label">DDG</span>
-                        <div class="char-stat__bar">
-                            <div class="char-stat__fill" style="width: {{ (character.DODGE / 30 * 100)|round }}%"></div>
-                        </div>
-                        <span class="char-stat__value">{{ character.DODGE }}</span>
-                    </div>
-                    <div class="char-stat">
-                        <span class="char-stat__label">CRT</span>
-                        <div class="char-stat__bar">
-                            <div class="char-stat__fill char-stat__fill--crit" style="width: {{ (character.CRIT / 10 * 100)|round }}%"></div>
-                        </div>
-                        <span class="char-stat__value">{{ character.CRIT }}%</span>
-                    </div>
-                </div>
-            </div>
+    {# ====== PERSONNAGES PAR CATEGORIE ====== #}
+    {% for catName, category in categories %}
+    {% if category.characters|length > 0 %}
+    <div class="personnages__category">
+        <div class="personnages__category-header">
+            <div class="personnages__category-line"></div>
+            <h2 class="personnages__category-title">
+                <i class="fas {{ category.icon }}"></i>
+                {{ catName }}
+            </h2>
+            <div class="personnages__category-line"></div>
         </div>
-        {% endfor %}
+        <p class="personnages__category-desc">{{ category.desc }}</p>
+
+        <div class="personnages__grid">
+            {% for character in category.characters %}
+            <div class="char-card">
+                <div class="char-card__portrait">
+                    <img src="{{ asset('asset/img/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '.webp') }}" alt="{{ character.name }}">
+                    <div class="char-card__overlay"></div>
+                    <span class="char-card__role-badge">{{ character.role.name }}</span>
+                </div>
+                <div class="char-card__body">
+                    <h3 class="char-card__name">{{ character.name }}</h3>
+                    <span class="char-card__role">{{ character.role.name }}</span>
+
+                    <div class="char-card__sprite">
+                        <img src="{{ asset('asset/sprites/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '-idle.gif') }}" alt="{{ character.name }} sprite">
+                    </div>
+
+                    <div class="char-card__stats">
+                        <div class="char-stat">
+                            <span class="char-stat__label">HP</span>
+                            <div class="char-stat__bar">
+                                <div class="char-stat__fill char-stat__fill--hp" style="width: {{ (character.HP / 65 * 100)|round }}%"></div>
+                            </div>
+                            <span class="char-stat__value">{{ character.HP }}</span>
+                        </div>
+                        <div class="char-stat">
+                            <span class="char-stat__label">DMG</span>
+                            <div class="char-stat__bar">
+                                <div class="char-stat__fill char-stat__fill--dmg" style="width: {{ (character.DMGMAX / 26 * 100)|round }}%"></div>
+                            </div>
+                            <span class="char-stat__value">{{ character.DMGMIN }}-{{ character.DMGMAX }}</span>
+                        </div>
+                        <div class="char-stat">
+                            <span class="char-stat__label">SPD</span>
+                            <div class="char-stat__bar">
+                                <div class="char-stat__fill char-stat__fill--spd" style="width: {{ (character.SPEED / 10 * 100)|round }}%"></div>
+                            </div>
+                            <span class="char-stat__value">{{ character.SPEED }}</span>
+                        </div>
+                        <div class="char-stat">
+                            <span class="char-stat__label">DDG</span>
+                            <div class="char-stat__bar">
+                                <div class="char-stat__fill" style="width: {{ (character.DODGE / 30 * 100)|round }}%"></div>
+                            </div>
+                            <span class="char-stat__value">{{ character.DODGE }}</span>
+                        </div>
+                        <div class="char-stat">
+                            <span class="char-stat__label">CRT</span>
+                            <div class="char-stat__bar">
+                                <div class="char-stat__fill char-stat__fill--crit" style="width: {{ (character.CRIT / 10 * 100)|round }}%"></div>
+                            </div>
+                            <span class="char-stat__value">{{ character.CRIT }}%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+    {% endif %}
+    {% endfor %}
 
     {# ====== FOOTER CTA ====== #}
     <div class="personnages__footer">

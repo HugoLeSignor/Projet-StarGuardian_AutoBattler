@@ -19,6 +19,23 @@ final class TeamsController extends AbstractController
     {
         $characters = $characterRepository->findAll();
 
+        $categories = [
+            'Tanks' => ['icon' => 'fa-shield-alt', 'characters' => []],
+            'DPS' => ['icon' => 'fa-crosshairs', 'characters' => []],
+            'Supports' => ['icon' => 'fa-hand-holding-medical', 'characters' => []],
+        ];
+
+        foreach ($characters as $character) {
+            $roleName = $character->getRole()->getName();
+            if ($roleName === 'Tank') {
+                $categories['Tanks']['characters'][] = $character;
+            } elseif ($roleName === 'DPS') {
+                $categories['DPS']['characters'][] = $character;
+            } else {
+                $categories['Supports']['characters'][] = $character;
+            }
+        }
+
         $presets = [];
         $user = $this->getUser();
         if ($user) {
@@ -27,6 +44,7 @@ final class TeamsController extends AbstractController
 
         return $this->render('teams/index.html.twig', [
             'heroes' => $characters,
+            'categories' => $categories,
             'presets' => $presets,
         ]);
     }
