@@ -46,6 +46,9 @@ class Battle
     #[ORM\Column(nullable: true)]
     private ?int $durationSeconds = null;
 
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $ratingApplied = false;
+
     public function __construct()
     {
         $this->createdAt = new \DateTimeImmutable();
@@ -163,6 +166,17 @@ class Battle
     public function setDurationSeconds(?int $durationSeconds): static
     {
         $this->durationSeconds = $durationSeconds;
+        return $this;
+    }
+
+    public function isRatingApplied(): bool
+    {
+        return $this->ratingApplied;
+    }
+
+    public function setRatingApplied(bool $ratingApplied): static
+    {
+        $this->ratingApplied = $ratingApplied;
         return $this;
     }
 

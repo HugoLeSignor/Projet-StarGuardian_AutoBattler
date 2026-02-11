@@ -96,22 +96,6 @@ final class ArenaController extends AbstractController
             $em->persist($battle);
             $em->flush();
 
-            // Stocker le pending rating en session
-            $ratingChange = 0;
-            if ($battle->getWinner() === 'player1') {
-                $ratingChange = $matchData['type'] === 'pvp' ? 25 : 10;
-            } elseif ($battle->getWinner() === 'player2') {
-                $ratingChange = $matchData['type'] === 'pvp' ? -25 : -10;
-            }
-
-            if ($ratingChange !== 0) {
-                $session->set('pending_rating_' . $battle->getId(), [
-                    'player1_id' => $currentUser->getId(),
-                    'player2_id' => $opponent?->getId(),
-                    'change' => $ratingChange,
-                ]);
-            }
-
             return $this->redirectToRoute('app_arena_show', ['id' => $battle->getId()]);
         }
 
@@ -159,7 +143,7 @@ final class ArenaController extends AbstractController
      * Affiche un combat depuis la BDD (URL unique /arena/{id})
      */
     #[Route('/arena/{id}', name: 'app_arena_show', requirements: ['id' => '\d+'])]
-    public function show(int $id, BattleRepository $battleRepo, CharacterRepository $charRepo, Request $request): Response
+    public function show(int $id, BattleRepository $battleRepo, CharacterRepository $charRepo): Response
     {
         $battle = $battleRepo->find($id);
         if (!$battle) {
@@ -206,8 +190,8 @@ final class ArenaController extends AbstractController
             default => 'Match nul',
         };
 
-        // Verifier s'il y a un pending rating (combat frais, pas un replay)
-        $hasPendingRating = $request->getSession()->has('pending_rating_' . $id);
+        // Le rating n'a pas encore ete applique = combat frais (pas un replay)
+        $needsFinalize = !$battle->isRatingApplied() && $battle->getWinner() !== 'draw';
 
         return $this->render('arena/index.html.twig', [
             'composition' => $composition,
@@ -216,33 +200,47 @@ final class ArenaController extends AbstractController
             'team1Name' => $team1Name,
             'team2Name' => $team2Name,
             'opponent' => $opponent,
-            'battleId' => $hasPendingRating ? $id : null,
-            'finalizeUrl' => $hasPendingRating ? $this->generateUrl('app_arena_finalize', ['id' => $id]) : null,
+            'finalizeUrl' => $needsFinalize ? $this->generateUrl('app_arena_finalize', ['id' => $id]) : null,
         ]);
     }
 
     /**
      * Applique le MMR a la fin de l'animation (appele par JS)
+     * Tout est lu depuis la BDD, pas de dependance a la session
      */
     #[Route('/arena/finalize/{id}', name: 'app_arena_finalize', requirements: ['id' => '\d+'], methods: ['POST'])]
-    public function finalize(int $id, Request $request, EntityManagerInterface $em): JsonResponse
+    public function finalize(int $id, BattleRepository $battleRepo, EntityManagerInterface $em): JsonResponse
     {
-        $session = $request->getSession();
-        $key = 'pending_rating_' . $id;
-        $pendingRating = $session->get($key);
+        $battle = $battleRepo->find($id);
 
-        if (!$pendingRating) {
-            return $this->json(['success' => false, 'message' => 'Aucun rating en attente'], 400);
+        if (!$battle) {
+            return $this->json(['success' => false, 'message' => 'Combat introuvable'], 404);
         }
 
-        // Consommer la session pour empecher les doublons
-        $session->remove($key);
+        // Deja applique ? (anti-doublon)
+        if ($battle->isRatingApplied()) {
+            return $this->json(['success' => false, 'message' => 'Rating deja applique'], 400);
+        }
 
-        $change = $pendingRating['change'];
-        $player1 = $em->getRepository(\App\Entity\User::class)->find($pendingRating['player1_id']);
-        $player2 = $pendingRating['player2_id']
-            ? $em->getRepository(\App\Entity\User::class)->find($pendingRating['player2_id'])
-            : null;
+        // Draw = pas de changement
+        if ($battle->getWinner() === 'draw') {
+            $battle->setRatingApplied(true);
+            $em->flush();
+            return $this->json(['success' => true, 'ratingChange' => 0, 'newRating' => null]);
+        }
+
+        // Calculer le changement depuis les donnees du Battle
+        $isPvp = $battle->isPvP();
+        $change = 0;
+        if ($battle->getWinner() === 'player1') {
+            $change = $isPvp ? 25 : 10;
+        } elseif ($battle->getWinner() === 'player2') {
+            $change = $isPvp ? -25 : -10;
+        }
+
+        // Appliquer aux deux joueurs
+        $player1 = $battle->getPlayer1();
+        $player2 = $battle->getPlayer2();
 
         if ($player1) {
             $player1->setRating($player1->getRating() + $change);
@@ -251,6 +249,7 @@ final class ArenaController extends AbstractController
             $player2->setRating($player2->getRating() - $change);
         }
 
+        $battle->setRatingApplied(true);
         $em->flush();
 
         return $this->json([
