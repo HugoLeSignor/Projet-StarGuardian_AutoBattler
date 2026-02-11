@@ -24,8 +24,34 @@
             </div>
         </div>
         <div class="selected-list"></div>
-        <button class="btn-launch" disabled>Lancer la partie</button>
+
+        <div class="selected-team__actions">
+            <button class="btn-launch" disabled>Lancer la partie</button>
+            <button class="btn-save-preset" disabled title="Sauvegarder cette &eacute;quipe">
+                <i class="fas fa-star"></i> Sauvegarder
+            </button>
+        </div>
     </div>
+
+    {# ====== PRESETS ====== #}
+    {% if presets is defined and presets|length > 0 %}
+    <div class="presets-bar">
+        <span class="presets-bar__label"><i class="fas fa-bookmark"></i> Presets :</span>
+        <div class="presets-bar__list">
+            {% for preset in presets %}
+                <div class="preset-chip" data-preset-id="{{ preset.id }}" data-preset-ids="{{ preset.characterIds|json_encode }}">
+                    <span class="preset-chip__name">{{ preset.name }}</span>
+                    <button class="preset-chip__load" title="Charger ce preset">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button class="preset-chip__delete" title="Supprimer ce preset">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
 
     {# ====== LAYOUT 2 COLONNES ====== #}
     <div class="teams-layout">
@@ -61,6 +87,22 @@
             </div>
         </div>
 
+    </div>
+</div>
+
+{# ====== MODAL SAVE PRESET ====== #}
+<div class="preset-modal" id="presetModal" style="display:none;">
+    <div class="preset-modal__backdrop"></div>
+    <div class="preset-modal__panel">
+        <h3 class="preset-modal__title">
+            <i class="fas fa-star"></i> Sauvegarder l'&eacute;quipe
+        </h3>
+        <input type="text" class="preset-modal__input" id="presetName"
+               placeholder="Nom du preset..." maxlength="50" autocomplete="off">
+        <div class="preset-modal__actions">
+            <button class="btn-dd btn-dd--secondary" id="presetCancel">Annuler</button>
+            <button class="btn-dd btn-dd--primary" id="presetConfirm">Sauvegarder</button>
+        </div>
     </div>
 </div>
 {% endblock %}

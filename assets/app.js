@@ -232,6 +232,163 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    /* ================================
+       PRESETS
+    ================================ */
+    const savePresetBtn = document.querySelector('.btn-save-preset');
+    const presetModal = document.getElementById('presetModal');
+    const presetNameInput = document.getElementById('presetName');
+    const presetConfirmBtn = document.getElementById('presetConfirm');
+    const presetCancelBtn = document.getElementById('presetCancel');
+
+    // Mettre a jour le bouton sauvegarder selon la selection
+    function updateSavePresetBtn() {
+        if (savePresetBtn) {
+            const roles = getSelectedRoles();
+            const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Support === 1;
+            savePresetBtn.disabled = !teamComplete;
+        }
+    }
+
+    // Appeler updateSavePresetBtn a chaque changement de selection
+    const originalUpdateSelectedTeam = updateSelectedTeam;
+    // On surcharge en ajoutant l'appel
+    const _origUpdate = updateSelectedTeam;
+
+    // Patch: ajouter l'appel a updateSavePresetBtn dans updateSelectedTeam
+    // On le fait en wrappant les indicateurs
+    const _origRoleIndicators = updateRoleIndicators;
+
+    // Ouvrir la modal
+    if (savePresetBtn && presetModal) {
+        savePresetBtn.addEventListener('click', () => {
+            presetNameInput.value = '';
+            presetModal.style.display = 'flex';
+            setTimeout(() => presetNameInput.focus(), 100);
+        });
+
+        // Fermer la modal
+        presetCancelBtn.addEventListener('click', () => {
+            presetModal.style.display = 'none';
+        });
+
+        presetModal.querySelector('.preset-modal__backdrop').addEventListener('click', () => {
+            presetModal.style.display = 'none';
+        });
+
+        // Sauvegarder le preset
+        presetConfirmBtn.addEventListener('click', () => {
+            const name = presetNameInput.value.trim();
+            if (!name) {
+                presetNameInput.style.borderColor = '#dc143c';
+                return;
+            }
+
+            presetConfirmBtn.disabled = true;
+            presetConfirmBtn.textContent = '...';
+
+            fetch('/teams/presets/save', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+                body: JSON.stringify({
+                    name: name,
+                    characterIds: selectedHeroIds.map(Number)
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // Recharger la page pour afficher le nouveau preset
+                    window.location.reload();
+                } else {
+                    alert(data.error || 'Erreur lors de la sauvegarde');
+                    presetConfirmBtn.disabled = false;
+                    presetConfirmBtn.textContent = 'Sauvegarder';
+                }
+            })
+            .catch(() => {
+                alert('Erreur lors de la sauvegarde');
+                presetConfirmBtn.disabled = false;
+                presetConfirmBtn.textContent = 'Sauvegarder';
+            });
+        });
+
+        // Enter pour valider
+        presetNameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') presetConfirmBtn.click();
+            presetNameInput.style.borderColor = '';
+        });
+    }
+
+    // Charger un preset (selection programmatique des personnages)
+    function loadPreset(characterIds) {
+        // Reset la selection actuelle
+        selectedHeroIds = [];
+        selectedHeroes = [];
+        portraits.forEach(p => p.classList.remove('selected'));
+
+        // Selectionner les personnages du preset
+        characterIds.forEach(id => {
+            const idStr = String(id);
+            const portrait = Array.from(portraits).find(p => p.dataset.id === idStr);
+            if (portrait) {
+                selectedHeroIds.push(idStr);
+                selectedHeroes.push(portrait.dataset.name);
+                portrait.classList.add('selected');
+            }
+        });
+
+        updateSelectedTeam();
+        updateSavePresetBtn();
+    }
+
+    // Supprimer un preset
+    function deletePreset(presetId, chipEl) {
+        if (!confirm('Supprimer ce preset ?')) return;
+
+        fetch(`/teams/presets/${presetId}`, {
+            method: 'DELETE',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                chipEl.remove();
+                // Si plus de presets, cacher la barre
+                const list = document.querySelector('.presets-bar__list');
+                if (list && list.children.length === 0) {
+                    document.querySelector('.presets-bar')?.remove();
+                }
+            }
+        })
+        .catch(() => alert('Erreur lors de la suppression'));
+    }
+
+    // Attacher les events aux chips de presets
+    document.querySelectorAll('.preset-chip').forEach(chip => {
+        const presetId = chip.dataset.presetId;
+        const charIds = JSON.parse(chip.dataset.presetIds);
+
+        chip.querySelector('.preset-chip__load').addEventListener('click', () => {
+            loadPreset(charIds);
+        });
+
+        chip.querySelector('.preset-chip__delete').addEventListener('click', (e) => {
+            e.stopPropagation();
+            deletePreset(presetId, chip);
+        });
+    });
+
+    // Observer les changements de selection pour le bouton save
+    // On utilise un MutationObserver sur selectedList
+    const selectedListObserver = new MutationObserver(() => updateSavePresetBtn());
+    if (selectedList) {
+        selectedListObserver.observe(selectedList, { childList: true });
+    }
+
     if (launchBtn) {
         launchBtn.addEventListener('click', () => {
             if (selectedHeroIds.length > 0) {

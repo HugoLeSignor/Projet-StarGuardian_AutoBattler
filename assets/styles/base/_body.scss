@@ -8,6 +8,44 @@ body{
 
     background-color: $color-dark;
     line-height: 1.6;
+}
 
+// ==========================================
+// FLASH MESSAGES (global)
+// ==========================================
+.flash-message {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.8rem 1.2rem;
+    margin: 0.5rem auto;
+    max-width: 600px;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.9rem;
+    border: 1px solid;
+    animation: flashFadeIn 0.4s ease-out;
+    z-index: 100;
+    position: relative;
 
+    i {
+        flex-shrink: 0;
+        font-size: 1rem;
+    }
+
+    &--success {
+        background: rgba(76, 175, 80, 0.12);
+        border-color: rgba(76, 175, 80, 0.35);
+        color: #6abf6e;
+    }
+
+    &--error {
+        background: rgba(139, 0, 0, 0.15);
+        border-color: rgba(139, 0, 0, 0.4);
+        color: #dc143c;
+    }
+}
+
+@keyframes flashFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
