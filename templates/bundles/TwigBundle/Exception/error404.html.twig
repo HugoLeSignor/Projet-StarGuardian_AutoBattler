@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}404 - Chemin Perdu{% endblock %}
+
+{% block body %}
+<div class="error-page">
+    <section class="error-page__scene">
+        <div class="error-page__vignette"></div>
+
+        <div class="error-page__panel">
+            <div class="error-page__ornament">&#x2726;</div>
+
+            <div class="error-page__icon">
+                <i class="fas fa-dungeon"></i>
+            </div>
+
+            <h1 class="error-page__code">404</h1>
+
+            <div class="error-page__separator">
+                <span></span>
+                <i class="fas fa-skull"></i>
+                <span></span>
+            </div>
+
+            <h2 class="error-page__title">Chemin Perdu dans les T&eacute;n&egrave;bres</h2>
+
+            <p class="error-page__text">
+                Cette route ne m&egrave;ne nulle part. Le couloir s'effondre derri&egrave;re vous,
+                ne laissant que l'obscurit&eacute; et l'&eacute;cho de vos pas.
+            </p>
+
+            <div class="error-page__actions">
+                <a href="{{ path('app_home') }}" class="btn-dd btn-dd--primary">
+                    <i class="fas fa-campground"></i>
+                    Retour au Hameau
+                </a>
+                {% if app.user %}
+                    <a href="{{ path('app_teams') }}" class="btn-dd btn-dd--secondary">
+                        <i class="fas fa-shield-alt"></i>
+                        Former une &Eacute;quipe
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="error-page__ornament">&#x2726;</div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,196 @@
+@use "../base/variables" as *;
+
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+$dd-parchment: #d4c4a8;
+$dd-gold: #c9a227;
+$dd-bone: #e8dcc4;
+
+// ==========================================
+// CONTENEUR PRINCIPAL
+// ==========================================
+.error-page {
+    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 30%, $dd-black 60%, $dd-dark-brown 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+// ==========================================
+// SCENE
+// ==========================================
+.error-page__scene {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.error-page__vignette {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(ellipse at center, transparent 10%, rgba($dd-black, 0.6) 50%, rgba($dd-black, 0.95) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+// ==========================================
+// PANNEAU CENTRAL
+// ==========================================
+.error-page__panel {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    max-width: 550px;
+    width: 100%;
+    padding: 3rem 2.5rem;
+    background: linear-gradient(180deg, rgba($dd-dark-brown, 0.95) 0%, rgba($dd-black, 0.95) 100%);
+    border: 3px solid #3d3225;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba($dd-gold, 0.15);
+        margin: 6px;
+        pointer-events: none;
+    }
+}
+
+// ==========================================
+// ELEMENTS
+// ==========================================
+.error-page__ornament {
+    color: $dd-gold;
+    font-size: 1.2rem;
+    opacity: 0.5;
+    letter-spacing: 0.5em;
+}
+
+.error-page__icon {
+    margin: 1rem 0 1.5rem;
+
+    i {
+        font-size: 3.5rem;
+        color: $dd-blood-red;
+        text-shadow: 0 0 30px rgba($dd-blood-red, 0.6);
+    }
+}
+
+.error-page__code {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 6rem;
+    color: $dd-crimson;
+    text-transform: uppercase;
+    letter-spacing: 0.3em;
+    margin: 0;
+    text-shadow: 0 0 40px rgba($dd-crimson, 0.4), 0 4px 8px rgba(0, 0, 0, 0.8);
+    line-height: 1;
+}
+
+.error-page__separator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+
+    span {
+        display: block;
+        width: 80px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, $dd-gold, transparent);
+    }
+
+    i {
+        color: $dd-blood-red;
+        font-size: 1.2rem;
+        text-shadow: 0 0 15px rgba($dd-blood-red, 0.8);
+    }
+}
+
+.error-page__title {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.6rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin: 0 0 1.2rem;
+    text-shadow: 0 0 20px rgba($dd-gold, 0.3);
+}
+
+.error-page__text {
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 1.05rem;
+    color: $dd-bone;
+    opacity: 0.85;
+    line-height: 1.8;
+    margin: 0 0 2rem;
+}
+
+// ==========================================
+// ACTIONS
+// ==========================================
+.error-page__actions {
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 768px) {
+    .error-page__panel {
+        margin: 0 1rem;
+        padding: 2rem 1.5rem;
+    }
+
+    .error-page__code {
+        font-size: 4rem;
+    }
+
+    .error-page__title {
+        font-size: 1.3rem;
+        letter-spacing: 0.1em;
+    }
+
+    .error-page__text {
+        font-size: 0.95rem;
+    }
+
+    .error-page__separator span {
+        width: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .error-page__code {
+        font-size: 3rem;
+    }
+
+    .error-page__title {
+        font-size: 1.1rem;
+    }
+
+    .error-page__actions {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .error-page__icon i {
+        font-size: 2.5rem;
+    }
+}
