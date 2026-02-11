@@ -574,6 +574,7 @@ $dd-bone: #e8dcc4;
     flex-direction: column;
     gap: 0.15rem;
     min-width: 0;
+    overflow: hidden;
 }
 
 .info-panel__username {

@@ -85,7 +85,7 @@
                 <div class="info-panel__player-info">
                     <span class="info-panel__username">{{ team1Player.username }}</span>
                     {% if team1Player.motto %}
-                        <span class="info-panel__motto">&laquo; {{ team1Player.motto }} &raquo;</span>
+                        <span class="info-panel__motto">&laquo; {{ team1Player.motto|u.truncate(50, '...') }} &raquo;</span>
                     {% endif %}
                     <span class="info-panel__rating"><i class="fas fa-trophy"></i> {{ team1Player.rating }} MMR</span>
                 </div>
@@ -157,7 +157,7 @@
                 <div class="info-panel__player-info">
                     <span class="info-panel__username">{{ team2Player.username }}</span>
                     {% if team2Player.motto %}
-                        <span class="info-panel__motto">&laquo; {{ team2Player.motto }} &raquo;</span>
+                        <span class="info-panel__motto">&laquo; {{ team2Player.motto|u.truncate(50, '...') }} &raquo;</span>
                     {% endif %}
                     <span class="info-panel__rating info-panel__rating--enemy"><i class="fas fa-trophy"></i> {{ team2Player.rating }} MMR</span>
                 </div>
