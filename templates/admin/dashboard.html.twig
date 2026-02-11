@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration{% endblock %}
+
+{% block body %}
+<div class="admin-page">
+    <div class="admin-page__vignette"></div>
+
+    <div class="admin-header">
+        <h1 class="admin-header__title"><i class="fas fa-crown"></i> Panel d'Administration</h1>
+        <nav class="admin-nav">
+            <a href="{{ path('app_admin') }}" class="admin-nav__link admin-nav__link--active">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ path('app_admin_users') }}" class="admin-nav__link">
+                <i class="fas fa-users"></i> Utilisateurs
+            </a>
+            <a href="{{ path('app_admin_reports') }}" class="admin-nav__link">
+                <i class="fas fa-flag"></i> Signalements
+                {% if pendingReports > 0 %}
+                    <span class="admin-nav__badge">{{ pendingReports }}</span>
+                {% endif %}
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-stats">
+        <div class="admin-stat">
+            <span class="admin-stat__value">{{ totalUsers }}</span>
+            <span class="admin-stat__label"><i class="fas fa-users"></i> Utilisateurs</span>
+        </div>
+        <div class="admin-stat">
+            <span class="admin-stat__value">{{ totalBattles }}</span>
+            <span class="admin-stat__label"><i class="fas fa-shield-alt"></i> Combats</span>
+        </div>
+        <div class="admin-stat">
+            <span class="admin-stat__value">{{ totalMessages }}</span>
+            <span class="admin-stat__label"><i class="fas fa-comment"></i> Messages</span>
+        </div>
+        <div class="admin-stat admin-stat--alert">
+            <span class="admin-stat__value">{{ pendingReports }}</span>
+            <span class="admin-stat__label"><i class="fas fa-flag"></i> Signalements</span>
+        </div>
+    </div>
+
+    <div class="admin-sections">
+        <div class="admin-section">
+            <h2 class="admin-section__title"><i class="fas fa-user-plus"></i> Derniers inscrits</h2>
+            {% if recentUsers|length > 0 %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Utilisateur</th>
+                            <th>Email</th>
+                            <th>MMR</th>
+                            <th>Statut</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in recentUsers %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('app_admin_user_detail', {id: user.id}) }}" class="admin-link">
+                                        {{ user.username }}
+                                    </a>
+                                </td>
+                                <td class="admin-table__muted">{{ user.email }}</td>
+                                <td>{{ user.rating }}</td>
+                                <td>
+                                    {% if user.isBanned %}
+                                        <span class="admin-badge admin-badge--danger">Banni</span>
+                                    {% else %}
+                                        <span class="admin-badge admin-badge--ok">Actif</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="admin-empty">Aucun utilisateur</p>
+            {% endif %}
+        </div>
+
+        <div class="admin-section">
+            <h2 class="admin-section__title"><i class="fas fa-flag"></i> Signalements r&eacute;cents</h2>
+            {% if reportedMessages|length > 0 %}
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Auteur</th>
+                            <th>Message</th>
+                            <th>Signal&eacute; par</th>
+                            <th>Raison</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for msg in reportedMessages %}
+                            <tr>
+                                <td>{{ msg.sender.username }}</td>
+                                <td class="admin-table__msg">{{ msg.content|slice(0, 60) }}{{ msg.content|length > 60 ? '...' : '' }}</td>
+                                <td>{{ msg.reportedBy ? msg.reportedBy.username : '?' }}</td>
+                                <td class="admin-table__muted">{{ msg.reportReason|default('Non specifiee') }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{{ path('app_admin_reports') }}" class="admin-section__more">Voir tous les signalements <i class="fas fa-arrow-right"></i></a>
+            {% else %}
+                <p class="admin-empty">Aucun signalement en attente</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

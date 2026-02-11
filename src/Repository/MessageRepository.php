@@ -103,4 +103,45 @@ class MessageRepository extends ServiceEntityRepository
 
         return $lastMessages;
     }
+
+    /**
+     * @return Message[]
+     */
+    public function findReported(): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.isReported = :true')
+            ->andWhere('m.isRemoved = :false')
+            ->setParameter('true', true)
+            ->setParameter('false', false)
+            ->orderBy('m.reportedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countReported(): int
+    {
+        return (int) $this->createQueryBuilder('m')
+            ->select('COUNT(m.id)')
+            ->where('m.isReported = :true')
+            ->andWhere('m.isRemoved = :false')
+            ->setParameter('true', true)
+            ->setParameter('false', false)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return Message[]
+     */
+    public function findByUser(User $user, int $limit = 20): array
+    {
+        return $this->createQueryBuilder('m')
+            ->where('m.sender = :user')
+            ->setParameter('user', $user)
+            ->orderBy('m.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

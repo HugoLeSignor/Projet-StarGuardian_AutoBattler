@@ -445,6 +445,24 @@ $dd-crimson: #dc143c;
         color: rgba($dd-parchment, 0.3);
         margin-top: 0.15rem;
     }
+
+    &__report {
+        background: none;
+        border: none;
+        color: rgba($dd-parchment, 0.2);
+        cursor: pointer;
+        font-size: 0.55rem;
+        padding: 0 0.2rem;
+        margin-left: 0.3rem;
+        transition: color 0.2s;
+
+        &:hover { color: $dd-crimson; }
+
+        &--done {
+            color: rgba(106, 191, 110, 0.5) !important;
+            cursor: default;
+        }
+    }
 }
 
 .friends-conversation__input-area {

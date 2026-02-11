@@ -1,0 +1,181 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - {{ targetUser.username }}{% endblock %}
+
+{% block body %}
+<div class="admin-page">
+    <div class="admin-page__vignette"></div>
+
+    <div class="admin-header">
+        <h1 class="admin-header__title"><i class="fas fa-crown"></i> Panel d'Administration</h1>
+        <nav class="admin-nav">
+            <a href="{{ path('app_admin') }}" class="admin-nav__link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ path('app_admin_users') }}" class="admin-nav__link admin-nav__link--active">
+                <i class="fas fa-users"></i> Utilisateurs
+            </a>
+            <a href="{{ path('app_admin_reports') }}" class="admin-nav__link">
+                <i class="fas fa-flag"></i> Signalements
+            </a>
+        </nav>
+    </div>
+
+    <a href="{{ path('app_admin_users') }}" class="admin-back">
+        <i class="fas fa-arrow-left"></i> Retour aux utilisateurs
+    </a>
+
+    <div class="admin-user-profile">
+        <div class="admin-user-profile__header">
+            <div class="admin-user-profile__avatar">
+                {% if targetUser.profileImage %}
+                    <img src="/uploads/avatars/{{ targetUser.profileImage }}" alt="Avatar">
+                {% else %}
+                    <i class="fas fa-user"></i>
+                {% endif %}
+            </div>
+            <div class="admin-user-profile__info">
+                <h2 class="admin-user-profile__name">{{ targetUser.username }}</h2>
+                <p class="admin-user-profile__email">{{ targetUser.email }}</p>
+                {% if 'ROLE_ADMIN' in targetUser.roles %}
+                    <span class="admin-badge admin-badge--gold">Admin</span>
+                {% endif %}
+                {% if targetUser.isBanned %}
+                    <span class="admin-badge admin-badge--danger">Banni</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="admin-stats admin-stats--small">
+            <div class="admin-stat">
+                <span class="admin-stat__value">{{ targetUser.rating }}</span>
+                <span class="admin-stat__label">MMR</span>
+            </div>
+            <div class="admin-stat">
+                <span class="admin-stat__value">{{ stats.total }}</span>
+                <span class="admin-stat__label">Combats</span>
+            </div>
+            <div class="admin-stat">
+                <span class="admin-stat__value">{{ stats.wins }}</span>
+                <span class="admin-stat__label">Victoires</span>
+            </div>
+            <div class="admin-stat">
+                <span class="admin-stat__value">{{ stats.winRate }}%</span>
+                <span class="admin-stat__label">Win Rate</span>
+            </div>
+        </div>
+
+        {% if targetUser.bio %}
+            <div class="admin-user-profile__bio">
+                <strong>Bio :</strong> {{ targetUser.bio }}
+            </div>
+        {% endif %}
+
+        {% if targetUser.isBanned %}
+            <div class="admin-user-profile__ban-info">
+                <i class="fas fa-ban"></i>
+                <strong>Banni le :</strong> {{ targetUser.bannedAt ? targetUser.bannedAt|date('d/m/Y H:i') : '?' }}
+                {% if targetUser.banReason %}
+                    <br><strong>Raison :</strong> {{ targetUser.banReason }}
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="admin-section">
+        <h2 class="admin-section__title"><i class="fas fa-gavel"></i> Actions de mod&eacute;ration</h2>
+        <div class="admin-mod-actions">
+            {% if targetUser.isBanned %}
+                <form method="POST" action="{{ path('app_admin_user_unban', {id: targetUser.id}) }}" class="admin-mod-form">
+                    <button type="submit" class="admin-btn admin-btn--success">
+                        <i class="fas fa-unlock"></i> D&eacute;bannir
+                    </button>
+                </form>
+            {% else %}
+                <form method="POST" action="{{ path('app_admin_user_ban', {id: targetUser.id}) }}" class="admin-mod-form"
+                      onsubmit="return confirm('Bannir {{ targetUser.username }} ?')">
+                    <input type="text" name="reason" placeholder="Raison du ban..." class="admin-mod-form__input">
+                    <button type="submit" class="admin-btn admin-btn--danger">
+                        <i class="fas fa-ban"></i> Bannir
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if recentMessages|length > 0 %}
+    <div class="admin-section">
+        <h2 class="admin-section__title"><i class="fas fa-comment"></i> Messages r&eacute;cents</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Destinataire</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in recentMessages %}
+                    <tr class="{{ msg.isRemoved ? 'admin-table__row--banned' : '' }}">
+                        <td>{{ msg.receiver.username }}</td>
+                        <td class="admin-table__msg">{{ msg.content|slice(0, 80) }}{{ msg.content|length > 80 ? '...' : '' }}</td>
+                        <td class="admin-table__muted">{{ msg.createdAt|date('d/m/Y H:i') }}</td>
+                        <td>
+                            {% if msg.isRemoved %}
+                                <span class="admin-badge admin-badge--danger">Supprim&eacute;</span>
+                            {% elseif msg.isReported %}
+                                <span class="admin-badge admin-badge--warning">Signal&eacute;</span>
+                            {% else %}
+                                <span class="admin-badge admin-badge--ok">OK</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if recentBattles|length > 0 %}
+    <div class="admin-section">
+        <h2 class="admin-section__title"><i class="fas fa-shield-alt"></i> Combats r&eacute;cents</h2>
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Adversaire</th>
+                    <th>Type</th>
+                    <th>R&eacute;sultat</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for battle in recentBattles %}
+                    {% set isP1 = battle.player1 and battle.player1.id == targetUser.id %}
+                    <tr>
+                        <td>
+                            {% if isP1 %}
+                                {{ battle.player2 ? battle.player2.username : (battle.botName ?? 'Bot') }}
+                            {% else %}
+                                {{ battle.player1 ? battle.player1.username : '?' }}
+                            {% endif %}
+                        </td>
+                        <td>{{ battle.matchType|upper }}</td>
+                        <td>
+                            {% if battle.winner == 'draw' %}
+                                <span class="admin-badge">Nul</span>
+                            {% elseif (isP1 and battle.winner == 'player1') or (not isP1 and battle.winner == 'player2') %}
+                                <span class="admin-badge admin-badge--ok">Victoire</span>
+                            {% else %}
+                                <span class="admin-badge admin-badge--danger">D&eacute;faite</span>
+                            {% endif %}
+                        </td>
+                        <td class="admin-table__muted">{{ battle.createdAt|date('d/m/Y H:i') }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

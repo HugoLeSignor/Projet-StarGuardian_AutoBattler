@@ -24,6 +24,11 @@
                 {% endif %}
                 <span class="topbar__username">{{ app.user.username }}</span>
             </div>
+            {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_admin') }}" class="topbar__admin" title="Administration">
+                <i class="fas fa-crown"></i>
+            </a>
+            {% endif %}
             <div class="topbar__friends" data-friends-toggle>
                 <i class="fas fa-user-friends"></i>
                 <span class="topbar__friends-badge" data-friends-badge style="display:none;">0</span>

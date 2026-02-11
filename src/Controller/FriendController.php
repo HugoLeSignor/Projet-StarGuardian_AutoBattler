@@ -335,6 +335,41 @@ class FriendController extends AbstractController
         ]);
     }
 
+    #[Route('/friends/messages/{id}/report', name: 'app_friends_messages_report', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function reportMessage(int $id, Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifie'], 401);
+        }
+
+        $message = $this->messageRepository->find($id);
+        if (!$message) {
+            return $this->json(['error' => 'Message introuvable'], 404);
+        }
+
+        // Ne peut pas signaler son propre message
+        if ($message->getSender() === $user) {
+            return $this->json(['error' => 'Vous ne pouvez pas signaler votre propre message'], 400);
+        }
+
+        // Deja signale
+        if ($message->isReported()) {
+            return $this->json(['error' => 'Ce message a deja ete signale'], 400);
+        }
+
+        $data = json_decode($request->getContent(), true);
+        $reason = trim($data['reason'] ?? '');
+
+        $message->setIsReported(true);
+        $message->setReportReason($reason ?: null);
+        $message->setReportedBy($user);
+        $message->setReportedAt(new \DateTimeImmutable());
+        $this->entityManager->flush();
+
+        return $this->json(['success' => true, 'message' => 'Message signale']);
+    }
+
     #[Route('/friends/unread-count', name: 'app_friends_unread_count', methods: ['GET'])]
     public function unreadCount(): JsonResponse
     {

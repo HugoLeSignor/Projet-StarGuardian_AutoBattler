@@ -298,6 +298,32 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(() => { btn.disabled = false; });
     }
 
+    function reportMessageAction(messageId, btn) {
+        const reason = prompt('Raison du signalement :');
+        if (reason === null) return; // cancelled
+
+        btn.disabled = true;
+        fetch(`/friends/messages/${messageId}/report`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify({ reason: reason })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                btn.innerHTML = '<i class="fas fa-check"></i>';
+                btn.classList.add('chat-message__report--done');
+                btn.title = 'Signale';
+            } else {
+                btn.disabled = false;
+            }
+        })
+        .catch(() => { btn.disabled = false; });
+    }
+
     // ==========================================
     // CONVERSATION
     // ==========================================
@@ -346,10 +372,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const div = document.createElement('div');
             div.classList.add('chat-message', msg.isFromMe ? 'chat-message--mine' : 'chat-message--theirs');
+
+            let reportBtn = '';
+            if (!msg.isFromMe) {
+                reportBtn = `<button class="chat-message__report" data-report-msg-id="${msg.id}" title="Signaler ce message"><i class="fas fa-flag"></i></button>`;
+            }
+
             div.innerHTML = `
                 ${escapeHtml(msg.content)}
-                <span class="chat-message__time">${escapeHtml(msg.date)}</span>
+                <span class="chat-message__time">${escapeHtml(msg.date)} ${reportBtn}</span>
             `;
+
+            // Attach report handler
+            const reportEl = div.querySelector('[data-report-msg-id]');
+            if (reportEl) {
+                reportEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    reportMessageAction(reportEl.dataset.reportMsgId, reportEl);
+                });
+            }
+
             messagesEl.appendChild(div);
         });
 

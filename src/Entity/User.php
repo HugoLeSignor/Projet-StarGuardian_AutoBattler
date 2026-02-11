@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -45,6 +46,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $profileImage = null;
+
+    #[ORM\Column(type: 'boolean', options: ['default' => false])]
+    private bool $isBanned = false;
+
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $banReason = null;
+
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $bannedAt = null;
 
     /**
      * @var Collection<int, Battle>
@@ -196,6 +206,39 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $battle->setPlayer1(null);
             }
         }
+        return $this;
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->isBanned;
+    }
+
+    public function setIsBanned(bool $isBanned): static
+    {
+        $this->isBanned = $isBanned;
+        return $this;
+    }
+
+    public function getBanReason(): ?string
+    {
+        return $this->banReason;
+    }
+
+    public function setBanReason(?string $banReason): static
+    {
+        $this->banReason = $banReason;
+        return $this;
+    }
+
+    public function getBannedAt(): ?\DateTimeImmutable
+    {
+        return $this->bannedAt;
+    }
+
+    public function setBannedAt(?\DateTimeImmutable $bannedAt): static
+    {
+        $this->bannedAt = $bannedAt;
         return $this;
     }
 }

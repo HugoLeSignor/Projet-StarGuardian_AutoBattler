@@ -32,6 +32,35 @@ $dd-bone: #e8dcc4;
 }
 
 // ==========================================
+// BOUTON RETOUR
+// ==========================================
+.teams-page__back {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: $dd-parchment;
+  text-decoration: none;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba($dd-gold, 0.25);
+  margin-bottom: 1rem;
+  opacity: 0.7;
+  transition: all 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+    color: $dd-gold;
+    border-color: $dd-gold;
+    background: rgba($dd-gold, 0.08);
+  }
+}
+
+// ==========================================
 // ZONE EQUIPE SELECTIONNEE (HAUT)
 // ==========================================
 .selected-team {

@@ -1,0 +1,620 @@
+@use '../base/variables' as *;
+
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-gold: #c9a227;
+$dd-parchment: #d4c4a8;
+$dd-bone: #e8dcc4;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+
+// ==========================================
+// PAGE CONTAINER
+// ==========================================
+.admin-page {
+    min-height: 100vh;
+    background: linear-gradient(180deg, $dd-black 0%, $dd-dark-brown 50%, $dd-black 100%);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Times New Roman', Georgia, serif;
+    color: $dd-parchment;
+}
+
+.admin-page__vignette {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: radial-gradient(ellipse at center, transparent 40%, rgba(0, 0, 0, 0.6) 100%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+// ==========================================
+// HEADER + NAV
+// ==========================================
+.admin-header {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 1.5rem;
+}
+
+.admin-header__title {
+    font-size: 1.3rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 1rem;
+
+    i { margin-right: 0.4rem; }
+}
+
+.admin-nav {
+    display: flex;
+    gap: 0.3rem;
+    border-bottom: 1px solid rgba($dd-gold, 0.2);
+    padding-bottom: 0;
+}
+
+.admin-nav__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.6rem 1rem;
+    color: rgba($dd-parchment, 0.6);
+    text-decoration: none;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: $dd-parchment;
+        background: rgba($dd-gold, 0.05);
+    }
+
+    &--active {
+        color: $dd-gold;
+        border-bottom-color: $dd-gold;
+    }
+}
+
+.admin-nav__badge {
+    background: $dd-crimson;
+    color: #fff;
+    font-size: 0.6rem;
+    min-width: 16px;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 50%;
+    padding: 0 4px;
+}
+
+// ==========================================
+// BACK LINK
+// ==========================================
+.admin-back {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: $dd-parchment;
+    text-decoration: none;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.8rem;
+    border: 1px solid rgba($dd-gold, 0.25);
+    margin-bottom: 1rem;
+    opacity: 0.7;
+    transition: all 0.2s ease;
+
+    &:hover {
+        opacity: 1;
+        color: $dd-gold;
+        border-color: $dd-gold;
+        background: rgba($dd-gold, 0.08);
+    }
+}
+
+// ==========================================
+// STATS GRID
+// ==========================================
+.admin-stats {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+
+    &--small {
+        grid-template-columns: repeat(4, 1fr);
+        margin-bottom: 1rem;
+    }
+}
+
+.admin-stat {
+    text-align: center;
+    padding: 1rem 0.5rem;
+    background: rgba($dd-gold, 0.05);
+    border: 1px solid rgba($dd-gold, 0.15);
+
+    &--alert {
+        border-color: rgba($dd-crimson, 0.3);
+        background: rgba($dd-crimson, 0.05);
+
+        .admin-stat__value { color: $dd-crimson; }
+    }
+
+    &__value {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: $dd-gold;
+    }
+
+    &__label {
+        display: block;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: rgba($dd-parchment, 0.6);
+        margin-top: 0.3rem;
+
+        i { margin-right: 0.2rem; }
+    }
+}
+
+// ==========================================
+// SECTIONS
+// ==========================================
+.admin-sections {
+    position: relative;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.admin-section {
+    position: relative;
+    z-index: 2;
+    margin-bottom: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba($dd-gold, 0.1);
+    padding: 1rem;
+
+    &__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.8rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    &__title {
+        font-size: 0.9rem;
+        color: $dd-gold;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin: 0 0 0.8rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 1px solid rgba($dd-gold, 0.15);
+
+        i { margin-right: 0.3rem; opacity: 0.7; }
+    }
+
+    &__more {
+        display: inline-block;
+        margin-top: 0.8rem;
+        color: $dd-gold;
+        text-decoration: none;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+
+        &:hover { opacity: 1; }
+
+        i { margin-left: 0.2rem; }
+    }
+}
+
+// ==========================================
+// TABLE
+// ==========================================
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+
+    th {
+        text-align: left;
+        padding: 0.5rem 0.6rem;
+        color: $dd-gold;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid rgba($dd-gold, 0.2);
+        font-weight: normal;
+    }
+
+    td {
+        padding: 0.5rem 0.6rem;
+        border-bottom: 1px solid rgba($dd-gold, 0.05);
+        color: $dd-bone;
+        vertical-align: middle;
+    }
+
+    &__muted {
+        color: rgba($dd-parchment, 0.4) !important;
+        font-size: 0.75rem;
+    }
+
+    &__msg {
+        max-width: 250px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.3rem;
+    }
+
+    &__row--banned {
+        opacity: 0.5;
+    }
+
+    tbody tr:hover {
+        background: rgba($dd-gold, 0.04);
+    }
+}
+
+// ==========================================
+// BADGES
+// ==========================================
+.admin-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.15rem 0.5rem;
+    border: 1px solid rgba($dd-parchment, 0.2);
+    color: rgba($dd-parchment, 0.6);
+
+    &--ok {
+        color: #6abf6e;
+        border-color: rgba(106, 191, 110, 0.3);
+    }
+
+    &--danger {
+        color: $dd-crimson;
+        border-color: rgba($dd-crimson, 0.3);
+    }
+
+    &--warning {
+        color: #e6a817;
+        border-color: rgba(230, 168, 23, 0.3);
+    }
+
+    &--gold {
+        color: $dd-gold;
+        border-color: rgba($dd-gold, 0.3);
+    }
+}
+
+// ==========================================
+// BUTTONS
+// ==========================================
+.admin-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: none;
+    border: 1px solid rgba($dd-gold, 0.3);
+    color: $dd-parchment;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.4rem 0.8rem;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba($dd-gold, 0.1);
+        border-color: $dd-gold;
+        color: $dd-gold;
+    }
+
+    &--small {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+    }
+
+    &--danger {
+        color: $dd-crimson;
+        border-color: rgba($dd-crimson, 0.3);
+
+        &:hover {
+            background: rgba($dd-crimson, 0.15);
+            border-color: $dd-crimson;
+            color: $dd-crimson;
+        }
+    }
+
+    &--success {
+        color: #6abf6e;
+        border-color: rgba(106, 191, 110, 0.3);
+
+        &:hover {
+            background: rgba(106, 191, 110, 0.15);
+            border-color: #6abf6e;
+            color: #6abf6e;
+        }
+    }
+}
+
+// ==========================================
+// SEARCH
+// ==========================================
+.admin-search {
+    display: flex;
+    gap: 0.3rem;
+
+    &__input {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba($dd-gold, 0.2);
+        color: $dd-parchment;
+        font-family: 'Times New Roman', Georgia, serif;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+        outline: none;
+        min-width: 200px;
+
+        &::placeholder { color: rgba($dd-parchment, 0.3); }
+        &:focus { border-color: rgba($dd-gold, 0.5); }
+    }
+
+    &__btn {
+        background: rgba($dd-gold, 0.1);
+        border: 1px solid rgba($dd-gold, 0.3);
+        color: $dd-gold;
+        cursor: pointer;
+        padding: 0.4rem 0.6rem;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: rgba($dd-gold, 0.2);
+            border-color: $dd-gold;
+        }
+    }
+}
+
+// ==========================================
+// PAGINATION
+// ==========================================
+.admin-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-top: 1rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba($dd-gold, 0.1);
+}
+
+.admin-pagination__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 30px;
+    height: 30px;
+    padding: 0 0.4rem;
+    text-decoration: none;
+    color: rgba($dd-parchment, 0.6);
+    font-size: 0.8rem;
+    border: 1px solid rgba($dd-gold, 0.15);
+    transition: all 0.2s ease;
+
+    &:hover {
+        color: $dd-gold;
+        border-color: rgba($dd-gold, 0.4);
+        background: rgba($dd-gold, 0.08);
+    }
+
+    &--active {
+        color: $dd-gold;
+        border-color: $dd-gold;
+        background: rgba($dd-gold, 0.1);
+    }
+}
+
+// ==========================================
+// USER PROFILE DETAIL
+// ==========================================
+.admin-user-profile {
+    position: relative;
+    z-index: 2;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba($dd-gold, 0.1);
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+
+    &__header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 1px solid rgba($dd-gold, 0.1);
+    }
+
+    &__avatar {
+        width: 56px;
+        height: 56px;
+        flex-shrink: 0;
+        border: 2px solid rgba($dd-gold, 0.3);
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 50%;
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+        i { font-size: 1.8rem; color: rgba($dd-parchment, 0.25); }
+    }
+
+    &__name {
+        font-size: 1.1rem;
+        color: $dd-bone;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0 0 0.2rem;
+    }
+
+    &__email {
+        font-size: 0.8rem;
+        color: rgba($dd-parchment, 0.5);
+        margin: 0 0 0.3rem;
+    }
+
+    &__bio {
+        font-size: 0.8rem;
+        color: rgba($dd-parchment, 0.6);
+        padding: 0.6rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-left: 2px solid rgba($dd-gold, 0.2);
+        margin-bottom: 0.8rem;
+    }
+
+    &__ban-info {
+        font-size: 0.8rem;
+        color: $dd-crimson;
+        padding: 0.6rem;
+        background: rgba($dd-crimson, 0.05);
+        border: 1px solid rgba($dd-crimson, 0.2);
+
+        i { margin-right: 0.3rem; }
+    }
+}
+
+// ==========================================
+// MODERATION ACTIONS
+// ==========================================
+.admin-mod-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-mod-form {
+    display: flex;
+    gap: 0.3rem;
+    align-items: center;
+
+    &__input {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba($dd-gold, 0.2);
+        color: $dd-parchment;
+        font-family: 'Times New Roman', Georgia, serif;
+        font-size: 0.8rem;
+        padding: 0.4rem 0.6rem;
+        outline: none;
+        min-width: 250px;
+
+        &::placeholder { color: rgba($dd-parchment, 0.3); }
+        &:focus { border-color: rgba($dd-gold, 0.5); }
+    }
+}
+
+// ==========================================
+// EMPTY STATE
+// ==========================================
+.admin-empty {
+    text-align: center;
+    color: rgba($dd-parchment, 0.4);
+    font-style: italic;
+    padding: 1.5rem 0;
+    font-size: 0.85rem;
+
+    i { margin-right: 0.3rem; }
+}
+
+// ==========================================
+// LINK
+// ==========================================
+.admin-link {
+    color: $dd-bone;
+    text-decoration: none;
+    transition: color 0.2s;
+
+    &:hover { color: $dd-gold; }
+}
+
+// ==========================================
+// TOPBAR ADMIN ICON
+// ==========================================
+.topbar__admin {
+    display: flex;
+    align-items: center;
+    padding: 0.3rem 0.6rem;
+    color: $dd-gold;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    text-decoration: none;
+
+    &:hover { opacity: 1; }
+
+    i { font-size: 0.9rem; }
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 768px) {
+    .admin-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .admin-sections {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-nav {
+        flex-wrap: wrap;
+    }
+
+    .admin-section__header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .admin-table__msg {
+        max-width: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-page {
+        padding: 1rem;
+    }
+
+    .admin-mod-form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .admin-mod-form__input {
+        min-width: auto;
+    }
+}

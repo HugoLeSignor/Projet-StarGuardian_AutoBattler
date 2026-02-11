@@ -29,4 +29,37 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->persist($user);
         $this->getEntityManager()->flush();
     }
+
+    /**
+     * @return User[]
+     */
+    public function findAllPaginated(int $page, int $limit, ?string $search = null): array
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->orderBy('u.id', 'DESC');
+
+        if ($search) {
+            $qb->where('u.username LIKE :search OR u.email LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        return $qb
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function countAll(?string $search = null): int
+    {
+        $qb = $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)');
+
+        if ($search) {
+            $qb->where('u.username LIKE :search OR u.email LIKE :search')
+               ->setParameter('search', '%' . $search . '%');
+        }
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
 }

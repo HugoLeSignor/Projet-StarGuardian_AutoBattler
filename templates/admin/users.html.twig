@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Utilisateurs{% endblock %}
+
+{% block body %}
+<div class="admin-page">
+    <div class="admin-page__vignette"></div>
+
+    <div class="admin-header">
+        <h1 class="admin-header__title"><i class="fas fa-crown"></i> Panel d'Administration</h1>
+        <nav class="admin-nav">
+            <a href="{{ path('app_admin') }}" class="admin-nav__link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ path('app_admin_users') }}" class="admin-nav__link admin-nav__link--active">
+                <i class="fas fa-users"></i> Utilisateurs
+            </a>
+            <a href="{{ path('app_admin_reports') }}" class="admin-nav__link">
+                <i class="fas fa-flag"></i> Signalements
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-section">
+        <div class="admin-section__header">
+            <h2 class="admin-section__title"><i class="fas fa-users"></i> Utilisateurs ({{ total }})</h2>
+            <form method="GET" action="{{ path('app_admin_users') }}" class="admin-search">
+                <input type="text" name="q" value="{{ search }}" placeholder="Rechercher par nom ou email..." class="admin-search__input">
+                <button type="submit" class="admin-search__btn"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+
+        {% if users|length > 0 %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utilisateur</th>
+                        <th>Email</th>
+                        <th>MMR</th>
+                        <th>R&ocirc;le</th>
+                        <th>Statut</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr class="{{ user.isBanned ? 'admin-table__row--banned' : '' }}">
+                            <td class="admin-table__muted">#{{ user.id }}</td>
+                            <td>
+                                <a href="{{ path('app_admin_user_detail', {id: user.id}) }}" class="admin-link">
+                                    {{ user.username }}
+                                </a>
+                            </td>
+                            <td class="admin-table__muted">{{ user.email }}</td>
+                            <td>{{ user.rating }}</td>
+                            <td>
+                                {% if 'ROLE_ADMIN' in user.roles %}
+                                    <span class="admin-badge admin-badge--gold">Admin</span>
+                                {% else %}
+                                    <span class="admin-badge">User</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.isBanned %}
+                                    <span class="admin-badge admin-badge--danger">Banni</span>
+                                {% else %}
+                                    <span class="admin-badge admin-badge--ok">Actif</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('app_admin_user_detail', {id: user.id}) }}" class="admin-btn admin-btn--small">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            {% if totalPages > 1 %}
+                <div class="admin-pagination">
+                    {% if currentPage > 1 %}
+                        <a href="{{ path('app_admin_users', {page: currentPage - 1, q: search}) }}" class="admin-pagination__link">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    {% endif %}
+
+                    {% for p in 1..totalPages %}
+                        {% if p >= currentPage - 2 and p <= currentPage + 2 %}
+                            <a href="{{ path('app_admin_users', {page: p, q: search}) }}"
+                               class="admin-pagination__link {{ p == currentPage ? 'admin-pagination__link--active' : '' }}">
+                                {{ p }}
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if currentPage < totalPages %}
+                        <a href="{{ path('app_admin_users', {page: currentPage + 1, q: search}) }}" class="admin-pagination__link">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        {% else %}
+            <p class="admin-empty">Aucun utilisateur trouv&eacute;</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

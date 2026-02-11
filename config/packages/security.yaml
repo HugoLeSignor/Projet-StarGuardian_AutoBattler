@@ -23,10 +23,12 @@ security:
             logout:
                 path: app_logout
                 target: app_home
+            user_checker: App\Security\UserChecker
 
     access_control:
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/champ, roles: ROLE_USER }
         - { path: ^/teams, roles: ROLE_USER }
         - { path: ^/arena, roles: ROLE_USER }
