@@ -7,6 +7,16 @@ import './js/combat.js';
 import './js/friends.js';
 
 /* ======================
+   UTILITAIRE SECURITE XSS
+====================== */
+function escapeHtml(str) {
+    if (!str) return '';
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
+/* ======================
    MENU BURGER
 ====================== */
 document.addEventListener("DOMContentLoaded", () => {
@@ -474,34 +484,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const resultLabel = (r) => r === 'win' ? 'Victoire' : r === 'loss' ? 'D\u00e9faite' : 'Nul';
 
         const avatarHtml = data.profileImage
-            ? `<img src="${data.profileImage}" alt="Avatar">`
-            : `<i class="fas fa-user-circle"></i>`;
+            ? `<img src="${escapeHtml(data.profileImage)}" alt="Avatar de ${escapeHtml(data.username)}">`
+            : `<i class="fas fa-user-circle" aria-hidden="true"></i>`;
 
         let html = `
             <div class="profile-popup__identity">
                 <div class="profile-popup__avatar">${avatarHtml}</div>
                 <div class="profile-popup__info">
-                    <span class="profile-popup__username">${data.username}</span>
-                    ${data.motto ? `<span class="profile-popup__motto">\u00ab ${data.motto} \u00bb</span>` : ''}
-                    ${data.bio ? `<p class="profile-popup__bio">${data.bio}</p>` : ''}
+                    <span class="profile-popup__username">${escapeHtml(data.username)}</span>
+                    ${data.motto ? `<span class="profile-popup__motto">\u00ab ${escapeHtml(data.motto)} \u00bb</span>` : ''}
+                    ${data.bio ? `<p class="profile-popup__bio">${escapeHtml(data.bio)}</p>` : ''}
                 </div>
             </div>
 
             <div class="profile-popup__stats">
                 <div class="profile-stat">
-                    <span class="profile-stat__value">${data.rating}</span>
+                    <span class="profile-stat__value">${escapeHtml(String(data.rating))}</span>
                     <span class="profile-stat__label">MMR</span>
                 </div>
                 <div class="profile-stat">
-                    <span class="profile-stat__value">${data.stats.wins}</span>
+                    <span class="profile-stat__value">${escapeHtml(String(data.stats.wins))}</span>
                     <span class="profile-stat__label">Victoires</span>
                 </div>
                 <div class="profile-stat">
-                    <span class="profile-stat__value">${data.stats.losses}</span>
+                    <span class="profile-stat__value">${escapeHtml(String(data.stats.losses))}</span>
                     <span class="profile-stat__label">D\u00e9faites</span>
                 </div>
                 <div class="profile-stat">
-                    <span class="profile-stat__value">${data.stats.winRate}%</span>
+                    <span class="profile-stat__value">${escapeHtml(String(data.stats.winRate))}%</span>
                     <span class="profile-stat__label">Win Rate</span>
                 </div>
             </div>
@@ -511,12 +521,12 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <div class="profile-popup__section">
                     <h3 class="profile-popup__subtitle">
-                        <i class="fas fa-star"></i> Champion Favori
+                        <i class="fas fa-star" aria-hidden="true"></i> Champion Favori
                     </h3>
                     <div class="profile-favorite">
-                        <span class="profile-favorite__name">${data.favoriteCharacter.name}</span>
-                        <span class="profile-favorite__role">${data.favoriteCharacter.role}</span>
-                        <span class="profile-favorite__count">${data.favoriteCharacter.gamesPlayed} parties</span>
+                        <span class="profile-favorite__name">${escapeHtml(data.favoriteCharacter.name)}</span>
+                        <span class="profile-favorite__role">${escapeHtml(data.favoriteCharacter.role)}</span>
+                        <span class="profile-favorite__count">${escapeHtml(String(data.favoriteCharacter.gamesPlayed))} parties</span>
                     </div>
                 </div>
             `;
@@ -526,13 +536,13 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <div class="profile-popup__section">
                     <h3 class="profile-popup__subtitle">
-                        <i class="fas fa-users"></i> Derni\u00e8re \u00c9quipe
+                        <i class="fas fa-users" aria-hidden="true"></i> Derni\u00e8re \u00c9quipe
                     </h3>
                     <div class="profile-last-team">
                         ${data.lastTeam.map(c => `
                             <div class="profile-last-team__member">
-                                <span class="profile-last-team__name">${c.name}</span>
-                                <span class="profile-last-team__role">${c.role}</span>
+                                <span class="profile-last-team__name">${escapeHtml(c.name)}</span>
+                                <span class="profile-last-team__role">${escapeHtml(c.role)}</span>
                             </div>
                         `).join('')}
                     </div>
@@ -544,16 +554,16 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `
                 <div class="profile-popup__section">
                     <h3 class="profile-popup__subtitle">
-                        <i class="fas fa-shield-alt"></i> Historique
+                        <i class="fas fa-shield-alt" aria-hidden="true"></i> Historique
                     </h3>
                     <div class="profile-history">
                         ${data.recentBattles.map(b => `
-                            <a href="/arena/replay/${b.id}" class="profile-history__entry ${resultClass(b.result)}">
+                            <a href="/arena/replay/${parseInt(b.id, 10)}" class="profile-history__entry ${resultClass(b.result)}">
                                 <span class="profile-history__result">${resultLabel(b.result)}</span>
-                                <span class="profile-history__opponent">vs ${b.opponent}</span>
-                                <span class="profile-history__type">${b.matchType.toUpperCase()}</span>
-                                <span class="profile-history__date">${b.date}</span>
-                                <i class="fas fa-play profile-history__replay"></i>
+                                <span class="profile-history__opponent">vs ${escapeHtml(b.opponent)}</span>
+                                <span class="profile-history__type">${escapeHtml(b.matchType).toUpperCase()}</span>
+                                <span class="profile-history__date">${escapeHtml(b.date)}</span>
+                                <i class="fas fa-play profile-history__replay" aria-hidden="true"></i>
                             </a>
                         `).join('')}
                     </div>
@@ -570,7 +580,7 @@ document.addEventListener('DOMContentLoaded', () => {
         html += `
             <div class="profile-popup__actions">
                 <a href="/profile" class="profile-popup__edit-link">
-                    <i class="fas fa-pen"></i> \u00c9diter le profil
+                    <i class="fas fa-pen" aria-hidden="true"></i> \u00c9diter le profil
                 </a>
             </div>
         `;
@@ -579,4 +589,3 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-console.log('assets/app.js charg\u00e9 \u2714');

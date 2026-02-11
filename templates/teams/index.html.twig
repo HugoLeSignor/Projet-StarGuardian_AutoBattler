@@ -80,7 +80,7 @@
                     data-crit="{{ hero.CRIT }}"
                     data-hp="{{ hero.HP }}"
                     data-sprite="{{ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '_':'-'}) : 'inconnu') ~ '-idle.gif' }}">
-                    <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '-':'-'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }}">
+                    <img src="{{ asset('asset/img/' ~ (hero.name is not empty ? hero.name|lower|replace({' ':'-', '-':'-'}) : 'inconnu') ~ '.webp') }}" alt="{{ hero.name }}" loading="lazy">
                     <span>{{ hero.name }}</span>
                 </div>
                 {% endfor %}

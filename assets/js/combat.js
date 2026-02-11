@@ -22,13 +22,6 @@ class CombatController {
         if (logsData) {
             try {
                 this.logs = JSON.parse(logsData);
-                console.log('📋 Logs chargés:', this.logs.length, 'entrées');
-
-                // Afficher un exemple de log d'attaque pour debug
-                const attackLog = this.logs.find(log => log.type === 'attack');
-                if (attackLog) {
-                    console.log('📌 Exemple de log d\'attaque:', attackLog);
-                }
             } catch (e) {
                 console.error('❌ Erreur parsing logs:', e);
                 return;
@@ -59,9 +52,6 @@ class CombatController {
                 }
             }
         });
-
-        console.log('👥 Personnages chargés:', Object.keys(this.characterElements));
-        console.log('💚 HP max:', this.characterMaxHP);
 
         // Cacher l'overlay
         if (this.overlay) {
@@ -316,13 +306,11 @@ class CombatController {
             teamName = log.targetTeam;
             currentHP = log.targetHP;
             maxHP = log.targetMaxHP;
-            console.log('Attack detected - HP update:', characterName, teamName, currentHP, '/', maxHP);
         } else if (log.type === 'heal') {
             characterName = log.target;
             teamName = log.targetTeam;
             currentHP = log.targetHP;
             maxHP = log.targetMaxHP;
-            console.log('Heal detected - HP update:', characterName, teamName, currentHP, '/', maxHP);
         }
 
         // Mettre à jour si nous avons les données nécessaires
@@ -481,7 +469,6 @@ class CombatController {
 document.addEventListener('DOMContentLoaded', () => {
     const combatContainer = document.querySelector('[data-combat-logs]');
     if (combatContainer) {
-        console.log('Initialisation du combat...');
         new CombatController(combatContainer);
     }
 });
