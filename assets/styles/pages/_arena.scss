@@ -133,7 +133,6 @@ $dd-bone: #e8dcc4;
 }
 
 .battle-stage__name {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.75rem;
     color: $dd-parchment;
     text-transform: uppercase;
@@ -329,7 +328,6 @@ $dd-bone: #e8dcc4;
     z-index: 2;
     align-self: center;
     flex-shrink: 0;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 3rem;
     color: $dd-blood-red;
     text-shadow: 0 0 30px rgba(139, 0, 0, 0.8), 0 0 60px rgba(139, 0, 0, 0.4);
@@ -427,7 +425,6 @@ $dd-bone: #e8dcc4;
 
 .winner-label {
     display: block;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5em;
@@ -437,7 +434,6 @@ $dd-bone: #e8dcc4;
 
 .winner-text {
     display: block;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 4rem;
     font-weight: bold;
     text-transform: uppercase;
@@ -525,7 +521,6 @@ $dd-bone: #e8dcc4;
 }
 
 .info-panel__title {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.25rem;
     text-transform: uppercase;
     letter-spacing: 0.2em;
@@ -587,7 +582,6 @@ $dd-bone: #e8dcc4;
 }
 
 .info-panel__username {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1rem;
     font-weight: bold;
     color: $dd-bone;
@@ -597,7 +591,6 @@ $dd-bone: #e8dcc4;
 
 .info-panel__motto {
     display: block;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.75rem;
     color: rgba($dd-parchment, 0.55);
     font-style: italic;
@@ -608,7 +601,6 @@ $dd-bone: #e8dcc4;
 }
 
 .info-panel__rating {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.8rem;
     color: $dd-gold;
 
@@ -682,7 +674,6 @@ $dd-bone: #e8dcc4;
 }
 
 .character-info__name {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1rem;
     color: $dd-parchment;
     margin-bottom: 0.25rem;
@@ -732,7 +723,6 @@ $dd-bone: #e8dcc4;
 }
 
 .combat-panel__title {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.25rem;
     color: $dd-gold;
     text-transform: uppercase;
@@ -771,7 +761,6 @@ $dd-bone: #e8dcc4;
 }
 
 .speed-label {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1rem;
     font-weight: bold;
     color: $dd-gold;
@@ -780,7 +769,6 @@ $dd-bone: #e8dcc4;
 }
 
 .speed-btn {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.9rem;
     font-weight: bold;
     padding: 0.5rem 1rem;
@@ -840,7 +828,6 @@ $dd-bone: #e8dcc4;
 }
 
 .combat-log__entry {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.95rem;
     line-height: 1.8;
     color: $dd-parchment;
@@ -894,7 +881,6 @@ $dd-bone: #e8dcc4;
 }
 
 .btn-arena {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;

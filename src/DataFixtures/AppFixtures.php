@@ -68,6 +68,9 @@ class AppFixtures extends Fixture
 
             // Ranged DPS
             $this->createCharacter('Musketeer', $roles['DPS'], 7, 14, 5, 20, 10, 47),
+
+            // Melee DPS
+            $this->createCharacter('Jester', $roles['DPS'], 7, 14, 9, 30, 12, 36),
         ];
 
         foreach ($characters as $character) {

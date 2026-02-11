@@ -42,7 +42,6 @@ $dd-bone: #e8dcc4;
   gap: 0.4rem;
   color: $dd-parchment;
   text-decoration: none;
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 0.85rem;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -86,7 +85,6 @@ $dd-bone: #e8dcc4;
 }
 
 .selected-team__title {
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 1.4rem;
   color: $dd-gold;
   text-transform: uppercase;
@@ -113,7 +111,6 @@ $dd-bone: #e8dcc4;
   border: 2px solid #3d3225;
   background: rgba(0, 0, 0, 0.4);
   color: #5a4c3e;
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 0.85rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -164,7 +161,6 @@ $dd-bone: #e8dcc4;
   }
 
   span {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.8rem;
     color: $dd-parchment;
     font-weight: bold;
@@ -178,7 +174,6 @@ $dd-bone: #e8dcc4;
 // BOUTON LANCER
 // ==========================================
 .btn-launch {
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 1.1rem;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -273,7 +268,6 @@ $dd-bone: #e8dcc4;
   }
 
   span {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.8rem;
     color: $dd-gold;
     text-transform: uppercase;
@@ -305,7 +299,6 @@ $dd-bone: #e8dcc4;
   span {
     padding: 0.5rem;
     text-align: center;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.75rem;
     font-weight: bold;
     color: $dd-bone;
@@ -387,7 +380,6 @@ $dd-bone: #e8dcc4;
   opacity: 0.5;
 
   h2 {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.3rem;
     color: $dd-parchment;
     text-transform: uppercase;
@@ -396,7 +388,6 @@ $dd-bone: #e8dcc4;
   }
 
   p {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.9rem;
     color: $dd-bone;
   }
@@ -431,7 +422,6 @@ $dd-bone: #e8dcc4;
 
   h2 {
     text-align: center;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.6rem;
     color: $dd-parchment;
     text-transform: uppercase;
@@ -441,7 +431,6 @@ $dd-bone: #e8dcc4;
 
   .role {
     text-align: center;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.9rem;
     color: $dd-crimson;
     text-transform: uppercase;
@@ -483,7 +472,6 @@ $dd-bone: #e8dcc4;
   gap: 0.6rem;
 
   > span:first-child {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.75rem;
     color: #5a4c3e;
     font-weight: bold;
@@ -493,7 +481,6 @@ $dd-bone: #e8dcc4;
   }
 
   > span:last-child {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.75rem;
     color: $dd-bone;
     opacity: 0.7;
@@ -541,7 +528,6 @@ $dd-bone: #e8dcc4;
   display: block;
   margin: 1.5rem auto 0;
   padding: 0.75rem 2rem;
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -662,7 +648,6 @@ $dd-bone: #e8dcc4;
 }
 
 .btn-save-preset {
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 0.9rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -709,7 +694,6 @@ $dd-bone: #e8dcc4;
 }
 
 .presets-bar__label {
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 0.85rem;
   color: $dd-gold;
   text-transform: uppercase;
@@ -746,7 +730,6 @@ $dd-bone: #e8dcc4;
 }
 
 .preset-chip__name {
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 0.8rem;
   color: $dd-parchment;
   letter-spacing: 0.05em;
@@ -820,7 +803,6 @@ $dd-bone: #e8dcc4;
 }
 
 .preset-modal__title {
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 1.2rem;
   color: $dd-gold;
   text-transform: uppercase;
@@ -837,7 +819,6 @@ $dd-bone: #e8dcc4;
   border: 2px solid #3d3225;
   background: rgba(0, 0, 0, 0.4);
   color: $dd-bone;
-  font-family: 'Times New Roman', Georgia, serif;
   font-size: 1rem;
   box-sizing: border-box;
   transition: border-color 0.3s ease;

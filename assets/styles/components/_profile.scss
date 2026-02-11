@@ -50,7 +50,6 @@ $dd-crimson: #dc143c;
     z-index: 1200;
     background: linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
     border: 2px solid #3d3225;
-    font-family: 'Times New Roman', Georgia, serif;
     color: $dd-parchment;
     opacity: 0;
     transform: translateY(-10px);
@@ -351,7 +350,6 @@ $dd-crimson: #dc143c;
 
 .profile-popup__edit-link {
     display: inline-block;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.8rem;
     color: $dd-gold;
     text-decoration: none;

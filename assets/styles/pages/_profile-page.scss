@@ -58,7 +58,6 @@ $dd-crimson: #dc143c;
     gap: 0.3rem;
 
     &__name {
-        font-family: 'Times New Roman', Georgia, serif;
         font-size: 1.3rem;
         color: $dd-bone;
         font-weight: bold;
@@ -67,14 +66,12 @@ $dd-crimson: #dc143c;
     }
 
     &__motto {
-        font-family: 'Times New Roman', Georgia, serif;
         font-size: 0.85rem;
         color: rgba($dd-parchment, 0.6);
         font-style: italic;
     }
 
     &__rating {
-        font-family: 'Times New Roman', Georgia, serif;
         font-size: 0.85rem;
         color: $dd-gold;
 
@@ -103,7 +100,6 @@ $dd-crimson: #dc143c;
 
     &__hint {
         margin-top: 0.4rem;
-        font-family: 'Times New Roman', Georgia, serif;
         font-size: 0.75rem;
         color: rgba($dd-parchment, 0.4);
         letter-spacing: 0.03em;
@@ -126,7 +122,6 @@ $dd-crimson: #dc143c;
         color: $dd-parchment;
         padding: 0.4rem 0.8rem;
         margin-right: 0.8rem;
-        font-family: 'Times New Roman', Georgia, serif;
         font-size: 0.8rem;
         text-transform: uppercase;
         letter-spacing: 0.05em;

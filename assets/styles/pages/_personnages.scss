@@ -49,7 +49,6 @@ $dd-bone: #e8dcc4;
 }
 
 .personnages__title {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 3rem;
     color: $dd-parchment;
     text-transform: uppercase;
@@ -80,7 +79,6 @@ $dd-bone: #e8dcc4;
 }
 
 .personnages__subtitle {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.1rem;
     color: $dd-bone;
     opacity: 0.7;
@@ -111,7 +109,6 @@ $dd-bone: #e8dcc4;
 }
 
 .personnages__category-title {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.6rem;
     color: $dd-gold;
     text-transform: uppercase;
@@ -128,7 +125,6 @@ $dd-bone: #e8dcc4;
 }
 
 .personnages__category-desc {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.9rem;
     color: rgba($dd-parchment, 0.5);
     font-style: italic;
@@ -223,7 +219,6 @@ $dd-bone: #e8dcc4;
     position: absolute;
     top: 8px;
     right: 8px;
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.7rem;
     color: $dd-gold;
     text-transform: uppercase;
@@ -240,7 +235,6 @@ $dd-bone: #e8dcc4;
 }
 
 .char-card__name {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 1.15rem;
     color: $dd-parchment;
     text-transform: uppercase;
@@ -249,7 +243,6 @@ $dd-bone: #e8dcc4;
 }
 
 .char-card__role {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.8rem;
     color: $dd-crimson;
     text-transform: uppercase;
@@ -289,7 +282,6 @@ $dd-bone: #e8dcc4;
 }
 
 .char-stat__label {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.7rem;
     color: #5a4c3e;
     font-weight: bold;
@@ -329,7 +321,6 @@ $dd-bone: #e8dcc4;
 }
 
 .char-stat__value {
-    font-family: 'Times New Roman', Georgia, serif;
     font-size: 0.7rem;
     color: $dd-bone;
     opacity: 0.7;
