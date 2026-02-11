@@ -256,6 +256,7 @@ final class ArenaController extends AbstractController
             'success' => true,
             'ratingChange' => $change,
             'newRating' => $player1?->getRating(),
+            'newRating2' => $player2?->getRating(),
         ]);
     }
 

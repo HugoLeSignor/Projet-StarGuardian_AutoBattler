@@ -451,8 +451,28 @@ $dd-bone: #e8dcc4;
 
 .stat-fill {
   height: 100%;
-  background: linear-gradient(90deg, $dd-crimson, $dd-blood-red);
+  background: linear-gradient(90deg, $dd-gold, rgba(201, 162, 39, 0.6));
   transition: width 0.5s ease-out;
+
+  &--hp {
+    background: linear-gradient(90deg, #4caf50, #2e7d32);
+  }
+
+  &--dmg {
+    background: linear-gradient(90deg, $dd-crimson, $dd-blood-red);
+  }
+
+  &--spd {
+    background: linear-gradient(90deg, #42a5f5, #1565c0);
+  }
+
+  &--dodge {
+    background: linear-gradient(90deg, $dd-gold, rgba(201, 162, 39, 0.6));
+  }
+
+  &--crit {
+    background: linear-gradient(90deg, #ff9800, #e65100);
+  }
 }
 
 // Bouton selectionner (dans details)

@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="stat">
                             <span>DMG</span>
                             <div class="stat-bar">
-                                <div class="stat-fill"
+                                <div class="stat-fill stat-fill--dmg"
                                     style="width:${Math.min((dmgMax / STAT_MAX.dmg) * 100, 100)}%">
                                 </div>
                             </div>
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="stat">
                             <span>VIT</span>
                             <div class="stat-bar">
-                                <div class="stat-fill"
+                                <div class="stat-fill stat-fill--spd"
                                     style="width:${Math.min((speed / STAT_MAX.speed) * 100, 100)}%">
                                 </div>
                             </div>
@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="stat">
                             <span>DODGE</span>
                             <div class="stat-bar">
-                                <div class="stat-fill"
+                                <div class="stat-fill stat-fill--dodge"
                                     style="width:${Math.min((dodge / STAT_MAX.dodge) * 100, 100)}%">
                                 </div>
                             </div>
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="stat">
                             <span>CRIT</span>
                             <div class="stat-bar">
-                                <div class="stat-fill"
+                                <div class="stat-fill stat-fill--crit"
                                     style="width:${Math.min((crit / STAT_MAX.crit) * 100, 100)}%">
                                 </div>
                             </div>
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="stat">
                             <span>HP</span>
                             <div class="stat-bar">
-                                <div class="stat-fill"
+                                <div class="stat-fill stat-fill--hp"
                                     style="width:${Math.min((hp / STAT_MAX.hp) * 100, 100)}%">
                                 </div>
                             </div>

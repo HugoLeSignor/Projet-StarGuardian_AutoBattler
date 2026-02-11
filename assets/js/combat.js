@@ -415,29 +415,51 @@ class CombatController {
         .then(res => res.json())
         .then(data => {
             if (data.success && data.ratingChange !== 0) {
-                this.showRatingUpdate(data.ratingChange, data.newRating);
+                this.showRatingUpdate(data.ratingChange, data.newRating, data.newRating2);
             }
         })
         .catch(err => console.error('Erreur finalisation rating:', err));
     }
 
-    showRatingUpdate(change, newRating) {
-        // Mettre a jour le MMR affiche dans le panneau joueur
+    showRatingUpdate(change, newRating, newRating2) {
+        // Mettre a jour le MMR affiche dans le panneau joueur (Equipe 1)
         const ratingEl = this.container.querySelector('.info-panel--team1 .info-panel__rating');
         if (ratingEl && newRating !== null) {
             ratingEl.innerHTML = `<i class="fas fa-trophy"></i> ${newRating} MMR`;
         }
 
+        // Mettre a jour le MMR affiche dans le panneau adversaire (Equipe 2)
+        const ratingEl2 = this.container.querySelector('.info-panel--team2 .info-panel__rating--enemy');
+        if (ratingEl2 && newRating2 !== null) {
+            ratingEl2.innerHTML = `<i class="fas fa-trophy"></i> ${newRating2} MMR`;
+        }
+
         // Afficher la notification de changement dans l'overlay
         const overlay = this.container.querySelector('[data-combat-overlay]');
         if (overlay) {
-            const notif = document.createElement('div');
-            notif.className = 'rating-change';
-            notif.style.cssText = 'font-size:1.4rem;margin-top:12px;font-weight:bold;opacity:0;transition:opacity 0.5s;';
-            notif.textContent = change > 0 ? `+${change} MMR` : `${change} MMR`;
-            notif.style.color = change > 0 ? '#4caf50' : '#f44336';
-            overlay.querySelector('.battle-stage__winner').appendChild(notif);
-            setTimeout(() => { notif.style.opacity = '1'; }, 100);
+            const winnerDiv = overlay.querySelector('.battle-stage__winner');
+
+            // Changement MMR Equipe 1
+            const notif1 = document.createElement('div');
+            notif1.className = 'rating-change';
+            notif1.style.cssText = 'font-size:1.2rem;margin-top:12px;font-weight:bold;opacity:0;transition:opacity 0.5s;';
+            notif1.textContent = change > 0 ? `Equipe 1 : +${change} MMR` : `Equipe 1 : ${change} MMR`;
+            notif1.style.color = change > 0 ? '#4caf50' : '#f44336';
+            winnerDiv.appendChild(notif1);
+
+            // Changement MMR Equipe 2 (inverse)
+            const change2 = -change;
+            const notif2 = document.createElement('div');
+            notif2.className = 'rating-change';
+            notif2.style.cssText = 'font-size:1.2rem;margin-top:6px;font-weight:bold;opacity:0;transition:opacity 0.5s;';
+            notif2.textContent = change2 > 0 ? `Equipe 2 : +${change2} MMR` : `Equipe 2 : ${change2} MMR`;
+            notif2.style.color = change2 > 0 ? '#4caf50' : '#f44336';
+            winnerDiv.appendChild(notif2);
+
+            setTimeout(() => {
+                notif1.style.opacity = '1';
+                notif2.style.opacity = '1';
+            }, 100);
         }
     }
 
