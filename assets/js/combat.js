@@ -405,10 +405,10 @@ class CombatController {
     }
 
     finalizeRating() {
-        const battleId = this.container.dataset.battleId;
-        if (!battleId) return;
+        const finalizeUrl = this.container.dataset.finalizeUrl;
+        if (!finalizeUrl) return;
 
-        fetch(`/arena/finalize/${battleId}`, {
+        fetch(finalizeUrl, {
             method: 'POST',
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
         })

@@ -15,121 +15,59 @@ use App\Service\CombatEngine;
 
 final class ArenaController extends AbstractController
 {
+    /**
+     * Point d'entree : cree le Battle en BDD puis redirige vers /arena/{id}
+     */
     #[Route('/arena', name: 'app_arena')]
-    public function test(Request $request, CharacterRepository $repo, CombatEngine $engine, EntityManagerInterface $em): Response
+    public function index(Request $request, CharacterRepository $repo, CombatEngine $engine, EntityManagerInterface $em): Response
     {
         $session = $request->getSession();
         $matchData = $session->get('match_data');
 
         if ($matchData) {
-            // Vient du matchmaking : utiliser les équipes sélectionnées
             $session->remove('match_data');
             $session->remove('selected_team_ids');
 
             $team1Ids = $matchData['team1_char_ids'];
             $team2Ids = $matchData['team2_char_ids'];
-            $team1DisplayName = 'Votre équipe';
-            $team2DisplayName = $matchData['type'] === 'bot'
-                ? ($matchData['bot_name'] ?? 'Bot')
-                : ($matchData['player2']?->getUsername() ?? 'Adversaire');
-        } else {
-            // Accès direct : équipes aléatoires (fallback)
-            $allCharacters = $repo->findAll();
+            $isCreator = $matchData['is_creator'] ?? true;
 
-            if (count($allCharacters) < 6) {
-                throw $this->createNotFoundException("Pas assez de personnages dans la base de données. Veuillez charger les fixtures.");
+            // Seul le creator cree le Battle (evite les doublons PvP)
+            if (!$isCreator) {
+                // Joiner : simuler le combat localement sans persister
+                return $this->renderCombat($repo, $engine, $team1Ids, $team2Ids, $matchData, null);
             }
 
-            $tanks = [];
-            $dps = [];
-            $supports = [];
+            // Creator : simuler, persister, puis rediriger vers /arena/{id}
+            $currentUser = $this->getUser();
+            $opponent = null;
 
-            foreach ($allCharacters as $char) {
-                $roleName = $char->getRole()->getName();
-                if ($roleName === 'Tank') {
-                    $tanks[] = $char;
-                } elseif ($roleName === 'DPS') {
-                    $dps[] = $char;
-                } else {
-                    $supports[] = $char;
-                }
-            }
-
-            shuffle($tanks);
-            shuffle($dps);
-            shuffle($supports);
-
-            $team1Chars = [
-                $dps[0] ?? $allCharacters[1],
-                $supports[0] ?? $allCharacters[2],
-                $tanks[0] ?? $allCharacters[0]
-            ];
-
-            $team2Chars = [
-                $tanks[1] ?? $tanks[0] ?? $allCharacters[3],
-                $dps[1] ?? $dps[0] ?? $allCharacters[4],
-                $supports[1] ?? $supports[0] ?? $allCharacters[5]
-            ];
-
-            $team1Ids = array_map(fn($char) => $char->getId(), $team1Chars);
-            $team2Ids = array_map(fn($char) => $char->getId(), $team2Chars);
-            $team1DisplayName = 'Equipe 1';
-            $team2DisplayName = 'Equipe 2';
-        }
-
-        // "Equipe 1"/"Equipe 2" restent les identifiants internes (CombatEngine + JS)
-        $team1 = $this->buildTeam($team1Ids, $repo, 'Equipe 1');
-        $team2 = $this->buildTeam($team2Ids, $repo, 'Equipe 2');
-
-        // Tri par rôle : Support → DPS → Tank (healer à gauche, tank à droite)
-        // Le CSS row-reverse sur l'équipe droite se charge du miroir automatiquement
-        $team1 = $this->sortTeamByRole($team1, ['Support', 'DPS', 'Tank']);
-        $team2 = $this->sortTeamByRole($team2, ['Support', 'DPS', 'Tank']);
-
-        $composition = [
-            'Equipe 1' => array_map(fn($d) => [
-                'name' => $d['char']->getName(),
-                'hp' => $d['char']->getHP(),
-                'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
-            ], $team1),
-            'Equipe 2' => array_map(fn($d) => [
-                'name' => $d['char']->getName(),
-                'hp' => $d['char']->getHP(),
-                'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
-            ], $team2),
-        ];
-
-        $logs = $engine->fightBattleWithRounds($team1, $team2);
-
-        // Déterminer le vainqueur depuis les logs structurés
-        $winner = null;
-        $lastLog = end($logs);
-        if (is_array($lastLog)) {
-            if ($lastLog['type'] === 'victory') {
-                $winner = $lastLog['winner'];
-            } elseif ($lastLog['type'] === 'draw') {
-                $winner = 'Match nul';
-            }
-        }
-
-        // Persister le combat en base si vient du matchmaking
-        // Seul le "creator" (celui qui a trouve l'adversaire) cree le Battle
-        // pour eviter les doublons quand les deux joueurs arrivent sur /arena
-        $currentUser = $this->getUser();
-        $opponent = null;
-        $battleId = null;
-        $isCreator = $matchData['is_creator'] ?? true; // true par defaut (bot, acces direct)
-
-        if ($matchData && $currentUser && $isCreator) {
-            $battle = new Battle();
-            $battle->setPlayer1($currentUser);
-
-            // Re-fetch player2 depuis la BDD (l'objet session est detache)
             if ($matchData['player2'] ?? null) {
                 $opponent = $em->getRepository(\App\Entity\User::class)->find($matchData['player2']->getId());
             }
-            $battle->setPlayer2($opponent);
 
+            $team1 = $this->buildTeam($team1Ids, $repo, 'Equipe 1');
+            $team2 = $this->buildTeam($team2Ids, $repo, 'Equipe 2');
+            $team1 = $this->sortTeamByRole($team1, ['Support', 'DPS', 'Tank']);
+            $team2 = $this->sortTeamByRole($team2, ['Support', 'DPS', 'Tank']);
+
+            $logs = $engine->fightBattleWithRounds($team1, $team2);
+
+            // Determiner le vainqueur
+            $winner = null;
+            $lastLog = end($logs);
+            if (is_array($lastLog)) {
+                if ($lastLog['type'] === 'victory') {
+                    $winner = $lastLog['winner'];
+                } elseif ($lastLog['type'] === 'draw') {
+                    $winner = 'Match nul';
+                }
+            }
+
+            // Creer le Battle
+            $battle = new Battle();
+            $battle->setPlayer1($currentUser);
+            $battle->setPlayer2($opponent);
             $battle->setTeam1CharacterIds($team1Ids);
             $battle->setTeam2CharacterIds($team2Ids);
             $battle->setMatchType($matchData['type']);
@@ -150,9 +88,7 @@ final class ArenaController extends AbstractController
             $em->persist($battle);
             $em->flush();
 
-            $battleId = $battle->getId();
-
-            // Stocker le changement de rating en session (sera applique a la fin du combat)
+            // Stocker le pending rating en session
             $ratingChange = 0;
             if ($battle->getWinner() === 'player1') {
                 $ratingChange = $matchData['type'] === 'pvp' ? 25 : 10;
@@ -161,31 +97,126 @@ final class ArenaController extends AbstractController
             }
 
             if ($ratingChange !== 0) {
-                $session->set('pending_rating_' . $battleId, [
+                $session->set('pending_rating_' . $battle->getId(), [
                     'player1_id' => $currentUser->getId(),
                     'player2_id' => $opponent?->getId(),
                     'change' => $ratingChange,
                 ]);
             }
-        } elseif ($matchData && $currentUser && !$isCreator) {
-            // Joueur "joiner" : recuperer l'adversaire pour l'affichage, pas de creation de Battle
-            if ($matchData['player2'] ?? null) {
-                $opponent = $em->getRepository(\App\Entity\User::class)->find($matchData['player2']->getId());
+
+            return $this->redirectToRoute('app_arena_show', ['id' => $battle->getId()]);
+        }
+
+        // Acces direct sans matchmaking : equipes aleatoires (pas de persist, pas de MMR)
+        $allCharacters = $repo->findAll();
+
+        if (count($allCharacters) < 6) {
+            throw $this->createNotFoundException("Pas assez de personnages dans la base de données.");
+        }
+
+        $tanks = [];
+        $dps = [];
+        $supports = [];
+
+        foreach ($allCharacters as $char) {
+            $roleName = $char->getRole()->getName();
+            if ($roleName === 'Tank') {
+                $tanks[] = $char;
+            } elseif ($roleName === 'DPS') {
+                $dps[] = $char;
+            } else {
+                $supports[] = $char;
             }
         }
 
+        shuffle($tanks);
+        shuffle($dps);
+        shuffle($supports);
+
+        $team1Ids = [
+            ($dps[0] ?? $allCharacters[1])->getId(),
+            ($supports[0] ?? $allCharacters[2])->getId(),
+            ($tanks[0] ?? $allCharacters[0])->getId(),
+        ];
+        $team2Ids = [
+            ($tanks[1] ?? $tanks[0] ?? $allCharacters[3])->getId(),
+            ($dps[1] ?? $dps[0] ?? $allCharacters[4])->getId(),
+            ($supports[1] ?? $supports[0] ?? $allCharacters[5])->getId(),
+        ];
+
+        return $this->renderCombat($repo, $engine, $team1Ids, $team2Ids, null, null);
+    }
+
+    /**
+     * Affiche un combat depuis la BDD (URL unique /arena/{id})
+     */
+    #[Route('/arena/{id}', name: 'app_arena_show', requirements: ['id' => '\d+'])]
+    public function show(int $id, BattleRepository $battleRepo, CharacterRepository $charRepo, Request $request): Response
+    {
+        $battle = $battleRepo->find($id);
+        if (!$battle) {
+            throw $this->createNotFoundException('Combat introuvable');
+        }
+
+        $team1 = $this->buildTeam($battle->getTeam1CharacterIds(), $charRepo, 'Equipe 1');
+        $team2 = $this->buildTeam($battle->getTeam2CharacterIds(), $charRepo, 'Equipe 2');
+        $team1 = $this->sortTeamByRole($team1, ['Support', 'DPS', 'Tank']);
+        $team2 = $this->sortTeamByRole($team2, ['Support', 'DPS', 'Tank']);
+
+        $composition = [
+            'Equipe 1' => array_map(fn($d) => [
+                'name' => $d['char']->getName(),
+                'hp' => $d['char']->getHP(),
+                'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
+            ], $team1),
+            'Equipe 2' => array_map(fn($d) => [
+                'name' => $d['char']->getName(),
+                'hp' => $d['char']->getHP(),
+                'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
+            ], $team2),
+        ];
+
+        $currentUser = $this->getUser();
+        $isPlayer1 = $battle->getPlayer1() === $currentUser;
+        $opponent = null;
+
+        if ($isPlayer1) {
+            $team1Name = 'Votre equipe';
+            $team2Name = $battle->isVsBot()
+                ? ($battle->getBotName() ?? 'Bot')
+                : ($battle->getPlayer2()?->getUsername() ?? 'Adversaire');
+            $opponent = $battle->getPlayer2();
+        } else {
+            $team1Name = $battle->getPlayer1()?->getUsername() ?? 'Joueur';
+            $team2Name = 'Votre equipe';
+            $opponent = $battle->getPlayer1();
+        }
+
+        $winner = match ($battle->getWinner()) {
+            'player1' => 'Equipe 1',
+            'player2' => 'Equipe 2',
+            default => 'Match nul',
+        };
+
+        // Verifier s'il y a un pending rating (combat frais, pas un replay)
+        $hasPendingRating = $request->getSession()->has('pending_rating_' . $id);
+
         return $this->render('arena/index.html.twig', [
             'composition' => $composition,
-            'logsJson' => json_encode($logs),
+            'logsJson' => json_encode($battle->getCombatLogs()),
             'winner' => $winner,
-            'team1Name' => $team1DisplayName,
-            'team2Name' => $team2DisplayName,
+            'team1Name' => $team1Name,
+            'team2Name' => $team2Name,
             'opponent' => $opponent,
-            'battleId' => $battleId,
+            'battleId' => $hasPendingRating ? $id : null,
+            'finalizeUrl' => $hasPendingRating ? $this->generateUrl('app_arena_finalize', ['id' => $id]) : null,
         ]);
     }
 
-    #[Route('/arena/finalize/{id}', name: 'app_arena_finalize', methods: ['POST'])]
+    /**
+     * Applique le MMR a la fin de l'animation (appele par JS)
+     */
+    #[Route('/arena/finalize/{id}', name: 'app_arena_finalize', requirements: ['id' => '\d+'], methods: ['POST'])]
     public function finalize(int $id, Request $request, EntityManagerInterface $em): JsonResponse
     {
         $session = $request->getSession();
@@ -224,7 +255,6 @@ final class ArenaController extends AbstractController
     #[Route('/arena/combat', name: 'app_arena_combat')]
     public function combat(Request $request): Response
     {
-        // Si on vient du matchmaking, rediriger vers l'arène (match_data reste en session)
         if ($request->getSession()->has('match_data')) {
             return $this->redirectToRoute('app_arena');
         }
@@ -232,17 +262,22 @@ final class ArenaController extends AbstractController
         return $this->redirectToRoute('app_teams');
     }
 
-    #[Route('/arena/replay/{id}', name: 'app_arena_replay')]
-    public function replay(int $id, BattleRepository $battleRepo, CharacterRepository $charRepo): Response
+    /**
+     * Replay = alias vers /arena/{id} (retrocompatibilite)
+     */
+    #[Route('/arena/replay/{id}', name: 'app_arena_replay', requirements: ['id' => '\d+'])]
+    public function replay(int $id): Response
     {
-        $battle = $battleRepo->find($id);
-        if (!$battle) {
-            throw $this->createNotFoundException('Combat introuvable');
-        }
+        return $this->redirectToRoute('app_arena_show', ['id' => $id]);
+    }
 
-        // Reconstruire la composition depuis les IDs sauvegardes
-        $team1 = $this->buildTeam($battle->getTeam1CharacterIds(), $charRepo, 'Equipe 1');
-        $team2 = $this->buildTeam($battle->getTeam2CharacterIds(), $charRepo, 'Equipe 2');
+    /**
+     * Render un combat sans persist (acces direct ou joiner)
+     */
+    private function renderCombat(CharacterRepository $repo, CombatEngine $engine, array $team1Ids, array $team2Ids, ?array $matchData, ?int $battleId): Response
+    {
+        $team1 = $this->buildTeam($team1Ids, $repo, 'Equipe 1');
+        $team2 = $this->buildTeam($team2Ids, $repo, 'Equipe 2');
         $team1 = $this->sortTeamByRole($team1, ['Support', 'DPS', 'Tank']);
         $team2 = $this->sortTeamByRole($team2, ['Support', 'DPS', 'Tank']);
 
@@ -259,37 +294,38 @@ final class ArenaController extends AbstractController
             ], $team2),
         ];
 
-        // Noms d'equipes
-        $currentUser = $this->getUser();
-        $isPlayer1 = $battle->getPlayer1() === $currentUser;
-        $opponent = null;
+        $logs = $engine->fightBattleWithRounds($team1, $team2);
 
-        if ($isPlayer1) {
-            $team1Name = 'Votre equipe';
-            $team2Name = $battle->isVsBot()
-                ? ($battle->getBotName() ?? 'Bot')
-                : ($battle->getPlayer2()?->getUsername() ?? 'Adversaire');
-            $opponent = $battle->getPlayer2();
-        } else {
-            $team1Name = $battle->getPlayer1()->getUsername();
-            $team2Name = 'Votre equipe';
-            $opponent = $battle->getPlayer1();
+        $winner = null;
+        $lastLog = end($logs);
+        if (is_array($lastLog)) {
+            if ($lastLog['type'] === 'victory') {
+                $winner = $lastLog['winner'];
+            } elseif ($lastLog['type'] === 'draw') {
+                $winner = 'Match nul';
+            }
         }
 
-        // Reconvertir le winner stocke en format template
-        $winner = match ($battle->getWinner()) {
-            'player1' => 'Equipe 1',
-            'player2' => 'Equipe 2',
-            default => 'Match nul',
-        };
+        $team1Name = 'Equipe 1';
+        $team2Name = 'Equipe 2';
+        $opponent = null;
+
+        if ($matchData) {
+            $team1Name = 'Votre equipe';
+            $team2Name = ($matchData['type'] ?? '') === 'bot'
+                ? ($matchData['bot_name'] ?? 'Bot')
+                : ($matchData['player2']?->getUsername() ?? 'Adversaire');
+        }
 
         return $this->render('arena/index.html.twig', [
             'composition' => $composition,
-            'logsJson' => json_encode($battle->getCombatLogs()),
+            'logsJson' => json_encode($logs),
             'winner' => $winner,
             'team1Name' => $team1Name,
             'team2Name' => $team2Name,
             'opponent' => $opponent,
+            'battleId' => $battleId,
+            'finalizeUrl' => null,
         ]);
     }
 

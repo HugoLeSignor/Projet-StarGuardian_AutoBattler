@@ -3,7 +3,7 @@
 {% block title %}Arena - Combat{% endblock %}
 
 {% block body %}
-<div class="arena-container" data-combat-logs="{{ logsJson|e('html_attr') }}"{% if battleId is defined and battleId %} data-battle-id="{{ battleId }}"{% endif %}>
+<div class="arena-container" data-combat-logs="{{ logsJson|e('html_attr') }}"{% if finalizeUrl is defined and finalizeUrl %} data-finalize-url="{{ finalizeUrl }}"{% endif %}>
 
     {# ========================================== #}
     {# SECTION HAUTE - Zone de combat animations #}
