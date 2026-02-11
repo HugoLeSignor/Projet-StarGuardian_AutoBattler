@@ -1,0 +1,507 @@
+@use "../base/variables" as *;
+
+// Darkest Dungeon palette (same as _profile.scss)
+$dd-black: #0a0a0a;
+$dd-dark-brown: #1a1411;
+$dd-gold: #c9a227;
+$dd-parchment: #d4c4a8;
+$dd-bone: #e8dcc4;
+$dd-blood-red: #8b0000;
+$dd-crimson: #dc143c;
+
+// ==========================================
+// TOPBAR FRIENDS ICON
+// ==========================================
+.topbar__friends {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.3rem 0.6rem;
+    color: $dd-parchment;
+    opacity: 0.7;
+    transition: opacity 0.2s, color 0.2s;
+
+    &:hover {
+        opacity: 1;
+        color: $dd-gold;
+    }
+
+    i {
+        font-size: 0.9rem;
+    }
+}
+
+.topbar__friends-badge {
+    position: absolute;
+    top: -2px;
+    right: 0;
+    background: $dd-crimson;
+    color: #fff;
+    font-size: 0.55rem;
+    font-family: 'Times New Roman', Georgia, serif;
+    min-width: 14px;
+    height: 14px;
+    line-height: 14px;
+    text-align: center;
+    border-radius: 50%;
+    padding: 0 3px;
+}
+
+// ==========================================
+// BACKDROP
+// ==========================================
+.friends-panel__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    &--open {
+        opacity: 1;
+    }
+}
+
+// ==========================================
+// PANEL (right side)
+// ==========================================
+.friends-panel {
+    position: fixed;
+    top: 50px;
+    right: 1rem;
+    width: 380px;
+    max-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    z-index: 1200;
+    background: linear-gradient(180deg, rgba(20, 15, 12, 0.98) 0%, rgba(10, 10, 10, 0.98) 100%);
+    border: 2px solid #3d3225;
+    font-family: 'Times New Roman', Georgia, serif;
+    color: $dd-parchment;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+
+    &::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 1px solid rgba($dd-gold, 0.15);
+        margin: 4px;
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    &--open {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    &::-webkit-scrollbar { width: 6px; }
+    &::-webkit-scrollbar-track { background: $dd-dark-brown; }
+    &::-webkit-scrollbar-thumb { background: rgba($dd-gold, 0.3); border-radius: 3px; }
+}
+
+// ==========================================
+// HEADER
+// ==========================================
+.friends-panel__header {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.8rem 1rem;
+    border-bottom: 1px solid rgba($dd-gold, 0.2);
+    flex-shrink: 0;
+}
+
+.friends-panel__title {
+    font-size: 1rem;
+    color: $dd-gold;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0;
+
+    i { margin-right: 0.4rem; }
+}
+
+.friends-panel__close {
+    background: none;
+    border: none;
+    color: $dd-bone;
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.6;
+    transition: opacity 0.2s, color 0.2s;
+
+    &:hover { opacity: 1; color: $dd-crimson; }
+}
+
+// ==========================================
+// TABS
+// ==========================================
+.friends-panel__tabs {
+    display: flex;
+    border-bottom: 1px solid rgba($dd-gold, 0.15);
+    flex-shrink: 0;
+}
+
+.friends-panel__tab {
+    flex: 1;
+    background: none;
+    border: none;
+    color: rgba($dd-parchment, 0.5);
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.6rem 0.3rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    position: relative;
+
+    i { margin-right: 0.2rem; }
+
+    &:hover {
+        color: $dd-parchment;
+        background: rgba($dd-gold, 0.05);
+    }
+
+    &--active {
+        color: $dd-gold;
+        border-bottom-color: $dd-gold;
+    }
+}
+
+.friends-panel__tab-badge {
+    background: $dd-crimson;
+    color: #fff;
+    font-size: 0.55rem;
+    min-width: 12px;
+    height: 12px;
+    line-height: 12px;
+    text-align: center;
+    border-radius: 50%;
+    padding: 0 3px;
+    margin-left: 0.3rem;
+}
+
+// ==========================================
+// TAB CONTENT
+// ==========================================
+.friends-panel__content {
+    position: relative;
+    z-index: 5;
+    flex: 1;
+    overflow-y: auto;
+    min-height: 200px;
+    max-height: 400px;
+}
+
+.friends-panel__loading {
+    text-align: center;
+    color: rgba($dd-parchment, 0.6);
+    padding: 2rem 0;
+}
+
+// ==========================================
+// FRIEND LIST ITEMS
+// ==========================================
+.friend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.8rem;
+    cursor: pointer;
+    border-bottom: 1px solid rgba($dd-gold, 0.05);
+    transition: background 0.2s ease;
+
+    &:hover {
+        background: rgba($dd-gold, 0.08);
+    }
+
+    &__avatar {
+        width: 32px;
+        height: 32px;
+        flex-shrink: 0;
+        border: 1px solid rgba($dd-gold, 0.3);
+        background: rgba(0, 0, 0, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        border-radius: 50%;
+
+        img { width: 100%; height: 100%; object-fit: cover; }
+        i { font-size: 1rem; color: rgba($dd-parchment, 0.25); }
+    }
+
+    &__info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &__name {
+        display: block;
+        font-size: 0.85rem;
+        color: $dd-bone;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    &__preview {
+        display: block;
+        font-size: 0.7rem;
+        color: rgba($dd-parchment, 0.4);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__rating {
+        font-size: 0.65rem;
+        color: rgba($dd-gold, 0.6);
+    }
+
+    &__actions {
+        display: flex;
+        gap: 0.3rem;
+    }
+}
+
+// ==========================================
+// REQUEST ACTIONS
+// ==========================================
+.friend-action {
+    background: none;
+    border: 1px solid;
+    padding: 0.25rem 0.5rem;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &--accept {
+        color: #6abf6e;
+        border-color: rgba(106, 191, 110, 0.3);
+
+        &:hover {
+            background: rgba(106, 191, 110, 0.15);
+            border-color: #6abf6e;
+        }
+    }
+
+    &--reject {
+        color: $dd-crimson;
+        border-color: rgba($dd-crimson, 0.3);
+
+        &:hover {
+            background: rgba($dd-crimson, 0.15);
+            border-color: $dd-crimson;
+        }
+    }
+
+    &--add {
+        color: $dd-gold;
+        border-color: rgba($dd-gold, 0.3);
+
+        &:hover {
+            background: rgba($dd-gold, 0.15);
+            border-color: $dd-gold;
+        }
+    }
+
+    &--remove {
+        color: rgba($dd-parchment, 0.4);
+        border-color: rgba($dd-parchment, 0.15);
+
+        &:hover {
+            color: $dd-crimson;
+            border-color: rgba($dd-crimson, 0.3);
+        }
+    }
+
+    &--pending {
+        color: rgba($dd-parchment, 0.4);
+        border-color: rgba($dd-parchment, 0.15);
+        cursor: default;
+    }
+}
+
+// ==========================================
+// SEARCH
+// ==========================================
+.friends-search {
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid rgba($dd-gold, 0.1);
+}
+
+.friends-search__input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba($dd-gold, 0.2);
+    color: $dd-parchment;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.8rem;
+    padding: 0.5rem 0.6rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+
+    &::placeholder { color: rgba($dd-parchment, 0.3); }
+    &:focus { border-color: rgba($dd-gold, 0.5); }
+}
+
+.friends-search__results {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+// ==========================================
+// CONVERSATION
+// ==========================================
+.friends-panel__conversation {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    max-height: calc(100vh - 120px);
+}
+
+.friends-conversation__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.8rem;
+    border-bottom: 1px solid rgba($dd-gold, 0.2);
+    flex-shrink: 0;
+}
+
+.friends-conversation__back {
+    background: none;
+    border: none;
+    color: $dd-gold;
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 0.2rem;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+
+    &:hover { opacity: 1; }
+}
+
+.friends-conversation__name {
+    font-size: 0.9rem;
+    color: $dd-bone;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: bold;
+}
+
+.friends-conversation__messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    min-height: 200px;
+    max-height: 350px;
+}
+
+.chat-message {
+    max-width: 80%;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    word-wrap: break-word;
+
+    &--mine {
+        align-self: flex-end;
+        background: rgba($dd-gold, 0.12);
+        border: 1px solid rgba($dd-gold, 0.2);
+        color: $dd-bone;
+    }
+
+    &--theirs {
+        align-self: flex-start;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba($dd-parchment, 0.1);
+        color: $dd-parchment;
+    }
+
+    &__time {
+        display: block;
+        font-size: 0.6rem;
+        color: rgba($dd-parchment, 0.3);
+        margin-top: 0.15rem;
+    }
+}
+
+.friends-conversation__input-area {
+    display: flex;
+    gap: 0.3rem;
+    padding: 0.5rem 0.6rem;
+    border-top: 1px solid rgba($dd-gold, 0.15);
+    flex-shrink: 0;
+}
+
+.friends-conversation__input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba($dd-gold, 0.2);
+    color: $dd-parchment;
+    font-family: 'Times New Roman', Georgia, serif;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.5rem;
+    outline: none;
+    box-sizing: border-box;
+
+    &::placeholder { color: rgba($dd-parchment, 0.3); }
+    &:focus { border-color: rgba($dd-gold, 0.5); }
+}
+
+.friends-conversation__send {
+    background: rgba($dd-gold, 0.1);
+    border: 1px solid rgba($dd-gold, 0.3);
+    color: $dd-gold;
+    cursor: pointer;
+    padding: 0.4rem 0.6rem;
+    transition: all 0.2s ease;
+
+    &:hover {
+        background: rgba($dd-gold, 0.2);
+        border-color: $dd-gold;
+    }
+}
+
+// ==========================================
+// EMPTY STATE
+// ==========================================
+.friends-panel__empty {
+    text-align: center;
+    color: rgba($dd-parchment, 0.4);
+    font-style: italic;
+    padding: 2rem 0.8rem;
+    font-size: 0.8rem;
+}
+
+// ==========================================
+// RESPONSIVE
+// ==========================================
+@media (max-width: 480px) {
+    .friends-panel {
+        right: 0;
+        width: 100%;
+        top: 40px;
+    }
+}

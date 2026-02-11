@@ -4,6 +4,7 @@
 import './styles/app.scss';
 import '@fortawesome/fontawesome-free/css/all.css';
 import './js/combat.js';
+import './js/friends.js';
 
 /* ======================
    MENU BURGER
@@ -26,11 +27,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
 /* 🔧 MAX DES STATS (adapter à ta BDD / équilibrage) */
 const STAT_MAX = {
-    dmg: 100,
-    speed: 100,
-    dodge: 100,
-    crit: 100,
-    hp: 200
+    dmg: 30,
+    speed: 12,
+    dodge: 40,
+    crit: 15,
+    hp: 75
 };
 
 document.addEventListener('DOMContentLoaded', () => {
