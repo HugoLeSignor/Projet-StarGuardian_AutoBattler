@@ -1067,6 +1067,14 @@
     }
 }
 
+.audio-label {
+    color: rgba($dd-parchment, 0.7);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+}
+
 .combat-panel__log {
     flex: 1;
     max-height: 300px;

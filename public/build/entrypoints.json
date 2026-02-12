@@ -2,19 +2,13 @@
   "entrypoints": {
     "app": {
       "js": [
-        "/build/runtime.228d8960.js",
-        "/build/app.10d833c4.js"
+        "/build/runtime.js",
+        "/build/app.js"
       ],
       "css": [
-        "/build/785.c074b7d7.css",
-        "/build/app.8fd47894.css"
+        "/build/vendors-node_modules_fortawesome_fontawesome-free_css_all_css.css",
+        "/build/app.css"
       ]
     }
-  },
-  "integrity": {
-    "/build/runtime.228d8960.js": "sha384-9gtoXRF6k3f0LzTO37+YWfbHCcGeTc8ODf5+1jbc6H7sktmvsQ9cLz4jBlY0tIB0",
-    "/build/app.10d833c4.js": "sha384-P5wQpBHmla+fjLQ8rKB73j8scYjUHAnfliWVNEAbd/jWtv2Nq1RkjH7+KaB4oFxp",
-    "/build/785.c074b7d7.css": "sha384-sQsAi/192woptfgryDX7PQLpB1vWk6JKxk8Ght/iq7RghjvTGuj4rFVlS0YVPqSx",
-    "/build/app.8fd47894.css": "sha384-2wTSFxgN9Id1cSvAFx9qHaTTtq1F/E0dRI0M4+cR/tyU6SwNBO2qqc/R5DRMOUT9"
   }
 }

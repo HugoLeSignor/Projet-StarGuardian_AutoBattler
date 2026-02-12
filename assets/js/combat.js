@@ -97,12 +97,15 @@ class CombatController {
         this.lastTrackIndex = -1;
         this.isMuted = false;
         this.volume = 0.4;
+        this.sfxVolume = 0.6;
         this.combatPlaylist = [
             '/asset/audio/combat/butchersboulevardmusic.mp3',
             '/asset/audio/combat/combatintheruins.mp3',
         ];
+        this.sfxCache = {};
         this.muteBtn = this.container.querySelector('[data-audio-mute]');
         this.volumeSlider = this.container.querySelector('[data-audio-volume]');
+        this.sfxSlider = this.container.querySelector('[data-sfx-volume]');
 
         // Event listeners
         this.bindEvents();
@@ -415,6 +418,11 @@ class CombatController {
                 if (this.combatMusic) {
                     this.combatMusic.volume = this.isMuted ? 0 : this.volume;
                 }
+            });
+        }
+        if (this.sfxSlider) {
+            this.sfxSlider.addEventListener('input', (e) => {
+                this.sfxVolume = parseFloat(e.target.value);
             });
         }
 
@@ -745,6 +753,7 @@ class CombatController {
                 if (log.caster && log.casterTeam) {
                     const blightKey = `${log.casterTeam}-${log.caster}`;
                     this.swapSprite(blightKey, 'skill.webp', 1400);
+                    this.playCharSfx(blightKey, 'skill');
                     const casterEl = this.getCharacterElement(log.caster, log.casterTeam);
                     if (casterEl) {
                         casterEl.classList.add('attacking');
@@ -782,6 +791,7 @@ class CombatController {
                 if (log.caster && log.casterTeam) {
                     const markKey = `${log.casterTeam}-${log.caster}`;
                     this.swapSprite(markKey, 'skill.webp', 1400);
+                    this.playCharSfx(markKey, 'skill');
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 if (log.target && log.targetTeam) this.animateMarked(log.target, log.targetTeam);
@@ -790,6 +800,7 @@ class CombatController {
                 if (log.caster && log.casterTeam) {
                     const riposteKey = `${log.casterTeam}-${log.caster}`;
                     this.swapSprite(riposteKey, 'skill.webp', 1400);
+                    this.playCharSfx(riposteKey, 'skill');
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 break;
@@ -801,11 +812,14 @@ class CombatController {
                         this.characterSlugs[selfBuffKey] = 'beast';
                     }
                     this.swapSprite(selfBuffKey, 'skill.webp', 1400);
+                    this.playCharSfx(selfBuffKey, 'skill');
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 break;
             case 'party_heal':
                 if (log.caster && log.casterTeam) {
+                    const partyHealKey = `${log.casterTeam}-${log.caster}`;
+                    this.playCharSfx(partyHealKey, 'heal');
                     this.animateHeal(log.caster, log.casterTeam, log.caster, log.casterTeam);
                     // Animer tous les alliés soignés
                     if (log.healed) {
@@ -823,6 +837,7 @@ class CombatController {
                 if (log.caster && log.casterTeam) {
                     const partyBuffKey = `${log.casterTeam}-${log.caster}`;
                     this.swapSprite(partyBuffKey, 'skill.webp', 1400);
+                    this.playCharSfx(partyBuffKey, 'skill');
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 // Animer tous les alliés du même côté
@@ -832,6 +847,7 @@ class CombatController {
                 if (log.caster && log.casterTeam) {
                     const stealthKey = `${log.casterTeam}-${log.caster}`;
                     this.swapSprite(stealthKey, 'skill.webp', 1400);
+                    this.playCharSfx(stealthKey, 'skill');
                     this.animateStealth(log.caster, log.casterTeam);
                 }
                 break;
@@ -842,11 +858,17 @@ class CombatController {
                 break;
             case 'emergency_heal':
                 if (log.caster && log.casterTeam) {
+                    const emergHealKey = `${log.casterTeam}-${log.caster}`;
+                    this.playCharSfx(emergHealKey, 'heal');
                     this.animateHeal(log.caster, log.casterTeam, log.caster, log.casterTeam);
                 }
                 break;
             case 'protect_dodge':
-                if (log.caster && log.casterTeam) this.animateDefend(log.caster, log.casterTeam);
+                if (log.caster && log.casterTeam) {
+                    const protDodgeKey = `${log.casterTeam}-${log.caster}`;
+                    this.playCharSfx(protDodgeKey, 'skill');
+                    this.animateDefend(log.caster, log.casterTeam);
+                }
                 break;
             case 'transform_damage':
                 if (log.target && log.targetTeam) {
@@ -918,6 +940,7 @@ class CombatController {
                 if (log.damage !== undefined && log.target) {
                     const partnerKey = `${log.partnerCharTeam}-${log.partnerChar}`;
                     this.swapSprite(partnerKey, 'attackanimation.webp', 1200);
+                    this.playCharSfx(partnerKey, 'attack');
 
                     const target = this.getCharacterElement(log.target, log.targetTeam);
                     if (target) {
@@ -996,6 +1019,7 @@ class CombatController {
             const key = `${attackerTeam}-${attackerName}`;
             this.swapSprite(key, 'attackanimation.webp', 1200);
             attacker.classList.add('attacking');
+            this.playCharSfx(key, 'attack');
             setTimeout(() => attacker.classList.remove('attacking'), 1200);
         }
 
@@ -1020,6 +1044,7 @@ class CombatController {
                 this.swapSprite(key, 'skill.webp', 1500);
             }
             healer.classList.add('healing');
+            this.playCharSfx(key, 'heal');
             setTimeout(() => healer.classList.remove('healing'), 1500);
         }
 
@@ -1035,6 +1060,7 @@ class CombatController {
             const key = `${defenderTeam}-${defenderName}`;
             this.swapSprite(key, 'defending.webp', 1800);
             defender.classList.add('defending');
+            this.playCharSfx(key, 'skill');
             setTimeout(() => defender.classList.remove('defending'), 1800);
         }
     }
@@ -1327,6 +1353,65 @@ class CombatController {
         }
         if (this.volumeSlider) {
             this.volumeSlider.disabled = this.isMuted;
+        }
+        if (this.sfxSlider) {
+            this.sfxSlider.disabled = this.isMuted;
+        }
+    }
+
+    // === SFX ===
+
+    /**
+     * Pre-load and cache an audio file, returns the cached Audio clone for playback.
+     */
+    loadSfx(path) {
+        if (!this.sfxCache[path]) {
+            this.sfxCache[path] = new Audio(path);
+        }
+        return this.sfxCache[path];
+    }
+
+    /**
+     * Play a sound effect for a character action.
+     * @param {string} slug - character slug (e.g. 'crusader', 'plague-doctor')
+     * @param {string} sfxName - sound file name (e.g. 'attacksound', 'skillsound', 'heal')
+     */
+    playSfx(slug, sfxName) {
+        if (this.isMuted || !slug) return;
+
+        const path = `/asset/ost/vfx/${slug}/${sfxName}.wav`;
+        const cached = this.loadSfx(path);
+
+        // Clone the audio node so overlapping plays don't cut each other off
+        const sound = cached.cloneNode();
+        sound.volume = this.sfxVolume;
+        sound.play().catch(() => {});
+    }
+
+    /**
+     * Play the appropriate SFX for a character given their key and action type.
+     * @param {string} key - character key (e.g. 'Equipe 1-Crusader')
+     * @param {string} action - 'attack', 'skill', or 'heal'
+     */
+    playCharSfx(key, action) {
+        const slug = this.characterSlugs[key];
+        if (!slug) return;
+
+        switch (action) {
+            case 'attack':
+                this.playSfx(slug, 'attacksound');
+                break;
+            case 'heal':
+                // Try heal.wav first, fallback to skillsound.wav
+                if (this.characterHasHeal[key]) {
+                    this.playSfx(slug, 'heal');
+                } else {
+                    this.playSfx(slug, 'skillsound');
+                }
+                break;
+            case 'skill':
+                this.playSfx(slug, 'skillsound');
+                break;
         }
     }
 
