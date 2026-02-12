@@ -22,6 +22,13 @@
             </div>
         {% endif %}
 
+        {% if mailError %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ mailError }}
+            </div>
+        {% endif %}
+
         {% for message in app.flashes('error') %}
             <div class="auth-alert auth-alert--error">
                 <i class="fas fa-exclamation-triangle"></i>

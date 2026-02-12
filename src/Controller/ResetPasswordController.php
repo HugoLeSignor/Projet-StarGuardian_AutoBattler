@@ -7,6 +7,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -23,6 +24,7 @@ class ResetPasswordController extends AbstractController
         MailerInterface $mailer
     ): Response {
         $submitted = false;
+        $mailError = null;
 
         if ($request->isMethod('POST')) {
             $email = trim($request->request->get('email', ''));
@@ -48,13 +50,19 @@ class ResetPasswordController extends AbstractController
                             'username' => $user->getUsername(),
                         ]));
 
-                    $mailer->send($emailMessage);
+                    try {
+                        $mailer->send($emailMessage);
+                    } catch (TransportExceptionInterface $e) {
+                        $mailError = 'Erreur lors de l\'envoi de l\'email : ' . $e->getMessage();
+                        $submitted = false;
+                    }
                 }
             }
         }
 
         return $this->render('reset_password/request.html.twig', [
             'submitted' => $submitted,
+            'mailError' => $mailError,
         ]);
     }
 
