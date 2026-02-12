@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande de deban{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-page__vignette"></div>
+
+    <div class="auth-panel">
+        <div class="auth-panel__ornament">&#x2726;</div>
+        <h1 class="auth-panel__title">Demande de d&eacute;ban</h1>
+        <div class="auth-panel__separator">
+            <span></span>
+            <i class="fas fa-unlock"></i>
+            <span></span>
+        </div>
+
+        {% if error %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error }}
+            </div>
+        {% endif %}
+
+        {% for message in app.flashes('success') %}
+            <div class="auth-alert auth-alert--success">
+                <i class="fas fa-check"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <form method="post" class="auth-form">
+            <div class="auth-form__group">
+                <label for="inputEmail" class="auth-form__label">Email du compte banni</label>
+                <input type="email" name="email" id="inputEmail" class="auth-form__input"
+                       placeholder="Entrez l'email de votre compte" required
+                       value="{{ emailValue }}">
+            </div>
+
+            <div class="auth-form__group">
+                <label for="inputMessage" class="auth-form__label">Raison de la demande</label>
+                <textarea name="message" id="inputMessage" class="auth-form__input"
+                          placeholder="Expliquez pourquoi vous souhaitez etre debanni..."
+                          rows="5" required style="resize: vertical;"></textarea>
+            </div>
+
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">Envoyer la demande</button>
+        </form>
+
+        <div class="auth-panel__separator auth-panel__separator--small">
+            <span></span>
+            <span></span>
+        </div>
+
+        <p class="auth-panel__link">
+            <a href="{{ path('app_login') }}"><i class="fas fa-arrow-left"></i> Retour a la connexion</a>
+        </p>
+        <div class="auth-panel__ornament">&#x2726;</div>
+    </div>
+</div>
+{% endblock %}

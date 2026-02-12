@@ -45,6 +45,10 @@
             <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">Se connecter</button>
         </form>
 
+        <p class="auth-panel__link" style="margin-top: 1rem;">
+            <a href="{{ path('app_forgot_password') }}">Mot de passe oubli&eacute; ?</a>
+        </p>
+
         <div class="auth-panel__separator auth-panel__separator--small">
             <span></span>
             <span></span>
@@ -52,6 +56,9 @@
 
         <p class="auth-panel__link">
             Pas encore de compte ? <a href="{{ path('app_register') }}">Cr&eacute;er un compte</a>
+        </p>
+        <p class="auth-panel__link">
+            Compte banni ? <a href="{{ path('app_unban_request') }}">Faire une demande de d&eacute;ban</a>
         </p>
         <div class="auth-panel__ornament">&#x2726;</div>
     </div>

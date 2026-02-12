@@ -21,6 +21,12 @@
                     <span class="admin-nav__badge">{{ pendingReports }}</span>
                 {% endif %}
             </a>
+            <a href="{{ path('app_admin_unban_requests') }}" class="admin-nav__link">
+                <i class="fas fa-unlock"></i> D&eacute;ban
+                {% if pendingUnbanRequests is defined and pendingUnbanRequests > 0 %}
+                    <span class="admin-nav__badge">{{ pendingUnbanRequests }}</span>
+                {% endif %}
+            </a>
         </nav>
     </div>
 
@@ -40,6 +46,10 @@
         <div class="admin-stat admin-stat--alert">
             <span class="admin-stat__value">{{ pendingReports }}</span>
             <span class="admin-stat__label"><i class="fas fa-flag"></i> Signalements</span>
+        </div>
+        <div class="admin-stat {{ pendingUnbanRequests > 0 ? 'admin-stat--alert' : '' }}">
+            <span class="admin-stat__value">{{ pendingUnbanRequests }}</span>
+            <span class="admin-stat__label"><i class="fas fa-unlock"></i> Demandes d&eacute;ban</span>
         </div>
     </div>
 

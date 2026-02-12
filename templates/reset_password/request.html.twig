@@ -1,0 +1,55 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mot de passe oubli&eacute;{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-page__vignette"></div>
+
+    <div class="auth-panel">
+        <div class="auth-panel__ornament">&#x2726;</div>
+        <h1 class="auth-panel__title">Mot de passe oubli&eacute;</h1>
+        <div class="auth-panel__separator">
+            <span></span>
+            <i class="fas fa-key"></i>
+            <span></span>
+        </div>
+
+        {% if submitted %}
+            <div class="auth-alert auth-alert--success">
+                <i class="fas fa-check"></i>
+                Si un compte existe avec cet email, un lien de r&eacute;initialisation vous a &eacute;t&eacute; envoy&eacute;.
+            </div>
+        {% endif %}
+
+        {% for message in app.flashes('error') %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if not submitted %}
+        <form method="post" class="auth-form">
+            <div class="auth-form__group">
+                <label for="inputEmail" class="auth-form__label">Votre adresse email</label>
+                <input type="email" name="email" id="inputEmail" class="auth-form__input"
+                       placeholder="Entrez l'email de votre compte" required autofocus>
+            </div>
+
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">Envoyer le lien</button>
+        </form>
+        {% endif %}
+
+        <div class="auth-panel__separator auth-panel__separator--small">
+            <span></span>
+            <span></span>
+        </div>
+
+        <p class="auth-panel__link">
+            <a href="{{ path('app_login') }}"><i class="fas fa-arrow-left"></i> Retour a la connexion</a>
+        </p>
+        <div class="auth-panel__ornament">&#x2726;</div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}R&eacute;initialiser le mot de passe{% endblock %}
+
+{% block body %}
+<div class="auth-page">
+    <div class="auth-page__vignette"></div>
+
+    <div class="auth-panel">
+        <div class="auth-panel__ornament">&#x2726;</div>
+        <h1 class="auth-panel__title">Nouveau mot de passe</h1>
+        <div class="auth-panel__separator">
+            <span></span>
+            <i class="fas fa-lock"></i>
+            <span></span>
+        </div>
+
+        {% if error %}
+            <div class="auth-alert auth-alert--error">
+                <i class="fas fa-exclamation-triangle"></i>
+                {{ error }}
+            </div>
+        {% endif %}
+
+        <form method="post" class="auth-form">
+            <div class="auth-form__group">
+                <label for="inputPassword" class="auth-form__label">Nouveau mot de passe</label>
+                <input type="password" name="password" id="inputPassword" class="auth-form__input"
+                       placeholder="Minimum 6 caract&egrave;res" required autofocus>
+            </div>
+
+            <div class="auth-form__group">
+                <label for="inputPasswordConfirm" class="auth-form__label">Confirmer le mot de passe</label>
+                <input type="password" name="password_confirm" id="inputPasswordConfirm" class="auth-form__input"
+                       placeholder="Retapez votre mot de passe" required>
+            </div>
+
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">R&eacute;initialiser</button>
+        </form>
+
+        <div class="auth-panel__separator auth-panel__separator--small">
+            <span></span>
+            <span></span>
+        </div>
+
+        <p class="auth-panel__link">
+            <a href="{{ path('app_login') }}"><i class="fas fa-arrow-left"></i> Retour a la connexion</a>
+        </p>
+        <div class="auth-panel__ornament">&#x2726;</div>
+    </div>
+</div>
+{% endblock %}

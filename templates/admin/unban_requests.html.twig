@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin - Demandes de deban{% endblock %}
+
+{% block body %}
+<div class="admin-page">
+    <div class="admin-page__vignette"></div>
+
+    <div class="admin-header">
+        <h1 class="admin-header__title"><i class="fas fa-crown"></i> Panel d'Administration</h1>
+        <nav class="admin-nav">
+            <a href="{{ path('app_admin') }}" class="admin-nav__link">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </a>
+            <a href="{{ path('app_admin_users') }}" class="admin-nav__link">
+                <i class="fas fa-users"></i> Utilisateurs
+            </a>
+            <a href="{{ path('app_admin_reports') }}" class="admin-nav__link">
+                <i class="fas fa-flag"></i> Signalements
+            </a>
+            <a href="{{ path('app_admin_unban_requests') }}" class="admin-nav__link admin-nav__link--active">
+                <i class="fas fa-unlock"></i> Demandes de d&eacute;ban
+                {% if unbanRequests|length > 0 %}
+                    <span class="admin-nav__badge">{{ unbanRequests|length }}</span>
+                {% endif %}
+            </a>
+        </nav>
+    </div>
+
+    <div class="admin-section">
+        <h2 class="admin-section__title"><i class="fas fa-unlock"></i> Demandes de d&eacute;ban en attente ({{ unbanRequests|length }})</h2>
+
+        {% for message in app.flashes('success') %}
+            <div class="auth-alert auth-alert--success" style="margin-bottom: 1rem;">
+                <i class="fas fa-check"></i>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% if unbanRequests|length > 0 %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in unbanRequests %}
+                        <tr>
+                            <td>{{ req.email }}</td>
+                            <td class="admin-table__msg">{{ req.message }}</td>
+                            <td class="admin-table__muted">{{ req.createdAt|date('d/m/Y H:i') }}</td>
+                            <td class="admin-table__actions">
+                                <form method="POST" action="{{ path('app_admin_unban_accept', {id: req.id}) }}" style="display:inline;">
+                                    <button type="submit" class="admin-btn admin-btn--small"
+                                            title="Accepter et debannir"
+                                            onclick="return confirm('Accepter cette demande et debannir l\'utilisateur ?')"
+                                            style="color: #4ade80;">
+                                        <i class="fas fa-check"></i>
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ path('app_admin_unban_reject', {id: req.id}) }}" style="display:inline;">
+                                    <button type="submit" class="admin-btn admin-btn--danger admin-btn--small"
+                                            title="Rejeter la demande"
+                                            onclick="return confirm('Rejeter cette demande ?')">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p class="admin-empty"><i class="fas fa-check-circle"></i> Aucune demande de deban en attente.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

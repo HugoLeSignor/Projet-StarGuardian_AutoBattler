@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\UnbanRequest;
 use App\Entity\User;
 use App\Repository\BattleRepository;
 use App\Repository\MessageRepository;
+use App\Repository\UnbanRequestRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +21,8 @@ class AdminController extends AbstractController
         private EntityManagerInterface $entityManager,
         private UserRepository $userRepository,
         private BattleRepository $battleRepository,
-        private MessageRepository $messageRepository
+        private MessageRepository $messageRepository,
+        private UnbanRequestRepository $unbanRequestRepository
     ) {}
 
     #[Route('', name: 'app_admin', methods: ['GET'])]
@@ -31,6 +34,7 @@ class AdminController extends AbstractController
         $totalBattles = $this->battleRepository->count([]);
         $totalMessages = $this->messageRepository->count([]);
         $pendingReports = $this->messageRepository->countReported();
+        $pendingUnbanRequests = $this->unbanRequestRepository->countPending();
 
         $recentUsers = $this->userRepository->findAllPaginated(1, 5);
         $reportedMessages = $this->messageRepository->findReported();
@@ -40,6 +44,7 @@ class AdminController extends AbstractController
             'totalBattles' => $totalBattles,
             'totalMessages' => $totalMessages,
             'pendingReports' => $pendingReports,
+            'pendingUnbanRequests' => $pendingUnbanRequests,
             'recentUsers' => $recentUsers,
             'reportedMessages' => array_slice($reportedMessages, 0, 5),
         ]);
@@ -176,5 +181,60 @@ class AdminController extends AbstractController
 
         $this->addFlash('success', 'Signalement rejete.');
         return $this->redirectToRoute('app_admin_reports');
+    }
+
+    #[Route('/unban-requests', name: 'app_admin_unban_requests', methods: ['GET'])]
+    public function unbanRequests(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $requests = $this->unbanRequestRepository->findPending();
+
+        return $this->render('admin/unban_requests.html.twig', [
+            'unbanRequests' => $requests,
+        ]);
+    }
+
+    #[Route('/unban-requests/{id}/accept', name: 'app_admin_unban_accept', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function acceptUnbanRequest(int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $unbanRequest = $this->unbanRequestRepository->find($id);
+        if (!$unbanRequest) {
+            throw $this->createNotFoundException('Demande introuvable');
+        }
+
+        $user = $this->userRepository->findOneBy(['email' => $unbanRequest->getEmail()]);
+        if ($user) {
+            $user->setIsBanned(false);
+            $user->setBanReason(null);
+            $user->setBannedAt(null);
+        }
+
+        $unbanRequest->setStatus(UnbanRequest::STATUS_ACCEPTED);
+        $unbanRequest->setReviewedAt(new \DateTimeImmutable());
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Demande acceptee. L\'utilisateur a ete debanni.');
+        return $this->redirectToRoute('app_admin_unban_requests');
+    }
+
+    #[Route('/unban-requests/{id}/reject', name: 'app_admin_unban_reject', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function rejectUnbanRequest(int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        $unbanRequest = $this->unbanRequestRepository->find($id);
+        if (!$unbanRequest) {
+            throw $this->createNotFoundException('Demande introuvable');
+        }
+
+        $unbanRequest->setStatus(UnbanRequest::STATUS_REJECTED);
+        $unbanRequest->setReviewedAt(new \DateTimeImmutable());
+        $this->entityManager->flush();
+
+        $this->addFlash('success', 'Demande rejetee.');
+        return $this->redirectToRoute('app_admin_unban_requests');
     }
 }
