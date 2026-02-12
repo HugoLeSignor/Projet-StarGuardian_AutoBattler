@@ -117,27 +117,32 @@ class MatchmakingService
         $allCharacters = $this->characterRepository->findAll();
         $tanks = [];
         $dps = [];
+        $healers = [];
         $supports = [];
         foreach ($allCharacters as $char) {
-            if ($char->getId() < 1) continue; // ignorer les ID < 1
+            if ($char->getId() < 1) continue;
             $roleName = $char->getRole()->getName();
             if ($roleName === 'Tank') {
                 $tanks[] = $char;
             } elseif ($roleName === 'DPS') {
                 $dps[] = $char;
+            } elseif ($roleName === 'Soigneur') {
+                $healers[] = $char;
             } else {
                 $supports[] = $char;
             }
         }
-        if (empty($tanks) || empty($dps) || empty($supports)) {
-            throw new \RuntimeException("Impossible de générer une équipe bot : il manque un Tank, un DPS ou un Support dans la base de données.");
+        if (empty($tanks) || empty($dps) || empty($healers) || empty($supports)) {
+            throw new \RuntimeException("Impossible de générer une équipe bot : il manque un Tank, un DPS, un Healer ou un Support dans la base de données.");
         }
         shuffle($tanks);
         shuffle($dps);
+        shuffle($healers);
         shuffle($supports);
         $ids = [
             $tanks[0]->getId(),
             $dps[0]->getId(),
+            $healers[0]->getId(),
             $supports[0]->getId(),
         ];
         // Sécurité : si un ID 0 apparaît, log et throw

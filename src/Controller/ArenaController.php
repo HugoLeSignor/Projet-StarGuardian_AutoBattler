@@ -102,12 +102,13 @@ final class ArenaController extends AbstractController
         // Acces direct sans matchmaking : equipes aleatoires (pas de persist, pas de MMR)
         $allCharacters = $repo->findAll();
 
-        if (count($allCharacters) < 6) {
+        if (count($allCharacters) < 8) {
             throw $this->createNotFoundException("Pas assez de personnages dans la base de données.");
         }
 
         $tanks = [];
         $dps = [];
+        $healers = [];
         $supports = [];
 
         foreach ($allCharacters as $char) {
@@ -116,6 +117,8 @@ final class ArenaController extends AbstractController
                 $tanks[] = $char;
             } elseif ($roleName === 'DPS') {
                 $dps[] = $char;
+            } elseif ($roleName === 'Soigneur') {
+                $healers[] = $char;
             } else {
                 $supports[] = $char;
             }
@@ -123,17 +126,20 @@ final class ArenaController extends AbstractController
 
         shuffle($tanks);
         shuffle($dps);
+        shuffle($healers);
         shuffle($supports);
 
         $team1Ids = [
-            ($dps[0] ?? $allCharacters[1])->getId(),
-            ($supports[0] ?? $allCharacters[2])->getId(),
-            ($tanks[0] ?? $allCharacters[0])->getId(),
+            $tanks[0]->getId(),
+            $dps[0]->getId(),
+            $healers[0]->getId(),
+            $supports[0]->getId(),
         ];
         $team2Ids = [
-            ($tanks[1] ?? $tanks[0] ?? $allCharacters[3])->getId(),
-            ($dps[1] ?? $dps[0] ?? $allCharacters[4])->getId(),
-            ($supports[1] ?? $supports[0] ?? $allCharacters[5])->getId(),
+            ($tanks[1] ?? $tanks[0])->getId(),
+            ($dps[1] ?? $dps[0])->getId(),
+            ($healers[1] ?? $healers[0])->getId(),
+            ($supports[1] ?? $supports[0])->getId(),
         ];
 
         return $this->renderCombat($repo, $engine, $team1Ids, $team2Ids, null, null);

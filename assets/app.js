@@ -52,19 +52,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!details || portraits.length === 0) return;
 
-    const maxSelection = 3;
+    const maxSelection = 4;
     let selectedHeroes = [];
     let selectedHeroIds = [];
 
-    // Composition obligatoire : 1 Tank, 1 DPS, 1 Soutien (Healer ou Support)
-    const ROLE_CATEGORIES = { 'Tank': 'Tank', 'DPS': 'DPS', 'Support': 'Soutien', 'Soigneur': 'Soutien', 'Buffer': 'Soutien' };
+    // Composition obligatoire : 1 Tank, 1 DPS, 1 Healer, 1 Support
+    const ROLE_CATEGORIES = { 'Tank': 'Tank', 'DPS': 'DPS', 'Soigneur': 'Healer', 'Support': 'Support', 'Buffer': 'Support' };
 
     function getSelectedRoles() {
-        const roles = { Tank: 0, DPS: 0, Soutien: 0 };
+        const roles = { Tank: 0, DPS: 0, Healer: 0, Support: 0 };
         selectedHeroIds.forEach(id => {
             const p = Array.from(portraits).find(pp => pp.dataset.id === id);
             if (p) {
-                const cat = ROLE_CATEGORIES[p.dataset.role] || 'Soutien';
+                const cat = ROLE_CATEGORIES[p.dataset.role] || 'Support';
                 roles[cat]++;
             }
         });
@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function canSelectRole(role) {
-        const cat = ROLE_CATEGORIES[role] || 'Soutien';
+        const cat = ROLE_CATEGORIES[role] || 'Support';
         const roles = getSelectedRoles();
         return roles[cat] < 1;
     }
@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             const btnRight = details.querySelector('.btn-select-right');
-            const roleCat = ROLE_CATEGORIES[role] || 'Soutien';
+            const roleCat = ROLE_CATEGORIES[role] || 'Support';
             const alreadySelected = selectedHeroIds.includes(id);
 
             // Désactiver le bouton si le slot de ce rôle est déjà pris
@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (launchBtn) {
             const roles = getSelectedRoles();
-            const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Soutien === 1;
+            const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Healer === 1 && roles.Support === 1;
             launchBtn.disabled = !teamComplete;
         }
     }
@@ -272,7 +272,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSavePresetBtn() {
         if (savePresetBtn) {
             const roles = getSelectedRoles();
-            const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Soutien === 1;
+            const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Healer === 1 && roles.Support === 1;
             savePresetBtn.disabled = !teamComplete;
         }
     }
