@@ -408,8 +408,8 @@ final class ArenaController extends AbstractController
         return match ($roleName) {
             'Tank' => 'Tank',
             'DPS' => 'DPS',
-            'Soigneur', 'Support' => 'Healer',
-            'Buffer' => 'Support',
+            'Soigneur' => 'Healer',
+            'Support', 'Buffer' => 'Support',
             default => 'Support',
         };
     }

@@ -27,7 +27,7 @@ final class PersonnagesController extends AbstractController
                 $categories['Tanks']['characters'][] = $character;
             } elseif ($roleName === 'DPS') {
                 $categories['DPS']['characters'][] = $character;
-            } elseif (in_array($roleName, ['Support', 'Soigneur'])) {
+            } elseif ($roleName === 'Soigneur') {
                 $categories['Healers']['characters'][] = $character;
             } else {
                 $categories['Supports']['characters'][] = $character;
