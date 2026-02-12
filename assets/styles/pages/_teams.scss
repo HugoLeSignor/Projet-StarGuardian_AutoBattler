@@ -285,6 +285,7 @@
     object-fit: cover;
     filter: brightness(0.8);
     transition: filter 0.2s ease;
+    flex-shrink: 0;
   }
 
   span {
@@ -630,9 +631,10 @@
 
   .team-grid {
     grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: min-content;
     border-right: none;
     border-bottom: 2px solid $dd-brown;
-    max-height: 300px;
+    max-height: 45vh;
   }
 
   .team-details {

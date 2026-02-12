@@ -111,6 +111,7 @@
         height: 100%;
         object-fit: contain;
         image-rendering: pixelated;
+        transition: opacity 0.1s ease;
     }
 
     .battle-stage__team--right & img.character-sprite {
@@ -271,6 +272,14 @@
 
         .hp-bar__fill {
             width: 0 !important;
+        }
+    }
+
+    // Animation de compétence spéciale (skill.webp)
+    &.using-skill {
+        .battle-stage__sprite {
+            filter: brightness(1.3) drop-shadow(0 0 8px rgba(150, 100, 255, 0.8));
+            transform: scale(1.05);
         }
     }
 

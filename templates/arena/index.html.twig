@@ -15,9 +15,11 @@
             {% for member in composition['Equipe 1'] %}
             <div class="battle-stage__character"
                  data-character-name="{{ member.name }}"
-                 data-character-team="Equipe 1">
+                 data-character-team="Equipe 1"
+                 data-character-slug="{{ member.name|lower|replace({' ': '-'}) }}"
+                 data-has-heal="{{ member.hasHeal ? 'true' : 'false' }}">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite" width="120" height="160">
+                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '/fightidle.webp') }}" alt="{{ member.name }}" class="character-sprite" width="120" height="160">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>
@@ -34,9 +36,11 @@
             {% for member in composition['Equipe 2'] %}
             <div class="battle-stage__character"
                  data-character-name="{{ member.name }}"
-                 data-character-team="Equipe 2">
+                 data-character-team="Equipe 2"
+                 data-character-slug="{{ member.name|lower|replace({' ': '-'}) }}"
+                 data-has-heal="{{ member.hasHeal ? 'true' : 'false' }}">
                 <div class="battle-stage__sprite">
-                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '.webp') }}" alt="{{ member.name }}" class="character-sprite" width="120" height="160">
+                    <img src="{{ asset('asset/img/combat/' ~ member.name|lower|replace({' ': '-'}) ~ '/fightidle.webp') }}" alt="{{ member.name }}" class="character-sprite" width="120" height="160">
                 </div>
                 <div class="hp-bar">
                     <div class="hp-bar__fill" style="width: 100%"></div>

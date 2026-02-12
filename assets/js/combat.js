@@ -37,12 +37,16 @@ class CombatController {
 
         // Map des personnages avec stockage des HP max initiaux
         this.characterMaxHP = {};
+        this.characterSlugs = {};
+        this.characterHasHeal = {};
         this.abilityCooldowns = {}; // Suivi des cooldowns en cours
         this.container.querySelectorAll('[data-character-name]').forEach(el => {
             const name = el.dataset.characterName;
             const team = el.dataset.characterTeam;
             const key = `${team}-${name}`;
             this.characterElements[key] = el;
+            this.characterSlugs[key] = el.dataset.characterSlug || '';
+            this.characterHasHeal[key] = el.dataset.hasHeal === 'true';
 
             // Extraire le HP max depuis le texte initial
             const hpText = el.querySelector('.hp-text');
@@ -407,14 +411,30 @@ class CombatController {
                 }
                 break;
             case 'mark':
-                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                if (log.caster && log.casterTeam) {
+                    const markKey = `${log.casterTeam}-${log.caster}`;
+                    this.swapSprite(markKey, 'skill.webp', 800);
+                    this.animateBuff(log.caster, log.casterTeam);
+                }
                 if (log.target && log.targetTeam) this.animateMarked(log.target, log.targetTeam);
                 break;
             case 'riposte_buff':
-                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                if (log.caster && log.casterTeam) {
+                    const riposteKey = `${log.casterTeam}-${log.caster}`;
+                    this.swapSprite(riposteKey, 'skill.webp', 800);
+                    this.animateBuff(log.caster, log.casterTeam);
+                }
                 break;
             case 'self_buff':
-                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                if (log.caster && log.casterTeam) {
+                    const selfBuffKey = `${log.casterTeam}-${log.caster}`;
+                    // Abomination Transformation : switch slug to beast permanently
+                    if (log.abilityName === 'Transformation') {
+                        this.characterSlugs[selfBuffKey] = 'beast';
+                    }
+                    this.swapSprite(selfBuffKey, 'skill.webp', 800);
+                    this.animateBuff(log.caster, log.casterTeam);
+                }
                 break;
             case 'party_heal':
                 if (log.caster && log.casterTeam) {
@@ -432,12 +452,20 @@ class CombatController {
                 }
                 break;
             case 'party_buff':
-                if (log.caster && log.casterTeam) this.animateBuff(log.caster, log.casterTeam);
+                if (log.caster && log.casterTeam) {
+                    const partyBuffKey = `${log.casterTeam}-${log.caster}`;
+                    this.swapSprite(partyBuffKey, 'skill.webp', 800);
+                    this.animateBuff(log.caster, log.casterTeam);
+                }
                 // Animer tous les alliés du même côté
                 this.animateTeamBuff(log.casterTeam);
                 break;
             case 'stealth':
-                if (log.caster && log.casterTeam) this.animateStealth(log.caster, log.casterTeam);
+                if (log.caster && log.casterTeam) {
+                    const stealthKey = `${log.casterTeam}-${log.caster}`;
+                    this.swapSprite(stealthKey, 'skill.webp', 800);
+                    this.animateStealth(log.caster, log.casterTeam);
+                }
                 break;
             case 'armor_pierce':
             case 'backline_strike':
@@ -474,6 +502,25 @@ class CombatController {
         });
     }
 
+    // === SPRITE SWAP ===
+
+    swapSprite(key, spriteName, duration) {
+        const el = this.characterElements[key];
+        if (!el) return;
+        const slug = this.characterSlugs[key];
+        if (!slug) return;
+        const img = el.querySelector('.character-sprite');
+        if (!img) return;
+        img.src = `/asset/img/combat/${slug}/${spriteName}`;
+        if (duration > 0) {
+            setTimeout(() => {
+                if (!el.classList.contains('dead')) {
+                    img.src = `/asset/img/combat/${this.characterSlugs[key]}/fightidle.webp`;
+                }
+            }, duration);
+        }
+    }
+
     // === ANIMATIONS EXISTANTES ===
 
     animateAttack(attackerName, attackerTeam, targetName, targetTeam, isCrit) {
@@ -481,6 +528,8 @@ class CombatController {
         const target = this.getCharacterElement(targetName, targetTeam);
 
         if (attacker) {
+            const key = `${attackerTeam}-${attackerName}`;
+            this.swapSprite(key, 'attackanimation.webp', 600);
             attacker.classList.add('attacking');
             setTimeout(() => attacker.classList.remove('attacking'), 600);
         }
@@ -499,6 +548,12 @@ class CombatController {
         const target = this.getCharacterElement(targetName, targetTeam);
 
         if (healer) {
+            const key = `${healerTeam}-${healerName}`;
+            if (this.characterHasHeal[key]) {
+                this.swapSprite(key, 'healing.webp', 800);
+            } else {
+                this.swapSprite(key, 'skill.webp', 800);
+            }
             healer.classList.add('healing');
             setTimeout(() => healer.classList.remove('healing'), 800);
         }
@@ -512,6 +567,8 @@ class CombatController {
     animateDefend(defenderName, defenderTeam) {
         const defender = this.getCharacterElement(defenderName, defenderTeam);
         if (defender) {
+            const key = `${defenderTeam}-${defenderName}`;
+            this.swapSprite(key, 'defending.webp', 1000);
             defender.classList.add('defending');
             setTimeout(() => defender.classList.remove('defending'), 1000);
         }

@@ -163,6 +163,7 @@ final class ArenaController extends AbstractController
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
+                'hasHeal' => in_array($d['char']->getRole()->getName(), ['Soigneur', 'Support']),
             ], $team1),
             'Equipe 2' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
@@ -171,6 +172,7 @@ final class ArenaController extends AbstractController
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
+                'hasHeal' => in_array($d['char']->getRole()->getName(), ['Soigneur', 'Support']),
             ], $team2),
         ];
 
@@ -332,6 +334,7 @@ final class ArenaController extends AbstractController
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
+                'hasHeal' => in_array($d['char']->getRole()->getName(), ['Soigneur', 'Support']),
             ], $team1),
             'Equipe 2' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
@@ -340,6 +343,7 @@ final class ArenaController extends AbstractController
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
+                'hasHeal' => in_array($d['char']->getRole()->getName(), ['Soigneur', 'Support']),
             ], $team2),
         ];
 
