@@ -27,6 +27,7 @@ class AttackAction implements ActionInterface
 
         if (in_array('protected', $initialTargetData['statuses'], true) && isset($initialTargetData['protectedBy'])) {
             foreach ($teamEnemies as &$edata) {
+                if ($edata === null) continue;
                 if ($edata['char'] === $initialTargetData['protectedBy'] && $edata['char']->getHP() > 0) {
                     $logs[] = [
                         'type' => 'protect',
@@ -385,6 +386,7 @@ class BlightAttackAction implements ActionInterface
         // Dégâts AoE réduits (50% des dégâts) sur tous les ennemis vivants
         $allHits = [];
         foreach ($teamEnemies as $i => &$enemyData) {
+            if ($enemyData === null) continue;
             if ($enemyData['char']->getHP() <= 0) continue;
 
             $enemy = $enemyData['char'];
@@ -678,6 +680,7 @@ class SelfBuffAction implements ActionInterface
         // Dégâts aux alliés (Abomination : Transformation)
         if ($this->allyDamage > 0) {
             foreach ($teamAllies as &$allyData) {
+                if ($allyData === null) continue;
                 if ($allyData['char'] === $user || $allyData['char']->getHP() <= 0) continue;
                 $ally = $allyData['char'];
                 $allyNewHP = max(0, $ally->getHP() - $this->allyDamage);
@@ -749,6 +752,7 @@ class PartyHealAction implements ActionInterface
 
         $healed = [];
         foreach ($teamAllies as &$allyData) {
+            if ($allyData === null) continue;
             $ally = $allyData['char'];
             if ($ally->getHP() <= 0) continue;
             $amount = min($this->healAmount, $allyData['HP_MAX'] - $ally->getHP());
@@ -800,6 +804,7 @@ class PartyBuffAction implements ActionInterface
         }
 
         foreach ($teamAllies as &$allyData) {
+            if ($allyData === null) continue;
             if ($allyData['char']->getHP() <= 0) continue;
             $allyData['tempBuffs'] = array_merge($allyData['tempBuffs'], $this->buffs);
             $allyData['tempBuffs']['turnsLeft'] = $this->duration;
@@ -1631,6 +1636,7 @@ class CombatEngine
             $teamEnemies = null;
 
             foreach ($team1 as $i => &$d) {
+                if ($d === null) continue;
                 if ($d['char'] === $char) {
                     $actorData =& $team1[$i];
                     $teamAllies =& $team1;
@@ -1642,6 +1648,7 @@ class CombatEngine
 
             if ($actorData === null) {
                 foreach ($team2 as $i => &$d) {
+                    if ($d === null) continue;
                     if ($d['char'] === $char) {
                         $actorData =& $team2[$i];
                         $teamAllies =& $team2;
@@ -1671,12 +1678,70 @@ class CombatEngine
             if (empty($actions))
                 continue;
 
-            $action = $actions[array_rand($actions)];
+            $action = $this->chooseAction($actions, $actorData, $teamAllies, $teamEnemies);
             $action->execute($char, $teamAllies, $teamEnemies, $logs, $actorData);
 
             // Check and apply synergies after each action
             $this->checkAndApplySynergies($char, $actorData, $teamAllies, $teamEnemies, $logs);
         }
+    }
+
+    /**
+     * Choisit l'action a effectuer avec priorite aux competences pretes.
+     * Signature prete → 70% de chance, Role ability prete → 60%, sinon Attack.
+     */
+    private function chooseAction(array $actions, array $actorData, array &$teamAllies, array &$teamEnemies): ActionInterface
+    {
+        $attackAction = null;
+        $roleAction = null;
+        $signatureAction = null;
+
+        foreach ($actions as $action) {
+            if ($action instanceof AttackAction) {
+                $attackAction = $action;
+            } elseif ($action instanceof HealAction || $action instanceof DefendAllyAction) {
+                $roleAction = $action;
+            } else {
+                // Toute autre action = signature
+                $signatureAction = $action;
+            }
+        }
+
+        // Priorite 1 : Signature ability si prete (70% de chance)
+        if ($signatureAction !== null && ($actorData['cooldowns']['ability'] ?? 0) <= 0) {
+            if (rand(1, 100) <= 70) {
+                return $signatureAction;
+            }
+        }
+
+        // Priorite 2 : Role ability (heal/defend) si prete
+        if ($roleAction !== null) {
+            $roleReady = false;
+
+            if ($roleAction instanceof HealAction) {
+                // Heal pret + au moins un allie blesse
+                if (($actorData['cooldowns']['heal'] ?? 0) <= 0) {
+                    foreach ($teamAllies as $allyData) {
+                        if ($allyData === null) continue;
+                        if ($allyData['char']->getHP() > 0 && $allyData['char']->getHP() < $allyData['HP_MAX']) {
+                            $roleReady = true;
+                            break;
+                        }
+                    }
+                }
+            } elseif ($roleAction instanceof DefendAllyAction) {
+                if (($actorData['cooldowns']['defend'] ?? 0) <= 0) {
+                    $roleReady = true;
+                }
+            }
+
+            if ($roleReady && rand(1, 100) <= 60) {
+                return $roleAction;
+            }
+        }
+
+        // Fallback : Attack
+        return $attackAction ?? $actions[array_rand($actions)];
     }
 
     private function rollInitiative(array &$team1, array &$team2): array
@@ -1825,6 +1890,7 @@ class CombatEngine
             // Find the partner alive in allies
             $partnerData = null;
             foreach ($teamAllies as $idx => &$allyData) {
+                if ($allyData === null) continue;
                 if ($allyData['char']->getName() === $synergy['partnerChar']
                     && $allyData['char']->getHP() > 0) {
                     $partnerData =& $teamAllies[$idx];
@@ -1910,6 +1976,7 @@ class CombatEngine
                 $targetData = null;
                 if ($targetName) {
                     foreach ($teamEnemies as $idx => &$edata) {
+                        if ($edata === null) continue;
                         if ($edata['char']->getName() === $targetName && $edata['char']->getHP() > 0) {
                             $targetData =& $teamEnemies[$idx];
                             break;
@@ -1988,6 +2055,7 @@ class CombatEngine
                 if (!$targetName) return;
 
                 foreach ($teamEnemies as $idx => &$edata) {
+                    if ($edata === null) continue;
                     if ($edata['char']->getName() === $targetName && $edata['char']->getHP() > 0) {
                         $edata['marked'] = [
                             'turnsLeft' => $effect['markTurns'],
@@ -2044,6 +2112,7 @@ class CombatEngine
                 if (!$targetName) return;
 
                 foreach ($teamEnemies as $idx => &$edata) {
+                    if ($edata === null) continue;
                     if ($edata['char']->getName() === $targetName && $edata['char']->getHP() > 0) {
                         if (in_array('bleeding', $edata['statuses'] ?? [], true)) {
                             $bonusDmg = (int)(($triggerLog['damage'] ?? 0) * $effect['bonusMultiplier']);
