@@ -3,7 +3,7 @@
 {% block title %}Composition d'&eacute;quipe{% endblock %}
 
 {% block body %}
-<div class="teams-page">
+<div class="teams-page" data-synergy-map="{{ synergyMap|default('{}')|e('html_attr') }}">
     <div class="teams-page__vignette"></div>
 
     {# ====== HEADER + EQUIPE SELECTIONNEE ====== #}

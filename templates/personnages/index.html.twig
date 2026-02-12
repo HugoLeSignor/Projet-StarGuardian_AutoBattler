@@ -96,6 +96,22 @@
                         <p class="char-card__ability-desc">{{ character.ability.description }}</p>
                     </div>
                     {% endif %}
+
+                    {% if synergyMap[character.name] is defined and synergyMap[character.name]|length > 0 %}
+                    <div class="char-card__synergies">
+                        <div class="char-card__synergies-header">
+                            <i class="fas fa-link"></i>
+                            <span>Synergies</span>
+                        </div>
+                        {% for syn in synergyMap[character.name] %}
+                        <div class="char-card__synergy-item">
+                            <span class="char-card__synergy-partner">{{ syn.partner }}</span>
+                            <span class="char-card__synergy-name">{{ syn.name }}</span>
+                            <p class="char-card__synergy-desc">{{ syn.desc }}</p>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

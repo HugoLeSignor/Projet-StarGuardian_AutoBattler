@@ -113,6 +113,27 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
             ` : '';
 
+            // Build synergy info for this character
+            const charSynergies = synergyMap[name] || [];
+            let synergyHtml = '';
+            if (charSynergies.length > 0) {
+                synergyHtml = `
+                    <div class="synergy-section">
+                        <div class="synergy-section__header">
+                            <i class="fas fa-link"></i>
+                            <span class="synergy-section__title">Synergies</span>
+                        </div>
+                        ${charSynergies.map(s => `
+                            <div class="synergy-section__item ${selectedHeroes.includes(s.partner) ? 'synergy-section__item--active' : ''}">
+                                <span class="synergy-section__partner">${escapeHtml(s.partner)}</span>
+                                <span class="synergy-section__sname">${escapeHtml(s.name)}</span>
+                                <p class="synergy-section__desc">${escapeHtml(s.desc)}</p>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
             details.innerHTML = `
                 <div class="team-details-content">
                     <h2>${name}</h2>
@@ -175,6 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
 
                     ${abilityHtml}
+                    ${synergyHtml}
 
                     <button class="btn-select-right">
                         ${isSelected ? 'Désélectionner' : 'Sélectionner'}
@@ -220,6 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // === SYNERGY SYSTEM ===
+    const teamsPageEl = document.querySelector('.teams-page');
+    const synergyMap = teamsPageEl ? JSON.parse(teamsPageEl.dataset.synergyMap || '{}') : {};
+
     /*  ZONE ÉQUIPE — sprites seulement */
     function updateSelectedTeam() {
         selectedList.innerHTML = '';
@@ -240,11 +266,107 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mettre à jour les indicateurs de rôles
         updateRoleIndicators();
 
+        // Mettre à jour les synergies
+        updateSynergyHighlights();
+
         if (launchBtn) {
             const roles = getSelectedRoles();
             const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Healer === 1 && roles.Support === 1;
             launchBtn.disabled = !teamComplete;
         }
+    }
+
+    function updateSynergyHighlights() {
+        // Remove all existing synergy highlights
+        portraits.forEach(p => {
+            p.classList.remove('synergy-available', 'synergy-active');
+            const badge = p.querySelector('.synergy-badge');
+            if (badge) badge.remove();
+        });
+
+        if (selectedHeroIds.length === 0) return;
+
+        // Get names of selected heroes
+        const selectedNames = selectedHeroIds.map(id => {
+            const p = Array.from(portraits).find(pp => pp.dataset.id === id);
+            return p ? p.dataset.name : null;
+        }).filter(Boolean);
+
+        // Find active synergies (both members selected)
+        const activeSynergies = [];
+        const seenPairs = new Set();
+        selectedNames.forEach(name => {
+            const synergies = synergyMap[name] || [];
+            synergies.forEach(syn => {
+                if (selectedNames.includes(syn.partner)) {
+                    const pairKey = [name, syn.partner].sort().join('+');
+                    if (!seenPairs.has(pairKey)) {
+                        seenPairs.add(pairKey);
+                        activeSynergies.push({ name1: name, name2: syn.partner, synergyName: syn.name, desc: syn.desc });
+                    }
+                }
+            });
+        });
+
+        // Mark selected portraits with active synergy
+        activeSynergies.forEach(syn => {
+            portraits.forEach(p => {
+                if ((p.dataset.name === syn.name1 || p.dataset.name === syn.name2)
+                    && selectedHeroIds.includes(p.dataset.id)) {
+                    p.classList.add('synergy-active');
+                }
+            });
+        });
+
+        // Highlight unselected portraits that have synergy with selected heroes
+        portraits.forEach(p => {
+            if (selectedHeroIds.includes(p.dataset.id)) return;
+            const pName = p.dataset.name;
+            const charSynergies = synergyMap[pName] || [];
+            const matching = charSynergies.filter(syn => selectedNames.includes(syn.partner));
+
+            if (matching.length > 0) {
+                p.classList.add('synergy-available');
+                const badge = document.createElement('div');
+                badge.className = 'synergy-badge';
+                badge.innerHTML = '<i class="fas fa-link"></i>';
+                badge.title = matching.map(s => s.name).join(', ');
+                p.appendChild(badge);
+            }
+        });
+
+        // Update the synergy display panel
+        updateSynergyDisplay(activeSynergies);
+    }
+
+    function updateSynergyDisplay(activeSynergies) {
+        let container = document.querySelector('.synergy-display');
+        if (!container) {
+            container = document.createElement('div');
+            container.className = 'synergy-display';
+            const actions = document.querySelector('.selected-team__actions');
+            if (actions) {
+                actions.parentNode.insertBefore(container, actions);
+            }
+        }
+
+        if (activeSynergies.length === 0) {
+            container.innerHTML = '';
+            return;
+        }
+
+        container.innerHTML = `
+            <div class="synergy-display__title">
+                <i class="fas fa-link"></i> Synergies actives
+            </div>
+            ${activeSynergies.map(s => `
+                <div class="synergy-display__item">
+                    <span class="synergy-display__name">${escapeHtml(s.synergyName)}</span>
+                    <span class="synergy-display__chars">${escapeHtml(s.name1)} + ${escapeHtml(s.name2)}</span>
+                    <span class="synergy-display__desc">${escapeHtml(s.desc)}</span>
+                </div>
+            `).join('')}
+        `;
     }
 
     function updateRoleIndicators() {

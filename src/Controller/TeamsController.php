@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Config\SynergyConfig;
 use App\Entity\TeamPreset;
 use App\Repository\CharacterRepository;
 use App\Repository\TeamPresetRepository;
@@ -49,6 +50,7 @@ final class TeamsController extends AbstractController
             'heroes' => $characters,
             'categories' => $categories,
             'presets' => $presets,
+            'synergyMap' => json_encode(SynergyConfig::getSynergyMap()),
         ]);
     }
 

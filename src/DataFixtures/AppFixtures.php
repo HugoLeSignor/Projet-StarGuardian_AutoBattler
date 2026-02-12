@@ -160,7 +160,7 @@ class AppFixtures extends Fixture
             $this->createAbility(
                 $characters['Plague Doctor'],
                 'Blast Nocif',
-                'Lance une fiole de poison qui infecte l\'ennemi avec la peste.',
+                'Lance une fiole de poison qui touche tous les ennemis et infecte la cible principale avec la peste.',
                 'blight_attack',
                 ['blightDamage' => 4, 'blightTurns' => 3],
                 3
@@ -168,9 +168,9 @@ class AppFixtures extends Fixture
             $this->createAbility(
                 $characters['Houndmaster'],
                 'Chien de Garde',
-                'Ordonne à son chien de protéger un allié, augmentant aussi son esquive.',
+                'Ordonne à son chien de protéger un allié, augmentant son esquive et ses dégâts.',
                 'protect_dodge',
-                ['dodgeBonus' => 15, 'protectTurns' => 2],
+                ['dodgeBonus' => 15, 'protectTurns' => 2, 'dmgBonus' => 15],
                 4
             ),
             $this->createAbility(

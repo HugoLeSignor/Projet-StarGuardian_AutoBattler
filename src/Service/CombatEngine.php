@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Config\SynergyConfig;
 use App\Entity\Character;
 
 interface ActionInterface
@@ -350,8 +351,9 @@ class BleedAttackAction implements ActionInterface
 }
 
 /**
- * Attaque + Peste (Blight) DoT
+ * Attaque AoE + Peste (Blight) DoT sur la cible principale
  * Utilisé par : Plague Doctor (Blast Nocif)
+ * Inflige des dégâts réduits à TOUS les ennemis, mais le DoT ne touche que la cible principale.
  */
 class BlightAttackAction implements ActionInterface
 {
@@ -376,48 +378,67 @@ class BlightAttackAction implements ActionInterface
             return;
         }
 
-        $targetIndex = CombatEngine::getRandomAliveIndex($teamEnemies, true);
-        if ($targetIndex === null) return;
+        // Choisir la cible principale pour le DoT
+        $primaryIndex = CombatEngine::getRandomAliveIndex($teamEnemies, true);
+        if ($primaryIndex === null) return;
 
-        $targetData =& $teamEnemies[$targetIndex];
-        $target = $targetData['char'];
+        // Dégâts AoE réduits (50% des dégâts) sur tous les ennemis vivants
+        $allHits = [];
+        foreach ($teamEnemies as $i => &$enemyData) {
+            if ($enemyData['char']->getHP() <= 0) continue;
 
-        // Attaque réduite (70% des dégâts)
-        $damage = (int)(rand($user->getDMGMIN(), $user->getDMGMAX()) * 0.7);
-        $newHP = max(0, $target->getHP() - $damage);
-        $target->setHP($newHP);
+            $enemy = $enemyData['char'];
+            $damage = (int)(rand($user->getDMGMIN(), $user->getDMGMAX()) * 0.5);
+            $newHP = max(0, $enemy->getHP() - $damage);
+            $enemy->setHP($newHP);
 
-        // Appliquer la peste
-        $targetData['dots']['blight'] = ['damage' => $this->blightDamage, 'turnsLeft' => $this->blightTurns];
-        if (!in_array('blighted', $targetData['statuses'], true)) {
-            $targetData['statuses'][] = 'blighted';
+            $allHits[] = [
+                'name' => $enemy->getName(),
+                'team' => $enemyData['team'],
+                'damage' => $damage,
+                'hp' => $newHP,
+                'maxHp' => $enemyData['HP_MAX'],
+                'isPrimary' => ($i === $primaryIndex),
+            ];
+
+            if ($newHP === 0 && !in_array('dead', $enemyData['statuses'], true)) {
+                $enemyData['statuses'][] = 'dead';
+                $logs[] = [
+                    'type' => 'death',
+                    'target' => $enemy->getName(),
+                    'targetTeam' => $enemyData['team'],
+                    'message' => CombatEngine::colorNameStatic($enemyData) . " est K.O !"
+                ];
+            }
         }
+        unset($enemyData);
+
+        // Appliquer la peste UNIQUEMENT sur la cible principale
+        $primaryData =& $teamEnemies[$primaryIndex];
+        if ($primaryData['char']->getHP() > 0) {
+            $primaryData['dots']['blight'] = ['damage' => $this->blightDamage, 'turnsLeft' => $this->blightTurns];
+            if (!in_array('blighted', $primaryData['statuses'], true)) {
+                $primaryData['statuses'][] = 'blighted';
+            }
+        }
+
+        $primaryName = $primaryData['char']->getName();
+        $hitNames = array_map(fn($h) => $h['name'], $allHits);
+        $hitList = implode(', ', $hitNames);
 
         $logs[] = [
             'type' => 'ability_use',
             'subtype' => 'blight_attack',
             'caster' => $user->getName(),
             'casterTeam' => $userData['team'],
-            'target' => $target->getName(),
-            'targetTeam' => $targetData['team'],
+            'target' => $primaryName,
+            'targetTeam' => $primaryData['team'],
             'abilityName' => $this->abilityName,
-            'damage' => $damage,
-            'targetHP' => $newHP,
-            'targetMaxHP' => $targetData['HP_MAX'],
+            'allHits' => $allHits,
             'blightDamage' => $this->blightDamage,
             'blightTurns' => $this->blightTurns,
-            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> sur " . CombatEngine::colorNameStatic($targetData) . " → $damage dégâts + Peste ({$this->blightDamage}/tour, {$this->blightTurns} tours)"
+            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → Empoisonne la zone ! Touche $hitList + Peste sur " . CombatEngine::colorNameStatic($primaryData) . " ({$this->blightDamage}/tour, {$this->blightTurns} tours)"
         ];
-
-        if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
-            $targetData['statuses'][] = 'dead';
-            $logs[] = [
-                'type' => 'death',
-                'target' => $target->getName(),
-                'targetTeam' => $targetData['team'],
-                'message' => CombatEngine::colorNameStatic($targetData) . " est K.O !"
-            ];
-        }
 
         $userData['cooldowns']['ability'] = $this->cooldownTurns;
     }
@@ -539,6 +560,7 @@ class MarkAction implements ActionInterface
             'target' => $target->getName(),
             'targetTeam' => $targetData['team'],
             'abilityName' => $this->abilityName,
+            'markTurns' => $this->markTurns,
             'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → " . CombatEngine::colorNameStatic($targetData) . " est marqué ! (+{$this->bonusDamage}% dégâts reçus, $desc)"
         ];
 
@@ -581,6 +603,7 @@ class RiposteAction implements ActionInterface
             'caster' => $user->getName(),
             'casterTeam' => $userData['team'],
             'abilityName' => $this->abilityName,
+            'riposteTurns' => $this->riposteTurns,
             'message' => CombatEngine::colorNameStatic($userData) . " active <span class='ability-name'>{$this->abilityName}</span> ! (Contre-attaque pendant {$this->riposteTurns} tours)"
         ];
 
@@ -647,6 +670,8 @@ class SelfBuffAction implements ActionInterface
             'caster' => $user->getName(),
             'casterTeam' => $userData['team'],
             'abilityName' => $this->abilityName,
+            'buffDuration' => $this->duration,
+            'buffs' => $this->buffs,
             'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> ! ($effectStr, $durationText)"
         ];
 
@@ -793,6 +818,8 @@ class PartyBuffAction implements ActionInterface
             'caster' => $user->getName(),
             'casterTeam' => $userData['team'],
             'abilityName' => $this->abilityName,
+            'buffDuration' => $this->duration,
+            'buffs' => $this->buffs,
             'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> ! Toute l'équipe gagne $effectStr pendant {$this->duration} tours"
         ];
 
@@ -838,6 +865,7 @@ class StealthAction implements ActionInterface
             'caster' => $user->getName(),
             'casterTeam' => $userData['team'],
             'abilityName' => $this->abilityName,
+            'stealthTurns' => $this->stealthTurns,
             'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → Disparaît dans l'ombre ! (+{$this->dmgBonus}% dégâts au prochain coup)"
         ];
 
@@ -974,6 +1002,7 @@ class EmergencyHealAction implements ActionInterface
             'target' => $user->getName(),
             'targetTeam' => $userData['team'],
             'abilityName' => $this->abilityName,
+            'selfBleedTurns' => $this->selfBleed > 0 ? 3 : 0,
             'amount' => $healAmount,
             'targetHP' => $user->getHP(),
             'targetMaxHP' => $userData['HP_MAX'],
@@ -1063,19 +1092,21 @@ class BacklineStrikeAction implements ActionInterface
 }
 
 /**
- * Protection d'allié + bonus d'esquive
+ * Protection d'allié + bonus d'esquive + bonus de dégâts
  * Utilisé par : Houndmaster (Chien de Garde)
  */
 class ProtectDodgeAction implements ActionInterface
 {
     private int $dodgeBonus;
+    private int $dmgBonus;
     private int $protectTurns;
     private int $cooldownTurns;
     private string $abilityName;
 
-    public function __construct(int $dodgeBonus, int $protectTurns, int $cooldownTurns, string $abilityName = 'Protection')
+    public function __construct(int $dodgeBonus, int $protectTurns, int $cooldownTurns, string $abilityName = 'Protection', int $dmgBonus = 0)
     {
         $this->dodgeBonus = $dodgeBonus;
+        $this->dmgBonus = $dmgBonus;
         $this->protectTurns = $protectTurns;
         $this->cooldownTurns = $cooldownTurns;
         $this->abilityName = $abilityName;
@@ -1123,6 +1154,16 @@ class ProtectDodgeAction implements ActionInterface
         $targetData['tempBuffs']['dodge'] = ($targetData['tempBuffs']['dodge'] ?? 0) + $this->dodgeBonus;
         $targetData['tempBuffs']['turnsLeft'] = max($targetData['tempBuffs']['turnsLeft'] ?? 0, $this->protectTurns);
 
+        // Bonus de dégâts temporaire
+        if ($this->dmgBonus > 0) {
+            $targetData['tempBuffs']['damage'] = ($targetData['tempBuffs']['damage'] ?? 0) + $this->dmgBonus;
+        }
+
+        $effects = "+{$this->dodgeBonus} esquive";
+        if ($this->dmgBonus > 0) {
+            $effects .= ", +{$this->dmgBonus}% dégâts";
+        }
+
         $logs[] = [
             'type' => 'ability_use',
             'subtype' => 'protect_dodge',
@@ -1131,7 +1172,8 @@ class ProtectDodgeAction implements ActionInterface
             'target' => $targetData['char']->getName(),
             'targetTeam' => $targetData['team'],
             'abilityName' => $this->abilityName,
-            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → Protège " . CombatEngine::colorNameStatic($targetData) . " (+{$this->dodgeBonus} esquive, {$this->protectTurns} tours)"
+            'protectTurns' => $this->protectTurns,
+            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → Protège " . CombatEngine::colorNameStatic($targetData) . " ($effects, {$this->protectTurns} tours)"
         ];
 
         $userData['cooldowns']['ability'] = $this->cooldownTurns;
@@ -1236,6 +1278,10 @@ class CombatEngine
         $this->initializeTeamData($team1);
         $this->initializeTeamData($team2);
 
+        // Announce active synergies before combat starts
+        $this->announceSynergies($team1, $logs);
+        $this->announceSynergies($team2, $logs);
+
         $round = 1;
 
         while ($this->teamAlive($team1) && $this->teamAlive($team2) && $round <= $maxRounds) {
@@ -1328,7 +1374,11 @@ class CombatEngine
             }
 
             $data['actions'] = $actions;
+            $data['synergyFlags'] = [];
         }
+
+        // Detect active synergies for this team
+        $this->detectTeamSynergies($team);
     }
 
     private function createSignatureAction(\App\Entity\Ability $ability): ?ActionInterface
@@ -1419,7 +1469,8 @@ class CombatEngine
                     $params['dodgeBonus'] ?? 15,
                     $params['protectTurns'] ?? 2,
                     $cd,
-                    $name
+                    $name,
+                    $params['dmgBonus'] ?? 0
                 );
             case 'bonus_vs_marked':
                 return new BonusVsMarkedAction(
@@ -1471,6 +1522,7 @@ class CombatEngine
                     'damage' => $bleedDmg,
                     'targetHP' => $newHP,
                     'targetMaxHP' => $data['HP_MAX'],
+                    'turnsRemaining' => $data['dots']['bleed']['turnsLeft'] - 1,
                     'message' => CombatEngine::colorNameStatic($data) . " saigne ! (-$bleedDmg PV, HP: $newHP)"
                 ];
 
@@ -1505,6 +1557,7 @@ class CombatEngine
                     'damage' => $blightDmg,
                     'targetHP' => $newHP,
                     'targetMaxHP' => $data['HP_MAX'],
+                    'turnsRemaining' => $data['dots']['blight']['turnsLeft'] - 1,
                     'message' => CombatEngine::colorNameStatic($data) . " souffre de la peste ! (-$blightDmg PV, HP: $newHP)"
                 ];
 
@@ -1620,6 +1673,9 @@ class CombatEngine
 
             $action = $actions[array_rand($actions)];
             $action->execute($char, $teamAllies, $teamEnemies, $logs, $actorData);
+
+            // Check and apply synergies after each action
+            $this->checkAndApplySynergies($char, $actorData, $teamAllies, $teamEnemies, $logs);
         }
     }
 
@@ -1693,5 +1749,332 @@ class CombatEngine
         }
 
         return "<span style='color:#ff4d4d;'>$name</span>";
+    }
+
+    // ============================================================
+    // SYSTEME DE SYNERGIES
+    // ============================================================
+
+    /**
+     * Detect active synergies for a team and store them in team data
+     */
+    private function detectTeamSynergies(array &$team): void
+    {
+        $names = array_map(fn($d) => $d['char']->getName(), $team);
+        $registry = SynergyConfig::getSynergyRegistry();
+
+        $activeSynergies = [];
+        foreach ($registry as $synergy) {
+            if (in_array($synergy['triggerChar'], $names, true)
+                && in_array($synergy['partnerChar'], $names, true)) {
+                $activeSynergies[] = $synergy;
+            }
+        }
+
+        foreach ($team as &$data) {
+            $data['activeSynergies'] = $activeSynergies;
+        }
+        unset($data);
+    }
+
+    /**
+     * Emit synergy_announce logs before round 1
+     */
+    private function announceSynergies(array $team, array &$logs): void
+    {
+        $activeSynergies = $team[0]['activeSynergies'] ?? [];
+        if (empty($activeSynergies)) return;
+
+        $teamName = $team[0]['team'] ?? 'Equipe';
+
+        foreach ($activeSynergies as $synergy) {
+            $logs[] = [
+                'type' => 'synergy_announce',
+                'synergyId' => $synergy['id'],
+                'synergyName' => $synergy['name'],
+                'triggerChar' => $synergy['triggerChar'],
+                'partnerChar' => $synergy['partnerChar'],
+                'team' => $teamName,
+                'message' => "<span class='synergy-name'>{$synergy['name']}</span> : {$synergy['triggerChar']} + {$synergy['partnerChar']}"
+            ];
+        }
+    }
+
+    /**
+     * After each action, check if the actor triggered any synergy
+     */
+    private function checkAndApplySynergies(
+        Character $actor,
+        array &$actorData,
+        array &$teamAllies,
+        array &$teamEnemies,
+        array &$logs
+    ): void {
+        $actorName = $actor->getName();
+        $activeSynergies = $actorData['activeSynergies'] ?? [];
+        if (empty($activeSynergies)) return;
+
+        $lastActionLog = $this->findLastActionLog($logs);
+        if (!$lastActionLog) return;
+
+        foreach ($activeSynergies as $synergy) {
+            if ($synergy['triggerChar'] !== $actorName) continue;
+
+            if (!$this->matchesTriggerCondition($lastActionLog, $synergy['triggerCondition'])) continue;
+
+            // Find the partner alive in allies
+            $partnerData = null;
+            foreach ($teamAllies as $idx => &$allyData) {
+                if ($allyData['char']->getName() === $synergy['partnerChar']
+                    && $allyData['char']->getHP() > 0) {
+                    $partnerData =& $teamAllies[$idx];
+                    break;
+                }
+            }
+            unset($allyData);
+
+            if ($partnerData === null) continue;
+
+            $this->executeSynergyEffect(
+                $synergy, $actorData, $partnerData,
+                $teamAllies, $teamEnemies, $logs, $lastActionLog
+            );
+        }
+    }
+
+    /**
+     * Find the last action log (skip death/protect/synergy logs)
+     */
+    private function findLastActionLog(array $logs): ?array
+    {
+        $actionTypes = ['attack', 'heal', 'defend', 'ability_use'];
+        for ($i = count($logs) - 1; $i >= 0; $i--) {
+            if (in_array($logs[$i]['type'], $actionTypes, true)) {
+                return $logs[$i];
+            }
+            if (in_array($logs[$i]['type'], ['round', 'synergy_trigger', 'synergy_announce'], true)) {
+                break;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Check if a log matches a synergy trigger condition
+     */
+    private function matchesTriggerCondition(array $log, string $condition): bool
+    {
+        // For ability_use logs, match on subtype
+        if ($log['type'] === 'ability_use' && isset($log['subtype'])) {
+            return $log['subtype'] === $condition;
+        }
+        // For defend action (DefendAllyAction), match on type
+        if ($condition === 'defend' && $log['type'] === 'defend') {
+            return true;
+        }
+        return $log['type'] === $condition;
+    }
+
+    /**
+     * Execute the synergy effect and emit logs
+     */
+    private function executeSynergyEffect(
+        array $synergy,
+        array &$actorData,
+        array &$partnerData,
+        array &$teamAllies,
+        array &$teamEnemies,
+        array &$logs,
+        array $triggerLog
+    ): void {
+        $effect = $synergy['effect'];
+        $partner = $partnerData['char'];
+
+        $synergyLog = [
+            'type' => 'synergy_trigger',
+            'synergyId' => $synergy['id'],
+            'synergyName' => $synergy['name'],
+            'synergyType' => $synergy['type'],
+            'effectType' => $effect['action'],
+            'triggerChar' => $actorData['char']->getName(),
+            'triggerCharTeam' => $actorData['team'],
+            'partnerChar' => $partner->getName(),
+            'partnerCharTeam' => $partnerData['team'],
+            'message' => '',
+        ];
+
+        switch ($effect['action']) {
+            case 'bonus_attack':
+                // Partner fires a bonus attack at the trigger target
+                $targetName = $triggerLog['target'] ?? null;
+                $targetData = null;
+                if ($targetName) {
+                    foreach ($teamEnemies as $idx => &$edata) {
+                        if ($edata['char']->getName() === $targetName && $edata['char']->getHP() > 0) {
+                            $targetData =& $teamEnemies[$idx];
+                            break;
+                        }
+                    }
+                    unset($edata);
+                }
+
+                if (!$targetData) {
+                    $idx = self::getRandomAliveIndex($teamEnemies, true);
+                    if ($idx === null) return;
+                    $targetData =& $teamEnemies[$idx];
+                }
+
+                $damage = rand($partner->getDMGMIN(), $partner->getDMGMAX());
+                $damage = (int)($damage * $effect['dmgMultiplier']);
+                $newHP = max(0, $targetData['char']->getHP() - $damage);
+                $targetData['char']->setHP($newHP);
+
+                $synergyLog['damage'] = $damage;
+                $synergyLog['target'] = $targetData['char']->getName();
+                $synergyLog['targetTeam'] = $targetData['team'];
+                $synergyLog['targetHP'] = $newHP;
+                $synergyLog['targetMaxHP'] = $targetData['HP_MAX'];
+                $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                    . self::colorNameStatic($partnerData) . " attaque "
+                    . self::colorNameStatic($targetData) . " → $damage dégâts (HP: $newHP)";
+
+                $logs[] = $synergyLog;
+
+                if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
+                    $targetData['statuses'][] = 'dead';
+                    $logs[] = [
+                        'type' => 'death',
+                        'target' => $targetData['char']->getName(),
+                        'targetTeam' => $targetData['team'],
+                        'message' => self::colorNameStatic($targetData) . " est K.O !"
+                    ];
+                }
+                break;
+
+            case 'grant_riposte':
+                $partnerData['riposte'] = [
+                    'turnsLeft' => $effect['riposteTurns'],
+                    'dmgMultiplier' => $effect['dmgMultiplier'],
+                ];
+                $synergyLog['grantedTurns'] = $effect['riposteTurns'];
+                $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                    . self::colorNameStatic($partnerData) . " gagne Riposte ({$effect['riposteTurns']} tour)";
+                $logs[] = $synergyLog;
+                break;
+
+            case 'temp_buff':
+                foreach ($effect['buffs'] as $stat => $value) {
+                    $partnerData['tempBuffs'][$stat] = ($partnerData['tempBuffs'][$stat] ?? 0) + $value;
+                }
+                $partnerData['tempBuffs']['turnsLeft'] = max(
+                    $partnerData['tempBuffs']['turnsLeft'] ?? 0,
+                    $effect['duration']
+                );
+
+                $buffDesc = [];
+                foreach ($effect['buffs'] as $stat => $val) {
+                    $buffDesc[] = "+{$val}% {$stat}";
+                }
+                $synergyLog['buffTypes'] = array_keys($effect['buffs']);
+                $synergyLog['buffDuration'] = $effect['duration'];
+                $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                    . self::colorNameStatic($partnerData) . " gagne "
+                    . implode(', ', $buffDesc) . " ({$effect['duration']} tours)";
+                $logs[] = $synergyLog;
+                break;
+
+            case 'apply_mark':
+                $targetName = $triggerLog['target'] ?? null;
+                if (!$targetName) return;
+
+                foreach ($teamEnemies as $idx => &$edata) {
+                    if ($edata['char']->getName() === $targetName && $edata['char']->getHP() > 0) {
+                        $edata['marked'] = [
+                            'turnsLeft' => $effect['markTurns'],
+                            'bonusDamage' => $effect['bonusDamage'],
+                            'removeOnHit' => false,
+                        ];
+                        if (!in_array('marked', $edata['statuses'], true)) {
+                            $edata['statuses'][] = 'marked';
+                        }
+                        $synergyLog['target'] = $targetName;
+                        $synergyLog['targetTeam'] = $edata['team'];
+                        $synergyLog['markTurns'] = $effect['markTurns'];
+                        $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                            . self::colorNameStatic($edata) . " est aussi marqué !";
+                        break;
+                    }
+                }
+                unset($edata);
+                $logs[] = $synergyLog;
+                break;
+
+            case 'grant_dodge':
+                $partnerData['tempBuffs']['dodge'] = ($partnerData['tempBuffs']['dodge'] ?? 0) + ($effect['dodgeBonus'] ?? 0);
+                $partnerData['tempBuffs']['turnsLeft'] = max(
+                    $partnerData['tempBuffs']['turnsLeft'] ?? 0,
+                    $effect['duration'] ?? 2
+                );
+                $synergyLog['dodgeDuration'] = $effect['duration'] ?? 2;
+                $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                    . self::colorNameStatic($partnerData) . " gagne +{$effect['dodgeBonus']} esquive";
+                $logs[] = $synergyLog;
+                break;
+
+            case 'extend_stealth':
+                if (isset($partnerData['stealth'])) {
+                    $partnerData['stealth']['turnsLeft'] += ($effect['extraTurns'] ?? 1);
+                    $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                        . self::colorNameStatic($partnerData) . " reste furtif (+{$effect['extraTurns']} tour)";
+                    $logs[] = $synergyLog;
+                }
+                break;
+
+            case 'guaranteed_crit':
+                $partnerData['tempBuffs']['crit'] = ($partnerData['tempBuffs']['crit'] ?? 0) + 100;
+                $partnerData['tempBuffs']['turnsLeft'] = max($partnerData['tempBuffs']['turnsLeft'] ?? 0, 1);
+                $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                    . self::colorNameStatic($partnerData) . " : critique garanti au prochain coup !";
+                $logs[] = $synergyLog;
+                break;
+
+            case 'bonus_damage_if_bleeding':
+                // Sang & Acier: check if the armor_pierce target was bleeding
+                $targetName = $triggerLog['target'] ?? null;
+                if (!$targetName) return;
+
+                foreach ($teamEnemies as $idx => &$edata) {
+                    if ($edata['char']->getName() === $targetName && $edata['char']->getHP() > 0) {
+                        if (in_array('bleeding', $edata['statuses'] ?? [], true)) {
+                            $bonusDmg = (int)(($triggerLog['damage'] ?? 0) * $effect['bonusMultiplier']);
+                            $newHP = max(0, $edata['char']->getHP() - $bonusDmg);
+                            $edata['char']->setHP($newHP);
+
+                            $synergyLog['damage'] = $bonusDmg;
+                            $synergyLog['target'] = $targetName;
+                            $synergyLog['targetTeam'] = $edata['team'];
+                            $synergyLog['targetHP'] = $newHP;
+                            $synergyLog['targetMaxHP'] = $edata['HP_MAX'];
+                            $synergyLog['message'] = "<span class='synergy-name'>{$synergy['name']}</span> ! "
+                                . "La lance s'enfonce dans les plaies ! +$bonusDmg dégâts à "
+                                . self::colorNameStatic($edata) . " (HP: $newHP)";
+                            $logs[] = $synergyLog;
+
+                            if ($newHP === 0 && !in_array('dead', $edata['statuses'], true)) {
+                                $edata['statuses'][] = 'dead';
+                                $logs[] = [
+                                    'type' => 'death',
+                                    'target' => $edata['char']->getName(),
+                                    'targetTeam' => $edata['team'],
+                                    'message' => self::colorNameStatic($edata) . " est K.O !"
+                                ];
+                            }
+                        }
+                        break;
+                    }
+                }
+                unset($edata);
+                break;
+        }
     }
 }

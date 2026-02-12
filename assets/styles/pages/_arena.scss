@@ -1114,6 +1114,13 @@
     text-shadow: 0 0 5px rgba($dd-gold, 0.5);
 }
 
+// Style pour les noms de synergies dans les logs
+.synergy-name {
+    color: #ce93d8;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(#9c27b0, 0.5);
+}
+
 .combat-panel__actions {
     display: flex;
     gap: 1rem;
@@ -1152,6 +1159,127 @@
             background: rgba($dd-brown, 0.3);
             border-color: $dd-parchment;
         }
+    }
+}
+
+// ==========================================
+// STATUS ICONS (buffs/debuffs au-dessus des sprites)
+// ==========================================
+.status-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 3px;
+    min-height: 22px;
+    max-width: 140px;
+    position: relative;
+    z-index: 5;
+}
+
+.status-icon {
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    font-size: 0.6rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: status-icon-appear 0.3s ease-out;
+    position: relative;
+
+    // Debuffs
+    &--bleed {
+        background: rgba($dd-crimson, 0.7);
+        border-color: rgba($dd-crimson, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba($dd-crimson, 0.8);
+    }
+
+    &--blight {
+        background: rgba(#4caf50, 0.7);
+        border-color: rgba(#4caf50, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#4caf50, 0.8);
+    }
+
+    &--stun {
+        background: rgba(#ffc107, 0.7);
+        border-color: rgba(#ffc107, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#ffc107, 0.8);
+    }
+
+    &--mark {
+        background: rgba(#ff5722, 0.7);
+        border-color: rgba(#ff5722, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#ff5722, 0.8);
+    }
+
+    // Buffs
+    &--protect {
+        background: rgba(#2196f3, 0.7);
+        border-color: rgba(#2196f3, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#2196f3, 0.8);
+    }
+
+    &--stealth {
+        background: rgba(#9c27b0, 0.7);
+        border-color: rgba(#9c27b0, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#9c27b0, 0.8);
+    }
+
+    &--riposte {
+        background: rgba(#ff9800, 0.7);
+        border-color: rgba(#ff9800, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#ff9800, 0.8);
+    }
+
+    &--dmg-up {
+        background: rgba(#f44336, 0.7);
+        border-color: rgba(#f44336, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#f44336, 0.8);
+    }
+
+    &--spd-up {
+        background: rgba(#00bcd4, 0.7);
+        border-color: rgba(#00bcd4, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#00bcd4, 0.8);
+    }
+
+    &--dodge-up {
+        background: rgba(#8bc34a, 0.7);
+        border-color: rgba(#8bc34a, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#8bc34a, 0.8);
+    }
+
+    &--crit-up {
+        background: rgba(#ff9800, 0.7);
+        border-color: rgba(#ff9800, 0.9);
+        color: #fff;
+        text-shadow: 0 0 4px rgba(#ff9800, 0.8);
+    }
+}
+
+@keyframes status-icon-appear {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
 }
 
@@ -1229,6 +1357,18 @@
     .battle-stage__sprite {
         width: 55px;
         height: 75px;
+    }
+
+    .status-icons {
+        min-height: 18px;
+        max-width: 70px;
+        gap: 2px;
+    }
+
+    .status-icon {
+        width: 16px;
+        height: 16px;
+        font-size: 0.5rem;
     }
 
     .battle-stage__team {
@@ -1322,6 +1462,19 @@
         font-size: 0.5rem;
     }
 
+    .status-icons {
+        min-height: 14px;
+        max-width: 50px;
+        gap: 1px;
+    }
+
+    .status-icon {
+        width: 13px;
+        height: 13px;
+        font-size: 0.4rem;
+        border-radius: 2px;
+    }
+
     .hp-bar {
         width: 40px;
         height: 4px;
@@ -1347,5 +1500,150 @@
 
     .info-panel__title {
         font-size: 1rem;
+    }
+}
+
+// ==========================================
+// SYNERGIES - Arena
+// ==========================================
+
+// Synergy chips dans les panneaux d'info
+.info-panel__synergies {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px solid rgba(#9c27b0, 0.2);
+}
+
+.synergy-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    background: rgba(#9c27b0, 0.12);
+    border: 1px solid rgba(#9c27b0, 0.4);
+    font-size: 0.7rem;
+    transition: all 0.3s ease;
+
+    i {
+        color: #ce93d8;
+        font-size: 0.6rem;
+    }
+}
+
+.synergy-chip__name {
+    color: $dd-gold;
+    font-weight: bold;
+}
+
+.synergy-chip__chars {
+    color: rgba($dd-parchment, 0.6);
+    font-size: 0.65rem;
+}
+
+// Animations synergies en combat
+.battle-stage__character {
+    // Glow de synergie (declencheur)
+    &.synergy-trigger-glow {
+        .battle-stage__sprite {
+            filter: drop-shadow(0 0 10px rgba(#9c27b0, 0.9))
+                    drop-shadow(0 0 25px rgba(#9c27b0, 0.6))
+                    drop-shadow(0 0 40px rgba($dd-gold, 0.3));
+        }
+    }
+
+    // Reaction du partenaire
+    &.synergy-react {
+        animation: synergy-react-anim 0.8s ease-out;
+
+        .battle-stage__sprite {
+            filter: drop-shadow(0 0 12px rgba(#9c27b0, 0.9))
+                    drop-shadow(0 0 25px rgba(#9c27b0, 0.5));
+        }
+    }
+
+    // Annonce de synergie pre-combat
+    &.synergy-announce-glow {
+        animation: synergy-announce-pulse 1.5s ease-in-out;
+
+        .battle-stage__sprite {
+            filter: drop-shadow(0 0 8px rgba(#9c27b0, 0.7))
+                    drop-shadow(0 0 16px rgba($dd-gold, 0.4));
+        }
+    }
+}
+
+@keyframes synergy-react-anim {
+    0% { transform: scale(1); }
+    30% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+@keyframes synergy-announce-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+// Ligne SVG de synergie
+.synergy-link-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.synergy-link-line {
+    stroke: #9c27b0;
+    stroke-width: 2;
+    fill: none;
+    stroke-dasharray: 8, 4;
+    animation: synergy-dash 0.8s linear forwards;
+    filter: drop-shadow(0 0 4px rgba(#9c27b0, 0.8));
+}
+
+@keyframes synergy-dash {
+    0% {
+        stroke-dashoffset: 100;
+        opacity: 0;
+    }
+    30% {
+        opacity: 1;
+    }
+    100% {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+// Log entries pour synergies
+.combat-log__entry {
+    &--synergy-announce {
+        color: #ce93d8;
+        font-style: italic;
+        border-left: 3px solid #9c27b0;
+        padding-left: 1.2rem;
+        background: rgba(#9c27b0, 0.05);
+
+        strong {
+            color: #ce93d8;
+        }
+    }
+
+    &--synergy-trigger {
+        color: #ce93d8;
+        font-weight: bold;
+        border-left: 3px solid #9c27b0;
+        padding-left: 1.2rem;
+        background: rgba(#9c27b0, 0.08);
+        text-shadow: 0 0 6px rgba(#9c27b0, 0.4);
+
+        strong {
+            color: $dd-gold;
+        }
     }
 }

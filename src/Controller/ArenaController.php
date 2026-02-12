@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Config\SynergyConfig;
 use App\Entity\Battle;
 use App\Repository\BattleRepository;
 use App\Repository\CharacterRepository;
@@ -209,6 +210,13 @@ final class ArenaController extends AbstractController
         // Le rating n'a pas encore ete applique = combat frais (pas un replay)
         $needsFinalize = !$battle->isRatingApplied() && $battle->getWinner() !== 'draw';
 
+        // Compute active synergies for display
+        $synergyMap = SynergyConfig::getSynergyMap();
+        $team1Names = array_map(fn($d) => $d['char']->getName(), $team1);
+        $team2Names = array_map(fn($d) => $d['char']->getName(), $team2);
+        $team1Synergies = $this->findActiveSynergies($team1Names, $synergyMap);
+        $team2Synergies = $this->findActiveSynergies($team2Names, $synergyMap);
+
         return $this->render('arena/index.html.twig', [
             'composition' => $composition,
             'logsJson' => json_encode($battle->getCombatLogs()),
@@ -222,6 +230,8 @@ final class ArenaController extends AbstractController
             'userWon' => $userWon,
             'isDraw' => $isDraw,
             'finalizeUrl' => $needsFinalize ? $this->generateUrl('app_arena_finalize', ['id' => $id]) : null,
+            'team1Synergies' => $team1Synergies,
+            'team2Synergies' => $team2Synergies,
         ]);
     }
 
@@ -375,6 +385,13 @@ final class ArenaController extends AbstractController
                 : ($matchData['player2']?->getUsername() ?? 'Adversaire');
         }
 
+        // Compute active synergies for display
+        $synergyMap = SynergyConfig::getSynergyMap();
+        $team1Names = array_map(fn($d) => $d['char']->getName(), $team1);
+        $team2Names = array_map(fn($d) => $d['char']->getName(), $team2);
+        $team1Synergies = $this->findActiveSynergies($team1Names, $synergyMap);
+        $team2Synergies = $this->findActiveSynergies($team2Names, $synergyMap);
+
         return $this->render('arena/index.html.twig', [
             'composition' => $composition,
             'logsJson' => json_encode($logs),
@@ -388,6 +405,8 @@ final class ArenaController extends AbstractController
             'userWon' => $winner === 'Equipe 1',
             'isDraw' => $winner === 'Match nul',
             'finalizeUrl' => null,
+            'team1Synergies' => $team1Synergies,
+            'team2Synergies' => $team2Synergies,
         ]);
     }
 
@@ -418,6 +437,31 @@ final class ArenaController extends AbstractController
             'Support', 'Buffer' => 'Support',
             default => 'Support',
         };
+    }
+
+    private function findActiveSynergies(array $names, array $synergyMap): array
+    {
+        $active = [];
+        $seen = [];
+        foreach ($names as $name) {
+            foreach ($synergyMap[$name] ?? [] as $syn) {
+                if (in_array($syn['partner'], $names, true)) {
+                    $pair = [$name, $syn['partner']];
+                    sort($pair);
+                    $key = implode('+', $pair);
+                    if (!in_array($key, $seen, true)) {
+                        $seen[] = $key;
+                        $active[] = [
+                            'name' => $syn['name'],
+                            'char1' => $name,
+                            'char2' => $syn['partner'],
+                            'desc' => $syn['desc'],
+                        ];
+                    }
+                }
+            }
+        }
+        return $active;
     }
 
     private function sortTeamByRole(array $team, array $roleOrder): array

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Config\SynergyConfig;
 use App\Repository\CharacterRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,6 +37,7 @@ final class PersonnagesController extends AbstractController
 
         return $this->render('personnages/index.html.twig', [
             'categories' => $categories,
+            'synergyMap' => SynergyConfig::getSynergyMap(),
         ]);
     }
 }

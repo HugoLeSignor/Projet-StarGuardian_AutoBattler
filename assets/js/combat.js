@@ -40,6 +40,7 @@ class CombatController {
         this.characterSlugs = {};
         this.characterHasHeal = {};
         this.abilityCooldowns = {}; // Suivi des cooldowns en cours
+        this.characterStatuses = {}; // Suivi des statuts actifs par personnage
         this.container.querySelectorAll('[data-character-name]').forEach(el => {
             const name = el.dataset.characterName;
             const team = el.dataset.characterTeam;
@@ -56,6 +57,9 @@ class CombatController {
                     this.characterMaxHP[key] = parseInt(match[2]);
                 }
             }
+
+            // Initialiser les statuts vides
+            this.characterStatuses[key] = this.createEmptyStatuses();
         });
 
         // Map des éléments d'ability dans les info panels
@@ -93,6 +97,287 @@ class CombatController {
         // Lancer automatiquement après un délai
         setTimeout(() => this.play(), 800);
     }
+
+    // === STATUS TRACKING ===
+
+    createEmptyStatuses() {
+        return {
+            bleeding: 0,
+            blighted: 0,
+            stunned: false,
+            marked: 0,
+            protected: 0,
+            stealthed: 0,
+            riposte: 0,
+            dmgUp: 0,
+            spdUp: 0,
+            dodgeUp: 0,
+            critUp: 0,
+        };
+    }
+
+    updateCharacterStatuses(log) {
+        switch (log.type) {
+            case 'round':
+                this.tickRoundStatuses();
+                return; // tickRoundStatuses already calls renderAllStatusIcons
+
+            case 'ability_use':
+                this.handleAbilityStatusChange(log);
+                break;
+
+            case 'defend':
+                this.setStatus(log.target, log.targetTeam, 'protected', log.duration || 2);
+                break;
+
+            case 'bleed_tick':
+                if (log.turnsRemaining !== undefined && log.turnsRemaining <= 0) {
+                    this.setStatus(log.target, log.targetTeam, 'bleeding', 0);
+                }
+                break;
+
+            case 'blight_tick':
+                if (log.turnsRemaining !== undefined && log.turnsRemaining <= 0) {
+                    this.setStatus(log.target, log.targetTeam, 'blighted', 0);
+                }
+                break;
+
+            case 'stunned_skip':
+                this.setStatus(log.target, log.targetTeam, 'stunned', false);
+                break;
+
+            case 'attack':
+                // Stealth consumed on attack
+                if (log.attacker && log.attackerTeam) {
+                    const key = `${log.attackerTeam}-${log.attacker}`;
+                    if (this.characterStatuses[key] && this.characterStatuses[key].stealthed > 0) {
+                        this.characterStatuses[key].stealthed = 0;
+                    }
+                }
+                break;
+
+            case 'synergy_trigger':
+                this.handleSynergyStatusChange(log);
+                break;
+
+            case 'death':
+                this.clearAllStatuses(log.target, log.targetTeam);
+                break;
+        }
+
+        this.renderAllStatusIcons();
+    }
+
+    handleAbilityStatusChange(log) {
+        switch (log.subtype) {
+            case 'bleed_attack':
+                if (log.target && log.targetTeam) {
+                    this.setStatus(log.target, log.targetTeam, 'bleeding', log.bleedTurns || 3);
+                }
+                break;
+            case 'blight_attack':
+                if (log.allHits) {
+                    const primary = log.allHits.find(h => h.isPrimary);
+                    if (primary) {
+                        this.setStatus(primary.name, primary.team, 'blighted', log.blightTurns || 3);
+                    }
+                } else if (log.target) {
+                    this.setStatus(log.target, log.targetTeam, 'blighted', log.blightTurns || 3);
+                }
+                break;
+            case 'stun':
+                if (log.target && log.targetTeam) {
+                    this.setStatus(log.target, log.targetTeam, 'stunned', true);
+                }
+                break;
+            case 'mark':
+                if (log.target && log.targetTeam) {
+                    this.setStatus(log.target, log.targetTeam, 'marked', log.markTurns || 3);
+                }
+                break;
+            case 'riposte_buff':
+                if (log.caster && log.casterTeam) {
+                    this.setStatus(log.caster, log.casterTeam, 'riposte', log.riposteTurns || 2);
+                }
+                break;
+            case 'self_buff':
+                if (log.caster && log.casterTeam) {
+                    this.applyBuffStatuses(log.caster, log.casterTeam, log.buffs, log.buffDuration || 2);
+                }
+                break;
+            case 'party_buff':
+                if (log.casterTeam) {
+                    this.applyTeamBuffStatuses(log.casterTeam, log.buffs, log.buffDuration || 2);
+                }
+                break;
+            case 'stealth':
+                if (log.caster && log.casterTeam) {
+                    this.setStatus(log.caster, log.casterTeam, 'stealthed', log.stealthTurns || 1);
+                }
+                break;
+            case 'protect_dodge':
+                if (log.target && log.targetTeam) {
+                    this.setStatus(log.target, log.targetTeam, 'protected', log.protectTurns || 2);
+                    this.setStatus(log.target, log.targetTeam, 'dodgeUp', log.protectTurns || 2);
+                }
+                break;
+            case 'emergency_heal':
+                if (log.selfBleedTurns && log.selfBleedTurns > 0 && log.caster) {
+                    this.setStatus(log.caster, log.casterTeam, 'bleeding', log.selfBleedTurns);
+                }
+                break;
+            case 'bonus_vs_marked':
+                // Mark may be consumed on hit (removeOnHit)
+                if (log.target && log.targetTeam) {
+                    const tKey = `${log.targetTeam}-${log.target}`;
+                    // We can't know for sure if removeOnHit, so leave the icon - it will tick down
+                }
+                break;
+        }
+    }
+
+    handleSynergyStatusChange(log) {
+        if (!log.effectType) return;
+
+        switch (log.effectType) {
+            case 'grant_riposte':
+                this.setStatus(log.partnerChar, log.partnerCharTeam, 'riposte', log.grantedTurns || 1);
+                break;
+            case 'temp_buff':
+                if (log.buffTypes) {
+                    const duration = log.buffDuration || 2;
+                    log.buffTypes.forEach(type => {
+                        const statusKey = this.buffTypeToStatusKey(type);
+                        if (statusKey) {
+                            this.setStatus(log.partnerChar, log.partnerCharTeam, statusKey, duration);
+                        }
+                    });
+                }
+                break;
+            case 'apply_mark':
+                if (log.target) {
+                    this.setStatus(log.target, log.targetTeam, 'marked', log.markTurns || 2);
+                }
+                break;
+            case 'grant_dodge':
+                this.setStatus(log.partnerChar, log.partnerCharTeam, 'dodgeUp', log.dodgeDuration || 2);
+                break;
+            case 'extend_stealth':
+                if (log.partnerChar && log.partnerCharTeam) {
+                    const key = `${log.partnerCharTeam}-${log.partnerChar}`;
+                    if (this.characterStatuses[key]) {
+                        this.characterStatuses[key].stealthed += (log.extraTurns || 1);
+                    }
+                }
+                break;
+            case 'guaranteed_crit':
+                this.setStatus(log.partnerChar, log.partnerCharTeam, 'critUp', 1);
+                break;
+        }
+    }
+
+    buffTypeToStatusKey(type) {
+        switch (type) {
+            case 'damage': return 'dmgUp';
+            case 'speed': return 'spdUp';
+            case 'dodge': return 'dodgeUp';
+            case 'crit': return 'critUp';
+            default: return null;
+        }
+    }
+
+    applyBuffStatuses(charName, teamName, buffs, duration) {
+        if (!buffs) return;
+        const key = `${teamName}-${charName}`;
+        const s = this.characterStatuses[key];
+        if (!s) return;
+
+        if (buffs.damage && buffs.damage > 0) s.dmgUp = Math.max(s.dmgUp, duration);
+        if (buffs.speed && buffs.speed > 0) s.spdUp = Math.max(s.spdUp, duration);
+        if (buffs.dodge && buffs.dodge > 0) s.dodgeUp = Math.max(s.dodgeUp, duration);
+        if (buffs.crit && buffs.crit > 0) s.critUp = Math.max(s.critUp, duration);
+    }
+
+    applyTeamBuffStatuses(teamName, buffs, duration) {
+        if (!buffs) return;
+        for (const key of Object.keys(this.characterStatuses)) {
+            if (key.startsWith(teamName + '-')) {
+                const s = this.characterStatuses[key];
+                if (buffs.damage && buffs.damage > 0) s.dmgUp = Math.max(s.dmgUp, duration);
+                if (buffs.speed && buffs.speed > 0) s.spdUp = Math.max(s.spdUp, duration);
+                if (buffs.dodge && buffs.dodge > 0) s.dodgeUp = Math.max(s.dodgeUp, duration);
+                if (buffs.crit && buffs.crit > 0) s.critUp = Math.max(s.critUp, duration);
+            }
+        }
+    }
+
+    setStatus(charName, teamName, statusKey, value) {
+        const key = `${teamName}-${charName}`;
+        if (!this.characterStatuses[key]) return;
+        this.characterStatuses[key][statusKey] = value;
+    }
+
+    clearAllStatuses(charName, teamName) {
+        const key = `${teamName}-${charName}`;
+        if (this.characterStatuses[key]) {
+            this.characterStatuses[key] = this.createEmptyStatuses();
+        }
+    }
+
+    tickRoundStatuses() {
+        for (const key of Object.keys(this.characterStatuses)) {
+            const s = this.characterStatuses[key];
+            // DOTs: NOT decremented here, handled by bleed_tick/blight_tick logs
+            // Decrement duration-based statuses (skip permanent buffs >= 999)
+            if (s.marked > 0 && s.marked < 999) s.marked--;
+            if (s.protected > 0 && s.protected < 999) s.protected--;
+            if (s.stealthed > 0 && s.stealthed < 999) s.stealthed--;
+            if (s.riposte > 0 && s.riposte < 999) s.riposte--;
+            if (s.dmgUp > 0 && s.dmgUp < 999) s.dmgUp--;
+            if (s.spdUp > 0 && s.spdUp < 999) s.spdUp--;
+            if (s.dodgeUp > 0 && s.dodgeUp < 999) s.dodgeUp--;
+            if (s.critUp > 0 && s.critUp < 999) s.critUp--;
+        }
+        this.renderAllStatusIcons();
+    }
+
+    renderAllStatusIcons() {
+        for (const key of Object.keys(this.characterStatuses)) {
+            this.renderStatusIcons(key);
+        }
+    }
+
+    renderStatusIcons(key) {
+        const el = this.characterElements[key];
+        if (!el) return;
+
+        const container = el.querySelector('.status-icons');
+        if (!container) return;
+
+        const s = this.characterStatuses[key];
+        const icons = [];
+
+        // Debuffs
+        if (s.bleeding > 0) icons.push({ icon: 'fa-tint', cls: 'status-icon--bleed', title: 'Saignement' });
+        if (s.blighted > 0) icons.push({ icon: 'fa-skull-crossbones', cls: 'status-icon--blight', title: 'Peste' });
+        if (s.stunned) icons.push({ icon: 'fa-dizzy', cls: 'status-icon--stun', title: 'Etourdi' });
+        if (s.marked > 0) icons.push({ icon: 'fa-crosshairs', cls: 'status-icon--mark', title: 'Marque' });
+
+        // Buffs
+        if (s.protected > 0) icons.push({ icon: 'fa-shield-alt', cls: 'status-icon--protect', title: 'Protege' });
+        if (s.stealthed > 0) icons.push({ icon: 'fa-eye-slash', cls: 'status-icon--stealth', title: 'Furtif' });
+        if (s.riposte > 0) icons.push({ icon: 'fa-exchange-alt', cls: 'status-icon--riposte', title: 'Riposte' });
+        if (s.dmgUp > 0) icons.push({ icon: 'fa-fist-raised', cls: 'status-icon--dmg-up', title: '+Degats' });
+        if (s.spdUp > 0) icons.push({ icon: 'fa-wind', cls: 'status-icon--spd-up', title: '+Vitesse' });
+        if (s.dodgeUp > 0) icons.push({ icon: 'fa-running', cls: 'status-icon--dodge-up', title: '+Esquive' });
+        if (s.critUp > 0) icons.push({ icon: 'fa-bullseye', cls: 'status-icon--crit-up', title: '+Critique' });
+
+        container.innerHTML = icons.map(i =>
+            `<span class="status-icon ${i.cls}" title="${i.title}"><i class="fas ${i.icon}"></i></span>`
+        ).join('');
+    }
+
+    // === END STATUS TRACKING ===
 
     bindEvents() {
         if (this.playBtn) {
@@ -140,7 +425,12 @@ class CombatController {
             this.displayLog(log);
             this.updateHealthBars(log);
             this.trackAbilityCooldowns(log);
+            this.updateCharacterStatuses(log);
             if (log.type === 'death') {
+                this.animateDeath(log.target, log.targetTeam);
+            }
+            // Synergy triggers that kill targets
+            if (log.type === 'synergy_trigger' && log.targetHP === 0 && log.target) {
                 this.animateDeath(log.target, log.targetTeam);
             }
             this.currentIndex++;
@@ -198,17 +488,26 @@ class CombatController {
             case 'stunned_skip': return 1800;
             case 'riposte_activate': return 2000;
             case 'ability_use': return this.getAbilityDelay(log);
+            // Synergies
+            case 'synergy_announce': return 2000;
+            case 'synergy_trigger': return this.getSynergyTriggerDelay(log);
             default: return 1200;
         }
+    }
+
+    getSynergyTriggerDelay(log) {
+        // Reactive synergies (bonus attacks) need more time
+        if (log.damage !== undefined) return 3500;
+        return 2500;
     }
 
     getAbilityDelay(log) {
         switch (log.subtype) {
             case 'bleed_attack':
-            case 'blight_attack':
             case 'backline_strike':
             case 'armor_pierce':
             case 'bonus_vs_marked': return 3000;
+            case 'blight_attack': return 3500;
             case 'stun': return 2500;
             case 'mark': return 2000;
             case 'riposte_buff':
@@ -237,6 +536,9 @@ class CombatController {
 
         // Suivi des cooldowns
         this.trackAbilityCooldowns(log);
+
+        // Suivi des statuts (icones buff/debuff)
+        this.updateCharacterStatuses(log);
     }
 
     trackAbilityCooldowns(log) {
@@ -292,6 +594,7 @@ class CombatController {
             case 'blight_tick': return 200;
             case 'riposte_activate': return 350;
             case 'ability_use': return this.getAbilityHPDelay(log);
+            case 'synergy_trigger': return 800;
             default: return 0;
         }
     }
@@ -343,6 +646,13 @@ class CombatController {
                 break;
             case 'ability_use':
                 this.playAbilityAnimation(log);
+                break;
+            // Synergies
+            case 'synergy_announce':
+                this.animateSynergyAnnounce(log);
+                break;
+            case 'synergy_trigger':
+                this.animateSynergyTrigger(log);
                 break;
         }
     }
@@ -399,8 +709,33 @@ class CombatController {
                 }
                 break;
             case 'blight_attack':
-                if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, false);
-                if (log.target && log.targetTeam) {
+                if (log.caster && log.casterTeam) {
+                    const blightKey = `${log.casterTeam}-${log.caster}`;
+                    this.swapSprite(blightKey, 'skill.webp', 1400);
+                    const casterEl = this.getCharacterElement(log.caster, log.casterTeam);
+                    if (casterEl) {
+                        casterEl.classList.add('attacking');
+                        setTimeout(() => casterEl.classList.remove('attacking'), 1200);
+                    }
+                }
+                // AOE: hurt all hit enemies
+                if (log.allHits) {
+                    setTimeout(() => {
+                        log.allHits.forEach(h => {
+                            const el = this.getCharacterElement(h.name, h.team);
+                            if (el) {
+                                el.classList.add('hurt');
+                                setTimeout(() => el.classList.remove('hurt'), 800);
+                            }
+                        });
+                    }, 500);
+                    // Blight DOT animation only on primary target
+                    const primary = log.allHits.find(h => h.isPrimary);
+                    if (primary) {
+                        setTimeout(() => this.animateDoT(primary.name, primary.team, 'blighted'), 1000);
+                    }
+                } else if (log.target && log.targetTeam) {
+                    // Fallback for old log format
                     setTimeout(() => this.animateDoT(log.target, log.targetTeam, 'blighted'), 700);
                 }
                 break;
@@ -500,6 +835,103 @@ class CombatController {
                 setTimeout(() => el.classList.remove('buffed'), 1400);
             }
         });
+    }
+
+    // === SYNERGY ANIMATIONS ===
+
+    animateSynergyAnnounce(log) {
+        const trigger = this.getCharacterElement(log.triggerChar, log.team);
+        const partner = this.getCharacterElement(log.partnerChar, log.team);
+
+        if (trigger) {
+            trigger.classList.add('synergy-announce-glow');
+            setTimeout(() => trigger.classList.remove('synergy-announce-glow'), 1500);
+        }
+        if (partner) {
+            setTimeout(() => {
+                partner.classList.add('synergy-announce-glow');
+                setTimeout(() => partner.classList.remove('synergy-announce-glow'), 1500);
+            }, 300);
+        }
+
+        // Draw SVG link between the two
+        if (trigger && partner) {
+            this.drawSynergyLink(trigger, partner);
+        }
+    }
+
+    animateSynergyTrigger(log) {
+        const trigger = this.getCharacterElement(log.triggerChar, log.triggerCharTeam);
+        const partner = this.getCharacterElement(log.partnerChar, log.partnerCharTeam);
+
+        // Phase 1: Trigger glow
+        if (trigger) {
+            trigger.classList.add('synergy-trigger-glow');
+            setTimeout(() => trigger.classList.remove('synergy-trigger-glow'), 1800);
+        }
+
+        // Phase 2: SVG link between trigger and partner
+        if (trigger && partner) {
+            setTimeout(() => this.drawSynergyLink(trigger, partner), 400);
+        }
+
+        // Phase 3: Partner reaction
+        if (partner) {
+            setTimeout(() => {
+                partner.classList.add('synergy-react');
+                setTimeout(() => partner.classList.remove('synergy-react'), 800);
+
+                // If it's a bonus attack, animate the partner attacking
+                if (log.damage !== undefined && log.target) {
+                    const partnerKey = `${log.partnerCharTeam}-${log.partnerChar}`;
+                    this.swapSprite(partnerKey, 'attackanimation.webp', 1200);
+
+                    const target = this.getCharacterElement(log.target, log.targetTeam);
+                    if (target) {
+                        setTimeout(() => {
+                            target.classList.add('hurt');
+                            setTimeout(() => target.classList.remove('hurt'), 800);
+                        }, 400);
+                    }
+                }
+            }, 800);
+        }
+    }
+
+    drawSynergyLink(el1, el2) {
+        const stage = this.container.querySelector('.battle-stage');
+        if (!stage) return;
+
+        // Remove existing SVG if any
+        const existingSvg = stage.querySelector('.synergy-link-svg');
+        if (existingSvg) existingSvg.remove();
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.classList.add('synergy-link-svg');
+        svg.setAttribute('width', '100%');
+        svg.setAttribute('height', '100%');
+
+        const stageRect = stage.getBoundingClientRect();
+        const rect1 = el1.getBoundingClientRect();
+        const rect2 = el2.getBoundingClientRect();
+
+        const x1 = rect1.left + rect1.width / 2 - stageRect.left;
+        const y1 = rect1.top + rect1.height / 2 - stageRect.top;
+        const x2 = rect2.left + rect2.width / 2 - stageRect.left;
+        const y2 = rect2.top + rect2.height / 2 - stageRect.top;
+
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.classList.add('synergy-link-line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+
+        svg.appendChild(line);
+        stage.appendChild(svg);
+
+        // Remove after animation
+        setTimeout(() => svg.remove(), 1800 / this.speed);
     }
 
     // === SPRITE SWAP ===
@@ -615,6 +1047,10 @@ class CombatController {
             entry.classList.add('combat-log__entry--stun');
         } else if (log.type === 'riposte_activate') {
             entry.classList.add('combat-log__entry--riposte');
+        } else if (log.type === 'synergy_announce') {
+            entry.classList.add('combat-log__entry--synergy-announce');
+        } else if (log.type === 'synergy_trigger') {
+            entry.classList.add('combat-log__entry--synergy-trigger');
         }
 
         entry.innerHTML = log.message;
@@ -647,6 +1083,14 @@ class CombatController {
         } else if (log.type === 'ability_use') {
             this.updateAbilityHealthBars(log);
             return;
+        } else if (log.type === 'synergy_trigger') {
+            // Synergies can cause damage
+            if (log.target && log.targetHP !== undefined && log.targetMaxHP) {
+                characterName = log.target;
+                teamName = log.targetTeam;
+                currentHP = log.targetHP;
+                maxHP = log.targetMaxHP;
+            }
         }
 
         // Mettre à jour si nous avons les données nécessaires
@@ -656,8 +1100,14 @@ class CombatController {
     }
 
     updateAbilityHealthBars(log) {
+        // AOE hits (blight_attack): update HP for all hit enemies
+        if (log.allHits) {
+            log.allHits.forEach(h => {
+                this.updateCharacterHP(h.name, h.team, h.hp, h.maxHp);
+            });
+        }
         // Compétences qui infligent des dégâts à une cible
-        if (log.target && log.targetHP !== undefined && log.targetMaxHP) {
+        else if (log.target && log.targetHP !== undefined && log.targetMaxHP) {
             this.updateCharacterHP(log.target, log.targetTeam, log.targetHP, log.targetMaxHP);
         }
 
