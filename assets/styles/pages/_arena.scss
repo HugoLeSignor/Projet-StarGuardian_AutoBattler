@@ -108,25 +108,12 @@
     z-index: 1;
 
     img.character-sprite {
-        width: 100%;
         height: 100%;
-        object-fit: cover;
-        object-position: bottom center;
+        width: auto;
+        max-width: none;
+        display: block;
         image-rendering: pixelated;
         transition: opacity 0.1s ease;
-    }
-
-    // Pendant les animations, élargir le conteneur et passer en contain
-    // pour montrer le sprite d'animation complet
-    &.sprite-animating {
-        width: 200px;
-        overflow: visible;
-        z-index: 5;
-
-        img.character-sprite {
-            object-fit: contain;
-            object-position: bottom center;
-        }
     }
 
     .battle-stage__team--right & img.character-sprite {
@@ -1175,10 +1162,6 @@
     .battle-stage__sprite {
         width: 110px;
         height: 150px;
-
-        &.sprite-animating {
-            width: 160px;
-        }
     }
 
     .battle-stage__team {
@@ -1226,10 +1209,6 @@
     .battle-stage__sprite {
         width: 85px;
         height: 115px;
-
-        &.sprite-animating {
-            width: 120px;
-        }
     }
 
     .battle-stage__team {
@@ -1250,10 +1229,6 @@
     .battle-stage__sprite {
         width: 55px;
         height: 75px;
-
-        &.sprite-animating {
-            width: 80px;
-        }
     }
 
     .battle-stage__team {
@@ -1336,10 +1311,6 @@
     .battle-stage__sprite {
         width: 40px;
         height: 55px;
-
-        &.sprite-animating {
-            width: 60px;
-        }
     }
 
     .battle-stage__vs {
