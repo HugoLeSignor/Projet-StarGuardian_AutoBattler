@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'auth.login_title'|trans }}{% endblock %}
+{% block title %}Connexion{% endblock %}
 
 {% block body %}
 <div class="auth-page">
@@ -8,7 +8,7 @@
 
     <div class="auth-panel">
         <div class="auth-panel__ornament">&#x2726;</div>
-        <h1 class="auth-panel__title">{{ 'auth.login_title'|trans }}</h1>
+        <h1 class="auth-panel__title">Connexion</h1>
         <div class="auth-panel__separator">
             <span></span>
             <i class="fas fa-dungeon"></i>
@@ -25,24 +25,24 @@
         {% for message in app.flashes('success') %}
             <div class="auth-alert auth-alert--success">
                 <i class="fas fa-check"></i>
-                {{ message|trans }}
+                {{ message }}
             </div>
         {% endfor %}
 
         <form method="post" class="auth-form">
             <div class="auth-form__group">
-                <label for="inputEmail" class="auth-form__label">{{ 'auth.email'|trans }}</label>
-                <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="auth-form__input" placeholder="{{ 'auth.email_placeholder'|trans }}" required autofocus>
+                <label for="inputEmail" class="auth-form__label">Email</label>
+                <input type="email" value="{{ last_username }}" name="_username" id="inputEmail" class="auth-form__input" placeholder="Entrez votre email" required autofocus>
             </div>
 
             <div class="auth-form__group">
-                <label for="inputPassword" class="auth-form__label">{{ 'auth.password'|trans }}</label>
-                <input type="password" name="_password" id="inputPassword" class="auth-form__input" placeholder="{{ 'auth.password_placeholder'|trans }}" required>
+                <label for="inputPassword" class="auth-form__label">Mot de passe</label>
+                <input type="password" name="_password" id="inputPassword" class="auth-form__input" placeholder="Entrez votre mot de passe" required>
             </div>
 
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">{{ 'auth.submit_login'|trans }}</button>
+            <button type="submit" class="btn-dd btn-dd--primary btn-dd--full">Se connecter</button>
         </form>
 
         <div class="auth-panel__separator auth-panel__separator--small">
@@ -51,7 +51,7 @@
         </div>
 
         <p class="auth-panel__link">
-            {{ 'auth.no_account'|trans }} <a href="{{ path('app_register') }}">{{ 'auth.create_account'|trans }}</a>
+            Pas encore de compte ? <a href="{{ path('app_register') }}">Cr&eacute;er un compte</a>
         </p>
         <div class="auth-panel__ornament">&#x2726;</div>
     </div>

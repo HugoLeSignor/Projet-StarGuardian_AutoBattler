@@ -25,7 +25,7 @@ class MatchmakingController extends AbstractController
         $selectedTeam = $request->getSession()->get('selected_team_ids', []);
         
         if (empty($selectedTeam)) {
-            $this->addFlash('error', 'flash.select_team_first');
+            $this->addFlash('error', 'Veuillez d\'abord sélectionner une équipe');
             return $this->redirectToRoute('app_teams');
         }
 

@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'teams.title'|trans }}{% endblock %}
+{% block title %}Composition d'&eacute;quipe{% endblock %}
 
 {% block body %}
 <div class="teams-page">
@@ -8,11 +8,11 @@
 
     {# ====== HEADER + EQUIPE SELECTIONNEE ====== #}
     <a href="{{ path('app_home') }}" class="teams-page__back">
-        <i class="fas fa-arrow-left"></i> {{ 'teams.back'|trans }}
+        <i class="fas fa-arrow-left"></i> Retour
     </a>
 
     <div class="selected-team">
-        <h3 class="selected-team__title">{{ 'teams.compose_team'|trans }}</h3>
+        <h3 class="selected-team__title">Composez votre &eacute;quipe</h3>
         <div class="role-indicator">
             <div class="role-slot" data-role="Tank">
                 <i class="fas fa-shield-alt"></i>
@@ -30,9 +30,9 @@
         <div class="selected-list"></div>
 
         <div class="selected-team__actions">
-            <button class="btn-launch" disabled>{{ 'teams.launch'|trans }}</button>
-            <button class="btn-save-preset" disabled title="{{ 'teams.save_team'|trans }}">
-                <i class="fas fa-star"></i> {{ 'teams.save_team'|trans }}
+            <button class="btn-launch" disabled>Lancer la partie</button>
+            <button class="btn-save-preset" disabled title="Sauvegarder cette &eacute;quipe">
+                <i class="fas fa-star"></i> Sauvegarder
             </button>
         </div>
     </div>
@@ -40,15 +40,15 @@
     {# ====== PRESETS ====== #}
     {% if presets is defined and presets|length > 0 %}
     <div class="presets-bar">
-        <span class="presets-bar__label"><i class="fas fa-bookmark"></i> {{ 'teams.presets'|trans }}</span>
+        <span class="presets-bar__label"><i class="fas fa-bookmark"></i> Presets :</span>
         <div class="presets-bar__list">
             {% for preset in presets %}
                 <div class="preset-chip" data-preset-id="{{ preset.id }}" data-preset-ids="{{ preset.characterIds|json_encode }}">
                     <span class="preset-chip__name">{{ preset.name }}</span>
-                    <button class="preset-chip__load" title="{{ 'teams.load_preset'|trans }}">
+                    <button class="preset-chip__load" title="Charger ce preset">
                         <i class="fas fa-play"></i>
                     </button>
-                    <button class="preset-chip__delete" title="{{ 'teams.delete_preset'|trans }}">
+                    <button class="preset-chip__delete" title="Supprimer ce preset">
                         <i class="fas fa-times"></i>
                     </button>
                 </div>
@@ -97,8 +97,8 @@
                 <div class="team-placeholder__icon">
                     <i class="fas fa-hand-pointer"></i>
                 </div>
-                <h2>{{ 'teams.select_hero'|trans }}</h2>
-                <p>{{ 'teams.select_hero_hint'|trans }}</p>
+                <h2>S&eacute;lectionnez un h&eacute;ros</h2>
+                <p>Cliquez sur un portrait pour afficher ses informations.</p>
             </div>
         </div>
 
@@ -110,13 +110,13 @@
     <div class="preset-modal__backdrop"></div>
     <div class="preset-modal__panel">
         <h3 class="preset-modal__title">
-            <i class="fas fa-star"></i> {{ 'teams.save_team_title'|trans }}
+            <i class="fas fa-star"></i> Sauvegarder l'&eacute;quipe
         </h3>
         <input type="text" class="preset-modal__input" id="presetName"
-               placeholder="{{ 'teams.preset_name_placeholder'|trans }}" maxlength="50" autocomplete="off">
+               placeholder="Nom du preset..." maxlength="50" autocomplete="off">
         <div class="preset-modal__actions">
-            <button class="btn-dd btn-dd--secondary" id="presetCancel">{{ 'common.cancel'|trans }}</button>
-            <button class="btn-dd btn-dd--primary" id="presetConfirm">{{ 'common.save'|trans }}</button>
+            <button class="btn-dd btn-dd--secondary" id="presetCancel">Annuler</button>
+            <button class="btn-dd btn-dd--primary" id="presetConfirm">Sauvegarder</button>
         </div>
     </div>
 </div>

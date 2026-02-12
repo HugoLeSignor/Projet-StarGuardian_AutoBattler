@@ -49,12 +49,12 @@ class ProfileController extends AbstractController
 
                     $user->setProfileImage($newFilename);
                 } catch (FileException $e) {
-                    $this->addFlash('error', 'flash.upload_error');
+                    $this->addFlash('error', 'Erreur lors de l\'upload de l\'image.');
                 }
             }
 
             $em->flush();
-            $this->addFlash('success', 'flash.profile_updated');
+            $this->addFlash('success', 'Profil mis a jour avec succes !');
 
             return $this->redirectToRoute('app_profile');
         }

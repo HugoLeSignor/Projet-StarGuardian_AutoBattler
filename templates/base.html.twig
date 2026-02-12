@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="{{ app.request.locale }}">
+<html lang="fr">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="description" content="{{ 'common.site_description'|trans }}">
+        <meta name="description" content="Darkest Fight Arena - Auto-battler inspir&eacute; de Darkest Dungeon. Composez votre &eacute;quipe de 3 h&eacute;ros et affrontez d'autres joueurs en combat automatis&eacute;.">
         <meta name="theme-color" content="#0a0a0a">
         <title>{% block title %}Darkest Fight Arena{% endblock %}</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,58 +14,11 @@
             {{ encore_entry_link_tags('app') }}
         {% endblock %}
     </head>
-    <body data-translations="{{ {
-        'pause': 'js.pause'|trans,
-        'resume': 'js.resume'|trans,
-        'finished': 'js.finished'|trans,
-        'start': 'js.start'|trans,
-        'deselect': 'js.deselect'|trans,
-        'slot_taken': 'js.slot_taken'|trans,
-        'max_3': 'js.max_3'|trans,
-        'no_companions': 'js.no_companions'|trans,
-        'no_requests': 'js.no_requests'|trans,
-        'no_warrior': 'js.no_warrior'|trans,
-        'you_prefix': 'js.you_prefix'|trans,
-        'no_message': 'js.no_message'|trans,
-        'loading_error': 'js.loading_error'|trans,
-        'friend_status': 'js.friend_status'|trans,
-        'sent_status': 'js.sent_status'|trans,
-        'received_status': 'js.received_status'|trans,
-        'report_reason': 'js.report_reason'|trans,
-        'reported': 'js.reported'|trans,
-        'start_conversation': 'js.start_conversation'|trans,
-        'delete_preset_confirm': 'js.delete_preset_confirm'|trans,
-        'save_error': 'js.save_error'|trans,
-        'delete_error': 'js.delete_error'|trans,
-        'team_select_error': 'js.team_select_error'|trans,
-        'combat_ready': 'js.combat_ready'|trans,
-        'combat_load_error': 'js.combat_load_error'|trans,
-        'search_error': 'js.search_error'|trans,
-        'opponent_found': 'js.opponent_found'|trans,
-        'select': 'js.select'|trans,
-        'games': 'js.games'|trans,
-        'win': 'js.win'|trans,
-        'loss': 'js.loss'|trans,
-        'draw': 'js.draw'|trans,
-        'edit_profile': 'js.edit_profile'|trans,
-        'no_battle': 'js.no_battle'|trans,
-        'victories': 'js.victories'|trans,
-        'defeats': 'js.defeats'|trans,
-        'favorite_champion': 'js.favorite_champion'|trans,
-        'last_team': 'js.last_team'|trans,
-        'history': 'js.history'|trans,
-        'accept': 'js.accept'|trans,
-        'reject': 'js.reject'|trans,
-        'add_friend': 'js.add_friend'|trans,
-        'remove_friend': 'js.remove_friend'|trans,
-        'preset_name': 'js.preset_name'|trans,
-        'loading': 'js.loading'|trans,
-        'save': 'common.save'|trans
-    }|json_encode|e('html_attr') }}">
+    <body>
         {% if app.user %}
         <div class="topbar">
             <div class="topbar__left">
-                <div class="topbar__user" data-profile-toggle role="button" tabindex="0" aria-label="{{ 'nav.open_profile'|trans({'%username%': app.user.username}) }}">
+                <div class="topbar__user" data-profile-toggle role="button" tabindex="0" aria-label="Ouvrir le profil de {{ app.user.username }}">
                     {% if app.user.profileImage %}
                         <img class="topbar__avatar" src="/uploads/avatars/{{ app.user.profileImage }}" alt="Avatar de {{ app.user.username }}" loading="lazy">
                     {% else %}
@@ -74,11 +27,11 @@
                     <span class="topbar__username">{{ app.user.username }}</span>
                 </div>
                 {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_admin') }}" class="topbar__icon" title="{{ 'nav.admin'|trans }}" aria-label="{{ 'nav.admin'|trans }}">
+                <a href="{{ path('app_admin') }}" class="topbar__icon" title="Administration" aria-label="Administration">
                     <i class="fas fa-crown" aria-hidden="true"></i>
                 </a>
                 {% endif %}
-                <div class="topbar__icon" data-friends-toggle title="{{ 'nav.companions'|trans }}" role="button" tabindex="0" aria-label="{{ 'nav.companions'|trans }}">
+                <div class="topbar__icon" data-friends-toggle title="Compagnons" role="button" tabindex="0" aria-label="Ouvrir le panneau Compagnons">
                     <i class="fas fa-user-friends" aria-hidden="true"></i>
                     <span class="topbar__friends-badge" data-friends-badge style="display:none;" aria-live="polite">0</span>
                 </div>
@@ -86,83 +39,76 @@
 
             <a href="{{ path('app_teams') }}" class="topbar__play">
                 <i class="fas fa-fire"></i>
-                {{ 'nav.play'|trans }}
+                Jouer
             </a>
 
             <div class="topbar__right">
-                <a href="{{ path('app_locale_switch', {locale: app.request.locale == 'fr' ? 'en' : 'fr'}) }}"
-                   class="topbar__locale"
-                   title="{{ app.request.locale == 'fr' ? 'Switch to English' : 'Passer en francais' }}">
-                    <span class="topbar__locale-current">{{ app.request.locale|upper }}</span>
-                    <span class="topbar__locale-separator">|</span>
-                    <span class="topbar__locale-other">{{ app.request.locale == 'fr' ? 'EN' : 'FR' }}</span>
-                </a>
-                <a href="{{ path('app_logout') }}" class="topbar__logout" aria-label="{{ 'nav.logout'|trans }}">
+                <a href="{{ path('app_logout') }}" class="topbar__logout" aria-label="D&eacute;connexion">
                     <i class="fas fa-sign-out-alt" aria-hidden="true"></i>
-                    {{ 'nav.logout'|trans }}
+                    D&eacute;connexion
                 </a>
             </div>
         </div>
 
-        <div class="profile-popup" data-profile-popup style="display:none;" role="dialog" aria-modal="true" aria-label="{{ 'nav.profile_title'|trans }}">
+        <div class="profile-popup" data-profile-popup style="display:none;" role="dialog" aria-modal="true" aria-label="Profil du Guerrier">
             <div class="profile-popup__header">
                 <h2 class="profile-popup__title">
                     <i class="fas fa-scroll" aria-hidden="true"></i>
-                    {{ 'nav.profile_title'|trans }}
+                    Profil du Guerrier
                 </h2>
-                <button class="profile-popup__close" data-profile-close aria-label="Close">
+                <button class="profile-popup__close" data-profile-close aria-label="Fermer le profil">
                     <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="profile-popup__content" data-profile-content>
                 <div class="profile-popup__loading">
-                    <i class="fas fa-spinner fa-spin"></i> {{ 'nav.loading'|trans }}
+                    <i class="fas fa-spinner fa-spin"></i> Chargement...
                 </div>
             </div>
         </div>
         <div class="profile-popup__backdrop" data-profile-backdrop style="display:none;"></div>
 
-        <div class="friends-panel" data-friends-panel style="display:none;" role="dialog" aria-modal="true" aria-label="{{ 'friends.title'|trans }}">
+        <div class="friends-panel" data-friends-panel style="display:none;" role="dialog" aria-modal="true" aria-label="Compagnons">
             <div class="friends-panel__header">
                 <h2 class="friends-panel__title">
                     <i class="fas fa-user-friends" aria-hidden="true"></i>
-                    {{ 'friends.title'|trans }}
+                    Compagnons
                 </h2>
-                <button class="friends-panel__close" data-friends-close aria-label="Close">
+                <button class="friends-panel__close" data-friends-close aria-label="Fermer le panneau Compagnons">
                     <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
             </div>
 
             <div class="friends-panel__tabs">
                 <button class="friends-panel__tab friends-panel__tab--active" data-friends-tab="friends">
-                    <i class="fas fa-users"></i> {{ 'friends.tab_friends'|trans }}
+                    <i class="fas fa-users"></i> Amis
                 </button>
                 <button class="friends-panel__tab" data-friends-tab="requests">
-                    <i class="fas fa-envelope"></i> {{ 'friends.tab_requests'|trans }}
+                    <i class="fas fa-envelope"></i> Demandes
                     <span class="friends-panel__tab-badge" data-requests-badge style="display:none;">0</span>
                 </button>
                 <button class="friends-panel__tab" data-friends-tab="search">
-                    <i class="fas fa-search"></i> {{ 'friends.tab_search'|trans }}
+                    <i class="fas fa-search"></i> Chercher
                 </button>
             </div>
 
             <div class="friends-panel__content">
                 <div class="friends-panel__tab-content friends-panel__tab-content--active" data-tab-content="friends">
                     <div class="friends-panel__loading">
-                        <i class="fas fa-spinner fa-spin"></i> {{ 'nav.loading'|trans }}
+                        <i class="fas fa-spinner fa-spin"></i> Chargement...
                     </div>
                 </div>
 
                 <div class="friends-panel__tab-content" data-tab-content="requests" style="display:none;">
                     <div class="friends-panel__loading">
-                        <i class="fas fa-spinner fa-spin"></i> {{ 'nav.loading'|trans }}
+                        <i class="fas fa-spinner fa-spin"></i> Chargement...
                     </div>
                 </div>
 
                 <div class="friends-panel__tab-content" data-tab-content="search" style="display:none;">
                     <div class="friends-search">
                         <input type="text" class="friends-search__input" data-friends-search-input
-                               placeholder="{{ 'friends.search_placeholder'|trans }}">
+                               placeholder="Rechercher un guerrier...">
                     </div>
                     <div class="friends-search__results" data-friends-search-results></div>
                 </div>
@@ -178,7 +124,7 @@
                 <div class="friends-conversation__messages" data-conversation-messages></div>
                 <div class="friends-conversation__input-area">
                     <input type="text" class="friends-conversation__input" data-conversation-input
-                           placeholder="{{ 'friends.write_message'|trans }}" maxlength="1000">
+                           placeholder="Ecrire un message..." maxlength="1000">
                     <button class="friends-conversation__send" data-conversation-send>
                         <i class="fas fa-paper-plane"></i>
                     </button>
@@ -186,31 +132,23 @@
             </div>
         </div>
         <div class="friends-panel__backdrop" data-friends-backdrop style="display:none;"></div>
-        {% else %}
-        <div class="locale-toggle-anon">
-            <a href="{{ path('app_locale_switch', {locale: app.request.locale == 'fr' ? 'en' : 'fr'}) }}"
-               class="locale-toggle-anon__link"
-               title="{{ app.request.locale == 'fr' ? 'Switch to English' : 'Passer en francais' }}">
-                {{ app.request.locale == 'fr' ? 'EN' : 'FR' }}
-            </a>
-        </div>
         {% endif %}
         {% block header %}{% endblock %}
         <main>
             {% for message in app.flashes('success') %}
                 <div class="flash-message flash-message--success" role="alert">
-                    <i class="fas fa-check" aria-hidden="true"></i> {{ message|trans }}
+                    <i class="fas fa-check" aria-hidden="true"></i> {{ message }}
                 </div>
             {% endfor %}
             {% for message in app.flashes('error') %}
                 <div class="flash-message flash-message--error" role="alert">
-                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ message|trans }}
+                    <i class="fas fa-exclamation-triangle" aria-hidden="true"></i> {{ message }}
                 </div>
             {% endfor %}
             {% block body %}{% endblock %}
         </main>
         <footer>
-            <small>&copy; {{ "now"|date("Y") }} {{ 'common.footer'|trans }}</small>
+            <small>&copy; {{ "now"|date("Y") }} Darkest Fight Arena - Tous droits r&eacute;serv&eacute;s</small>
         </footer>
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}

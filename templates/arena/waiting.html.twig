@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'waiting.title'|trans }}{% endblock %}
+{% block title %}Preparation du combat{% endblock %}
 
 {% block body %}
 <div class="matchmaking">
@@ -9,7 +9,7 @@
     <div class="matchmaking__panel">
         <div class="matchmaking__ornament">&#x2726;</div>
 
-        <h1 class="matchmaking__title">{{ 'waiting.title'|trans }}</h1>
+        <h1 class="matchmaking__title">Pr&eacute;paration du combat</h1>
 
         <div class="matchmaking__separator">
             <span></span>
@@ -23,7 +23,7 @@
         </div>
 
         <p class="matchmaking__status" id="waiting-status">
-            {{ 'waiting.loading_arena'|trans }}
+            Chargement de l'ar&egrave;ne...
         </p>
 
         <div class="matchmaking__dots">
@@ -35,7 +35,6 @@
 </div>
 
 <script>
-    const _t = JSON.parse(document.body.dataset.translations || '{}');
     const statusEl = document.getElementById('waiting-status');
     let attempts = 0;
 
@@ -48,14 +47,14 @@
         .then(r => r.json())
         .then(data => {
             if (data.found && data.redirectUrl) {
-                statusEl.textContent = _t.combat_ready || 'Combat pret !';
+                statusEl.textContent = 'Combat pr\u00eat !';
                 setTimeout(() => {
                     window.location.href = data.redirectUrl;
                 }, 300);
             } else if (attempts < 15) {
                 setTimeout(checkBattle, 1000);
             } else {
-                statusEl.textContent = _t.combat_load_error || 'Le combat n\'a pas pu etre charge.';
+                statusEl.textContent = 'Le combat n\'a pas pu \u00eatre charg\u00e9.';
                 setTimeout(() => {
                     window.location.href = '{{ path('app_teams') }}';
                 }, 2000);

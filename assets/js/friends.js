@@ -92,8 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function loadFriends() {
         const container = document.querySelector('[data-tab-content="friends"]');
-        const _t = window._t || (k => k);
-        container.innerHTML = `<div class="friends-panel__loading"><i class="fas fa-spinner fa-spin"></i> ${_t('loading')}</div>`;
+        container.innerHTML = '<div class="friends-panel__loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
 
         fetch('/friends/list', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -102,7 +101,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             friendsLoaded = true;
             if (data.friends.length === 0) {
-                container.innerHTML = `<p class="friends-panel__empty"><i class="fas fa-ghost"></i> ${_t('no_companions')}</p>`;
+                container.innerHTML = '<p class="friends-panel__empty"><i class="fas fa-ghost"></i> Aucun compagnon... Le donjon est solitaire.</p>';
                 return;
             }
 
@@ -117,8 +116,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         <span class="friend-item__name">${escapeHtml(f.username)}</span>
                         <span class="friend-item__preview">
                             ${f.lastMessage
-                                ? (f.lastMessage.isFromMe ? _t('you_prefix') : '') + escapeHtml(f.lastMessage.content)
-                                : _t('no_message')}
+                                ? (f.lastMessage.isFromMe ? 'Vous: ' : '') + escapeHtml(f.lastMessage.content)
+                                : 'Aucun message'}
                         </span>
                     </div>
                     <span class="friend-item__rating"><i class="fas fa-trophy"></i> ${f.rating}</span>
@@ -134,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         })
         .catch(() => {
-            container.innerHTML = `<p class="friends-panel__empty">${_t('loading_error')}</p>`;
+            container.innerHTML = '<p class="friends-panel__empty">Erreur de chargement</p>';
         });
     }
 
@@ -143,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
     function loadRequests() {
         const container = document.querySelector('[data-tab-content="requests"]');
-        container.innerHTML = `<div class="friends-panel__loading"><i class="fas fa-spinner fa-spin"></i> ${_t('loading')}</div>`;
+        container.innerHTML = '<div class="friends-panel__loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
 
         fetch('/friends/pending', {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -152,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(data => {
             requestsLoaded = true;
             if (data.requests.length === 0) {
-                container.innerHTML = `<p class="friends-panel__empty">${_t('no_requests')}</p>`;
+                container.innerHTML = '<p class="friends-panel__empty">Aucune demande en attente</p>';
                 return;
             }
 
@@ -193,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         })
         .catch(() => {
-            container.innerHTML = `<p class="friends-panel__empty">${_t('loading_error')}</p>`;
+            container.innerHTML = '<p class="friends-panel__empty">Erreur de chargement</p>';
         });
     }
 
@@ -237,18 +236,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(res => res.json())
                 .then(data => {
                     if (data.users.length === 0) {
-                        searchResults.innerHTML = `<p class="friends-panel__empty">${_t('no_warrior')}</p>`;
+                        searchResults.innerHTML = '<p class="friends-panel__empty">Aucun guerrier trouve</p>';
                         return;
                     }
 
                     searchResults.innerHTML = data.users.map(u => {
                         let actionHtml = '';
                         if (u.friendStatus === 'accepted') {
-                            actionHtml = `<span class="friend-action friend-action--pending">${_t('friend_status')}</span>`;
+                            actionHtml = '<span class="friend-action friend-action--pending">Ami</span>';
                         } else if (u.friendStatus === 'pending_sent') {
-                            actionHtml = `<span class="friend-action friend-action--pending">${_t('sent_status')}</span>`;
+                            actionHtml = '<span class="friend-action friend-action--pending">Envoyee</span>';
                         } else if (u.friendStatus === 'pending_received') {
-                            actionHtml = `<span class="friend-action friend-action--pending">${_t('received_status')}</span>`;
+                            actionHtml = '<span class="friend-action friend-action--pending">Recue</span>';
                         } else {
                             actionHtml = `<button class="friend-action friend-action--add" data-add-friend-id="${u.userId}">
                                 <i class="fas fa-plus"></i>
@@ -291,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(res => res.json())
         .then(data => {
             if (data.success) {
-                btn.outerHTML = `<span class="friend-action friend-action--pending">${_t('sent_status')}</span>`;
+                btn.outerHTML = '<span class="friend-action friend-action--pending">Envoyee</span>';
             } else {
                 btn.disabled = false;
             }
@@ -300,7 +299,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function reportMessageAction(messageId, btn) {
-        const reason = prompt(_t('report_reason'));
+        const reason = prompt('Raison du signalement :');
         if (reason === null) return; // cancelled
 
         btn.disabled = true;
@@ -317,7 +316,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.success) {
                 btn.innerHTML = '<i class="fas fa-check"></i>';
                 btn.classList.add('chat-message__report--done');
-                btn.title = _t('reported');
+                btn.title = 'Signale';
             } else {
                 btn.disabled = false;
             }
@@ -339,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.querySelector('[data-conversation-name]').textContent = username;
         const messagesEl = document.querySelector('[data-conversation-messages]');
-        messagesEl.innerHTML = `<div class="friends-panel__loading"><i class="fas fa-spinner fa-spin"></i> ${_t('loading')}</div>`;
+        messagesEl.innerHTML = '<div class="friends-panel__loading"><i class="fas fa-spinner fa-spin"></i> Chargement...</div>';
 
         fetch(`/friends/messages/${userId}`, {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
@@ -356,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!append) {
             if (messages.length === 0) {
-                messagesEl.innerHTML = `<p class="friends-panel__empty">${_t('start_conversation')}</p>`;
+                messagesEl.innerHTML = '<p class="friends-panel__empty">Debut de la conversation. Envoyez le premier message!</p>';
             } else {
                 messagesEl.innerHTML = '';
             }

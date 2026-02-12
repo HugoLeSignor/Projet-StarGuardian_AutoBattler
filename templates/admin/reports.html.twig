@@ -1,22 +1,22 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ 'admin.reports'|trans }}{% endblock %}
+{% block title %}Admin - Signalements{% endblock %}
 
 {% block body %}
 <div class="admin-page">
     <div class="admin-page__vignette"></div>
 
     <div class="admin-header">
-        <h1 class="admin-header__title"><i class="fas fa-crown"></i> {{ 'admin.title'|trans }}</h1>
+        <h1 class="admin-header__title"><i class="fas fa-crown"></i> Panel d'Administration</h1>
         <nav class="admin-nav">
             <a href="{{ path('app_admin') }}" class="admin-nav__link">
-                <i class="fas fa-tachometer-alt"></i> {{ 'admin.dashboard'|trans }}
+                <i class="fas fa-tachometer-alt"></i> Dashboard
             </a>
             <a href="{{ path('app_admin_users') }}" class="admin-nav__link">
-                <i class="fas fa-users"></i> {{ 'admin.users'|trans }}
+                <i class="fas fa-users"></i> Utilisateurs
             </a>
             <a href="{{ path('app_admin_reports') }}" class="admin-nav__link admin-nav__link--active">
-                <i class="fas fa-flag"></i> {{ 'admin.reports'|trans }}
+                <i class="fas fa-flag"></i> Signalements
                 {% if reportedMessages|length > 0 %}
                     <span class="admin-nav__badge">{{ reportedMessages|length }}</span>
                 {% endif %}
@@ -25,19 +25,19 @@
     </div>
 
     <div class="admin-section">
-        <h2 class="admin-section__title"><i class="fas fa-flag"></i> {{ 'admin.reported_messages'|trans({'%count%': reportedMessages|length}) }}</h2>
+        <h2 class="admin-section__title"><i class="fas fa-flag"></i> Messages signal&eacute;s ({{ reportedMessages|length }})</h2>
 
         {% if reportedMessages|length > 0 %}
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>{{ 'admin.table_author'|trans }}</th>
-                        <th>{{ 'admin.table_recipient'|trans }}</th>
-                        <th>{{ 'admin.table_message'|trans }}</th>
-                        <th>{{ 'admin.table_reported_by'|trans }}</th>
-                        <th>{{ 'admin.table_reason'|trans }}</th>
-                        <th>{{ 'admin.table_date'|trans }}</th>
-                        <th>{{ 'admin.table_actions'|trans }}</th>
+                        <th>Auteur</th>
+                        <th>Destinataire</th>
+                        <th>Message</th>
+                        <th>Signal&eacute; par</th>
+                        <th>Raison</th>
+                        <th>Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -51,19 +51,19 @@
                             <td>{{ msg.receiver.username }}</td>
                             <td class="admin-table__msg">{{ msg.content }}</td>
                             <td>{{ msg.reportedBy ? msg.reportedBy.username : '?' }}</td>
-                            <td class="admin-table__muted">{{ msg.reportReason|default('admin.reason_default'|trans) }}</td>
+                            <td class="admin-table__muted">{{ msg.reportReason|default('Non specifiee') }}</td>
                             <td class="admin-table__muted">{{ msg.reportedAt ? msg.reportedAt|date('d/m/Y H:i') : '?' }}</td>
                             <td class="admin-table__actions">
                                 <form method="POST" action="{{ path('app_admin_report_remove', {id: msg.id}) }}" style="display:inline;">
                                     <button type="submit" class="admin-btn admin-btn--danger admin-btn--small"
-                                            title="{{ 'admin.delete_message'|trans }}"
-                                            onclick="return confirm('{{ 'admin.delete_message_confirm'|trans }}')">
+                                            title="Supprimer le message"
+                                            onclick="return confirm('Supprimer ce message ?')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
                                 <form method="POST" action="{{ path('app_admin_report_dismiss', {id: msg.id}) }}" style="display:inline;">
                                     <button type="submit" class="admin-btn admin-btn--small"
-                                            title="{{ 'admin.dismiss_report'|trans }}">
+                                            title="Rejeter le signalement">
                                         <i class="fas fa-check"></i>
                                     </button>
                                 </form>
@@ -73,7 +73,7 @@
                 </tbody>
             </table>
         {% else %}
-            <p class="admin-empty"><i class="fas fa-check-circle"></i> {{ 'admin.no_reports_calm'|trans }}</p>
+            <p class="admin-empty"><i class="fas fa-check-circle"></i> Aucun signalement en attente. Tout est calme dans le donjon.</p>
         {% endif %}
     </div>
 </div>
