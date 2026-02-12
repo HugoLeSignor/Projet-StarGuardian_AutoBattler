@@ -99,6 +99,12 @@ class AttackAction implements ActionInterface
             'message' => CombatEngine::colorNameStatic($userData) . " attaque " . CombatEngine::colorNameStatic($targetData) . " → $damage dégâts (HP: $newHP)" . ($isCrit ? " (CRIT!)" : "")
         ];
 
+        // Retirer la marque si removeOnHit
+        if (isset($targetData['marked']) && ($targetData['marked']['removeOnHit'] ?? false)) {
+            unset($targetData['marked']);
+            $targetData['statuses'] = array_values(array_filter($targetData['statuses'], fn($s) => $s !== 'marked'));
+        }
+
         // Riposte : la cible contre-attaque
         if ($newHP > 0 && isset($targetData['riposte']) && $targetData['riposte']['turnsLeft'] > 0) {
             $riposteDmg = rand($target->getDMGMIN(), $target->getDMGMAX());
@@ -492,13 +498,15 @@ class MarkAction implements ActionInterface
 {
     private int $markTurns;
     private int $bonusDamage;
+    private bool $removeOnHit;
     private int $cooldownTurns;
     private string $abilityName;
 
-    public function __construct(int $markTurns, int $bonusDamage, int $cooldownTurns, string $abilityName = 'Marque')
+    public function __construct(int $markTurns, int $bonusDamage, int $cooldownTurns, string $abilityName = 'Marque', bool $removeOnHit = false)
     {
         $this->markTurns = $markTurns;
         $this->bonusDamage = $bonusDamage;
+        $this->removeOnHit = $removeOnHit;
         $this->cooldownTurns = $cooldownTurns;
         $this->abilityName = $abilityName;
     }
@@ -517,11 +525,12 @@ class MarkAction implements ActionInterface
         $targetData =& $teamEnemies[$targetIndex];
         $target = $targetData['char'];
 
-        $targetData['marked'] = ['turnsLeft' => $this->markTurns, 'bonusDamage' => $this->bonusDamage];
+        $targetData['marked'] = ['turnsLeft' => $this->markTurns, 'bonusDamage' => $this->bonusDamage, 'removeOnHit' => $this->removeOnHit];
         if (!in_array('marked', $targetData['statuses'], true)) {
             $targetData['statuses'][] = 'marked';
         }
 
+        $desc = $this->removeOnHit ? "jusqu'au prochain coup" : "{$this->markTurns} tours";
         $logs[] = [
             'type' => 'ability_use',
             'subtype' => 'mark',
@@ -530,7 +539,7 @@ class MarkAction implements ActionInterface
             'target' => $target->getName(),
             'targetTeam' => $targetData['team'],
             'abilityName' => $this->abilityName,
-            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → " . CombatEngine::colorNameStatic($targetData) . " est marqué ! (+{$this->bonusDamage}% dégâts reçus, {$this->markTurns} tours)"
+            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → " . CombatEngine::colorNameStatic($targetData) . " est marqué ! (+{$this->bonusDamage}% dégâts reçus, $desc)"
         ];
 
         $userData['cooldowns']['ability'] = $this->cooldownTurns;
@@ -590,14 +599,16 @@ class SelfBuffAction implements ActionInterface
     private int $cooldownTurns;
     private string $abilityName;
     private int $allyDamage;
+    private float $hpThreshold;
 
-    public function __construct(array $buffs, int $duration, int $cooldownTurns, string $abilityName = 'Buff', int $allyDamage = 0)
+    public function __construct(array $buffs, int $duration, int $cooldownTurns, string $abilityName = 'Buff', int $allyDamage = 0, float $hpThreshold = 1.0)
     {
         $this->buffs = $buffs;
         $this->duration = $duration;
         $this->cooldownTurns = $cooldownTurns;
         $this->abilityName = $abilityName;
         $this->allyDamage = $allyDamage;
+        $this->hpThreshold = $hpThreshold;
     }
 
     public function execute(Character $user, array &$teamAllies, array &$teamEnemies, array &$logs, array &$userData): void
@@ -608,9 +619,20 @@ class SelfBuffAction implements ActionInterface
             return;
         }
 
+        // Vérifier le seuil de HP (ex: Abomination ne se transforme que sous 50% HP)
+        if ($this->hpThreshold < 1.0) {
+            $hpRatio = $user->getHP() / $userData['HP_MAX'];
+            if ($hpRatio > $this->hpThreshold) {
+                $action = new AttackAction();
+                $action->execute($user, $teamAllies, $teamEnemies, $logs, $userData);
+                return;
+            }
+        }
+
         $userData['tempBuffs'] = array_merge($userData['tempBuffs'], $this->buffs);
         $userData['tempBuffs']['turnsLeft'] = $this->duration;
 
+        $isPermanent = $this->duration >= 999;
         $effects = [];
         if (isset($this->buffs['damage']) && $this->buffs['damage'] > 0) $effects[] = "+{$this->buffs['damage']}% dégâts";
         if (isset($this->buffs['speed']) && $this->buffs['speed'] > 0) $effects[] = "+{$this->buffs['speed']} vitesse";
@@ -618,13 +640,14 @@ class SelfBuffAction implements ActionInterface
         if (isset($this->buffs['crit']) && $this->buffs['crit'] > 0) $effects[] = "+{$this->buffs['crit']}% crit";
         $effectStr = implode(', ', $effects);
 
+        $durationText = $isPermanent ? 'permanent' : "{$this->duration} tours";
         $logs[] = [
             'type' => 'ability_use',
             'subtype' => 'self_buff',
             'caster' => $user->getName(),
             'casterTeam' => $userData['team'],
             'abilityName' => $this->abilityName,
-            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> ! ($effectStr, {$this->duration} tours)"
+            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> ! ($effectStr, $durationText)"
         ];
 
         // Dégâts aux alliés (Abomination : Transformation)
@@ -1162,12 +1185,6 @@ class BonusVsMarkedAction implements ActionInterface
         $damage = rand($user->getDMGMIN(), $user->getDMGMAX());
         $damage = (int)($damage * (1 + $this->markedBonus / 100));
 
-        $isCrit = false;
-        if (rand(1, 100) <= $user->getCRIT()) {
-            $damage = (int)($damage * 1.5);
-            $isCrit = true;
-        }
-
         $newHP = max(0, $target->getHP() - $damage);
         $target->setHP($newHP);
 
@@ -1182,9 +1199,15 @@ class BonusVsMarkedAction implements ActionInterface
             'damage' => $damage,
             'targetHP' => $newHP,
             'targetMaxHP' => $targetData['HP_MAX'],
-            'isCrit' => $isCrit,
-            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> sur cible marquée → " . CombatEngine::colorNameStatic($targetData) . " $damage dégâts (HP: $newHP)" . ($isCrit ? " (CRIT!)" : "")
+            'isCrit' => false,
+            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> sur cible marquée → " . CombatEngine::colorNameStatic($targetData) . " $damage dégâts (HP: $newHP)"
         ];
+
+        // Retirer la marque si removeOnHit
+        if (isset($targetData['marked']) && ($targetData['marked']['removeOnHit'] ?? false)) {
+            unset($targetData['marked']);
+            $targetData['statuses'] = array_values(array_filter($targetData['statuses'], fn($s) => $s !== 'marked'));
+        }
 
         if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
             $targetData['statuses'][] = 'dead';
@@ -1336,7 +1359,8 @@ class CombatEngine
                     $params['markTurns'] ?? 3,
                     $params['bonusDamage'] ?? 30,
                     $cd,
-                    $name
+                    $name,
+                    $params['removeOnHit'] ?? false
                 );
             case 'riposte':
                 return new RiposteAction(
@@ -1351,7 +1375,8 @@ class CombatEngine
                     $params['duration'] ?? 2,
                     $cd,
                     $name,
-                    $params['allyDamage'] ?? 0
+                    $params['allyDamage'] ?? 0,
+                    $params['hpThreshold'] ?? 1.0
                 );
             case 'party_heal':
                 return new PartyHealAction(
@@ -1500,8 +1525,8 @@ class CombatEngine
                 }
             }
 
-            // Tick de la marque
-            if (isset($data['marked'])) {
+            // Tick de la marque (pas de decrement si removeOnHit)
+            if (isset($data['marked']) && !($data['marked']['removeOnHit'] ?? false)) {
                 $data['marked']['turnsLeft']--;
                 if ($data['marked']['turnsLeft'] <= 0) {
                     unset($data['marked']);
@@ -1526,8 +1551,8 @@ class CombatEngine
                 }
             }
 
-            // Tick des buffs temporaires
-            if (isset($data['tempBuffs']) && $data['tempBuffs']['turnsLeft'] > 0) {
+            // Tick des buffs temporaires (ne pas décrementer les buffs permanents >= 999)
+            if (isset($data['tempBuffs']) && $data['tempBuffs']['turnsLeft'] > 0 && $data['tempBuffs']['turnsLeft'] < 999) {
                 $data['tempBuffs']['turnsLeft']--;
                 if ($data['tempBuffs']['turnsLeft'] <= 0) {
                     $data['tempBuffs'] = ['damage' => 0, 'speed' => 0, 'dodge' => 0, 'crit' => 0, 'turnsLeft' => 0];
@@ -1538,11 +1563,42 @@ class CombatEngine
 
     private function attackPhase(array $turnOrder, array &$team1, array &$team2, array &$logs): void
     {
-        foreach ($turnOrder as &$actorData) {
-
-            $attacker = $actorData['char'];
-            if ($attacker->getHP() <= 0)
+        // turnOrder contient des copies (array_merge), on retrouve les originaux
+        // dans team1/team2 via l'identité de l'objet Character pour que les
+        // modifications (cooldowns, buffs, statuts) persistent entre les tours.
+        foreach ($turnOrder as $actorInfo) {
+            $char = $actorInfo['char'];
+            if ($char->getHP() <= 0)
                 continue;
+
+            // Retrouver la donnée originale dans les tableaux d'équipe
+            $actorData = null;
+            $teamAllies = null;
+            $teamEnemies = null;
+
+            foreach ($team1 as $i => &$d) {
+                if ($d['char'] === $char) {
+                    $actorData =& $team1[$i];
+                    $teamAllies =& $team1;
+                    $teamEnemies =& $team2;
+                    break;
+                }
+            }
+            unset($d);
+
+            if ($actorData === null) {
+                foreach ($team2 as $i => &$d) {
+                    if ($d['char'] === $char) {
+                        $actorData =& $team2[$i];
+                        $teamAllies =& $team2;
+                        $teamEnemies =& $team1;
+                        break;
+                    }
+                }
+                unset($d);
+            }
+
+            if ($actorData === null) continue;
 
             // Vérifier l'étourdissement
             if ($actorData['stunned'] === true) {
@@ -1550,19 +1606,11 @@ class CombatEngine
                 $actorData['statuses'] = array_values(array_filter($actorData['statuses'], fn($s) => $s !== 'stunned'));
                 $logs[] = [
                     'type' => 'stunned_skip',
-                    'target' => $attacker->getName(),
+                    'target' => $char->getName(),
                     'targetTeam' => $actorData['team'],
                     'message' => CombatEngine::colorNameStatic($actorData) . " est étourdi et passe son tour !"
                 ];
                 continue;
-            }
-
-            if ($actorData['team'] === 'Equipe 1') {
-                $teamAllies =& $team1;
-                $teamEnemies =& $team2;
-            } else {
-                $teamAllies =& $team2;
-                $teamEnemies =& $team1;
             }
 
             $actions = $actorData['actions'] ?? [];
@@ -1570,7 +1618,7 @@ class CombatEngine
                 continue;
 
             $action = $actions[array_rand($actions)];
-            $action->execute($attacker, $teamAllies, $teamEnemies, $logs, $actorData);
+            $action->execute($char, $teamAllies, $teamEnemies, $logs, $actorData);
         }
     }
 

@@ -150,10 +150,10 @@ class AppFixtures extends Fixture
             $this->createAbility(
                 $characters['Abomination'],
                 'Transformation',
-                'Se transforme en bête, gagnant en puissance mais blessant ses alliés.',
+                'Se transforme en bête quand ses PV sont bas (<50%). Buff permanent mais blesse les alliés.',
                 'self_buff',
-                ['buffs' => ['damage' => 30, 'speed' => 3, 'dodge' => 0, 'crit' => 0], 'duration' => 3, 'allyDamage' => 5],
-                5
+                ['buffs' => ['damage' => 30, 'speed' => 3, 'dodge' => 0, 'crit' => 0], 'duration' => 999, 'allyDamage' => 5, 'hpThreshold' => 0.5],
+                999
             ),
 
             // === SUPPORT ===
@@ -202,9 +202,9 @@ class AppFixtures extends Fixture
             $this->createAbility(
                 $characters['Occultist'],
                 'Malédiction de Vulnérabilité',
-                'Marque un ennemi, le rendant vulnérable et augmentant les dégâts qu\'il reçoit.',
+                'Marque un ennemi, le rendant vulnérable. La marque disparaît au prochain coup reçu.',
                 'mark',
-                ['markTurns' => 3, 'bonusDamage' => 30],
+                ['markTurns' => 99, 'bonusDamage' => 30, 'removeOnHit' => true],
                 3
             ),
 
