@@ -209,6 +209,7 @@ class HealAction implements ActionInterface
         $ratio = 999;
 
         foreach ($team as $i => $data) {
+            if ($data === null) continue;
             if ($data['char']->getHP() <= 0)
                 continue;
 
@@ -241,6 +242,7 @@ class DefendAllyAction implements ActionInterface
 
         $choices = [];
         foreach ($teamAllies as $i => $data) {
+            if ($data === null) continue;
             if ($data['char'] !== $user && $data['char']->getHP() > 0) {
                 $choices[] = $i;
             }
@@ -739,6 +741,7 @@ class PartyHealAction implements ActionInterface
         // Vérifier si au moins un allié a besoin de soin
         $needsHeal = false;
         foreach ($teamAllies as $allyData) {
+            if ($allyData === null) continue;
             if ($allyData['char']->getHP() > 0 && $allyData['char']->getHP() < $allyData['HP_MAX']) {
                 $needsHeal = true;
                 break;
@@ -1047,6 +1050,7 @@ class BacklineStrikeAction implements ActionInterface
         $targetIndex = null;
         $lowestHP = PHP_INT_MAX;
         foreach ($teamEnemies as $i => $edata) {
+            if ($edata === null) continue;
             if ($edata['char']->getHP() > 0 && $edata['char']->getHP() < $lowestHP) {
                 $lowestHP = $edata['char']->getHP();
                 $targetIndex = $i;
@@ -1128,6 +1132,7 @@ class ProtectDodgeAction implements ActionInterface
         // Choisir un allié à protéger (le plus faible en % PV)
         $choices = [];
         foreach ($teamAllies as $i => $data) {
+            if ($data === null) continue;
             if ($data['char'] !== $user && $data['char']->getHP() > 0) {
                 $choices[] = $i;
             }
@@ -1213,6 +1218,7 @@ class BonusVsMarkedAction implements ActionInterface
         // Chercher une cible marquée en priorité
         $targetIndex = null;
         foreach ($teamEnemies as $i => $edata) {
+            if ($edata === null) continue;
             if ($edata['char']->getHP() > 0 && isset($edata['marked']) && $edata['marked']['turnsLeft'] > 0) {
                 $targetIndex = $i;
                 break;
@@ -1331,6 +1337,7 @@ class CombatEngine
     private function initializeTeamData(array &$team): void
     {
         foreach ($team as &$data) {
+            if ($data === null) continue;
             $char = $data['char'];
 
             $data['HP_MAX'] = $char->getHP();
@@ -1491,6 +1498,7 @@ class CombatEngine
     private function tickTeam(array &$team, array &$logs): void
     {
         foreach ($team as &$data) {
+            if ($data === null) continue;
             if ($data['char']->getHP() <= 0) continue;
 
             // Tick des cooldowns
@@ -1749,6 +1757,7 @@ class CombatEngine
         $all = array_merge($team1, $team2);
 
         foreach ($all as &$data) {
+            if ($data === null) continue;
             $char = $data['char'];
             $roll = rand(1, 20);
             $speedBonus = $data['tempBuffs']['speed'] ?? 0;
@@ -1776,6 +1785,7 @@ class CombatEngine
         $alive = [];
 
         foreach ($team as $i => $data) {
+            if ($data === null) continue;
             if ($data['char']->getHP() > 0) {
                 if ($respectStealth && in_array('stealthed', $data['statuses'] ?? [], true)) {
                     continue;
@@ -1787,6 +1797,7 @@ class CombatEngine
         // Fallback : si tous sont en stealth, cibler quand même
         if (empty($alive)) {
             foreach ($team as $i => $data) {
+                if ($data === null) continue;
                 if ($data['char']->getHP() > 0) {
                     $alive[] = $i;
                 }
@@ -1799,6 +1810,7 @@ class CombatEngine
     private function teamAlive(array $team): bool
     {
         foreach ($team as $data) {
+            if ($data === null) continue;
             if ($data['char']->getHP() > 0)
                 return true;
         }
@@ -1825,7 +1837,7 @@ class CombatEngine
      */
     private function detectTeamSynergies(array &$team): void
     {
-        $names = array_map(fn($d) => $d['char']->getName(), $team);
+        $names = array_map(fn($d) => $d['char']->getName(), array_filter($team, fn($d) => $d !== null));
         $registry = SynergyConfig::getSynergyRegistry();
 
         $activeSynergies = [];
@@ -1837,6 +1849,7 @@ class CombatEngine
         }
 
         foreach ($team as &$data) {
+            if ($data === null) continue;
             $data['activeSynergies'] = $activeSynergies;
         }
         unset($data);
