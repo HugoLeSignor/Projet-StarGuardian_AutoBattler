@@ -1253,6 +1253,43 @@
     .character-info {
         flex: 0 1 100%;
     }
+
+    .combat-panel {
+        padding: 1rem;
+    }
+
+    .combat-panel__title {
+        font-size: 1rem;
+        letter-spacing: 0.1em;
+    }
+
+    .combat-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .combat-controls__playback {
+        justify-content: center;
+    }
+
+    .combat-controls__speed {
+        justify-content: center;
+    }
+
+    .btn-arena {
+        font-size: 0.85rem;
+        padding: 0.6rem 1rem;
+        box-sizing: border-box;
+    }
+
+    .combat-panel__actions {
+        flex-direction: column;
+
+        .btn-arena {
+            width: 100%;
+            text-align: center;
+        }
+    }
 }
 
 @media (max-width: 480px) {
@@ -1292,12 +1329,21 @@
         font-size: 0.5rem;
     }
 
-    .combat-panel__actions {
-        flex-direction: column;
+    .combat-panel {
+        padding: 0.8rem;
     }
 
     .btn-arena {
-        width: 100%;
-        text-align: center;
+        font-size: 0.75rem;
+        padding: 0.5rem 0.8rem;
+        letter-spacing: 0.05em;
+    }
+
+    .info-panel {
+        padding: 1rem;
+    }
+
+    .info-panel__title {
+        font-size: 1rem;
     }
 }

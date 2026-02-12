@@ -182,23 +182,23 @@ class CombatController {
 
     getDelayForLog(log) {
         switch (log.type) {
-            case 'round': return 2000;
-            case 'initiative': return 400;
-            case 'attack': return 2000;
-            case 'heal': return 1800;
-            case 'defend': return 1500;
-            case 'dodge': return 1200;
-            case 'death': return 2500;
-            case 'protect': return 1500;
+            case 'round': return 2500;
+            case 'initiative': return 600;
+            case 'attack': return 3000;
+            case 'heal': return 2800;
+            case 'defend': return 2500;
+            case 'dodge': return 2000;
+            case 'death': return 3500;
+            case 'protect': return 2500;
             case 'victory':
-            case 'draw': return 1000;
+            case 'draw': return 1500;
             // Nouveaux types
-            case 'bleed_tick': return 800;
-            case 'blight_tick': return 800;
-            case 'stunned_skip': return 1000;
-            case 'riposte_activate': return 1200;
+            case 'bleed_tick': return 1500;
+            case 'blight_tick': return 1500;
+            case 'stunned_skip': return 1800;
+            case 'riposte_activate': return 2000;
             case 'ability_use': return this.getAbilityDelay(log);
-            default: return 800;
+            default: return 1200;
         }
     }
 
@@ -208,18 +208,18 @@ class CombatController {
             case 'blight_attack':
             case 'backline_strike':
             case 'armor_pierce':
-            case 'bonus_vs_marked': return 2000;
-            case 'stun': return 1500;
-            case 'mark': return 1200;
+            case 'bonus_vs_marked': return 3000;
+            case 'stun': return 2500;
+            case 'mark': return 2000;
             case 'riposte_buff':
             case 'self_buff':
-            case 'stealth': return 1200;
-            case 'party_heal': return 1800;
-            case 'party_buff': return 1500;
-            case 'emergency_heal': return 1800;
-            case 'protect_dodge': return 1500;
-            case 'transform_damage': return 800;
-            default: return 1200;
+            case 'stealth': return 2000;
+            case 'party_heal': return 2800;
+            case 'party_buff': return 2500;
+            case 'emergency_heal': return 2800;
+            case 'protect_dodge': return 2500;
+            case 'transform_damage': return 1500;
+            default: return 2000;
         }
     }
 
@@ -353,7 +353,7 @@ class CombatController {
         const target = this.getCharacterElement(targetName, targetTeam);
         if (target) {
             target.classList.add(dotClass);
-            setTimeout(() => target.classList.remove(dotClass), 600);
+            setTimeout(() => target.classList.remove(dotClass), 1000);
         }
     }
 
@@ -361,7 +361,7 @@ class CombatController {
         const target = this.getCharacterElement(targetName, targetTeam);
         if (target) {
             target.classList.add('stunned');
-            setTimeout(() => target.classList.remove('stunned'), 800);
+            setTimeout(() => target.classList.remove('stunned'), 1400);
         }
     }
 
@@ -378,7 +378,7 @@ class CombatController {
         const target = this.getCharacterElement(targetName, targetTeam);
         if (target) {
             target.classList.add('buffed');
-            setTimeout(() => target.classList.remove('buffed'), 800);
+            setTimeout(() => target.classList.remove('buffed'), 1400);
         }
     }
 
@@ -395,25 +395,25 @@ class CombatController {
             case 'bleed_attack':
                 if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, false);
                 if (log.target && log.targetTeam) {
-                    setTimeout(() => this.animateDoT(log.target, log.targetTeam, 'bleeding'), 400);
+                    setTimeout(() => this.animateDoT(log.target, log.targetTeam, 'bleeding'), 700);
                 }
                 break;
             case 'blight_attack':
                 if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, false);
                 if (log.target && log.targetTeam) {
-                    setTimeout(() => this.animateDoT(log.target, log.targetTeam, 'blighted'), 400);
+                    setTimeout(() => this.animateDoT(log.target, log.targetTeam, 'blighted'), 700);
                 }
                 break;
             case 'stun':
                 if (log.caster && log.casterTeam) this.animateAttack(log.caster, log.casterTeam, log.target, log.targetTeam, false);
                 if (log.target && log.targetTeam) {
-                    setTimeout(() => this.animateStunned(log.target, log.targetTeam), 400);
+                    setTimeout(() => this.animateStunned(log.target, log.targetTeam), 700);
                 }
                 break;
             case 'mark':
                 if (log.caster && log.casterTeam) {
                     const markKey = `${log.casterTeam}-${log.caster}`;
-                    this.swapSprite(markKey, 'skill.webp', 800);
+                    this.swapSprite(markKey, 'skill.webp', 1400);
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 if (log.target && log.targetTeam) this.animateMarked(log.target, log.targetTeam);
@@ -421,7 +421,7 @@ class CombatController {
             case 'riposte_buff':
                 if (log.caster && log.casterTeam) {
                     const riposteKey = `${log.casterTeam}-${log.caster}`;
-                    this.swapSprite(riposteKey, 'skill.webp', 800);
+                    this.swapSprite(riposteKey, 'skill.webp', 1400);
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 break;
@@ -432,7 +432,7 @@ class CombatController {
                     if (log.abilityName === 'Transformation') {
                         this.characterSlugs[selfBuffKey] = 'beast';
                     }
-                    this.swapSprite(selfBuffKey, 'skill.webp', 800);
+                    this.swapSprite(selfBuffKey, 'skill.webp', 1400);
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 break;
@@ -445,7 +445,7 @@ class CombatController {
                             const el = this.getCharacterElement(h.name, h.team);
                             if (el) {
                                 el.classList.add('healed');
-                                setTimeout(() => el.classList.remove('healed'), 800);
+                                setTimeout(() => el.classList.remove('healed'), 1500);
                             }
                         });
                     }
@@ -454,7 +454,7 @@ class CombatController {
             case 'party_buff':
                 if (log.caster && log.casterTeam) {
                     const partyBuffKey = `${log.casterTeam}-${log.caster}`;
-                    this.swapSprite(partyBuffKey, 'skill.webp', 800);
+                    this.swapSprite(partyBuffKey, 'skill.webp', 1400);
                     this.animateBuff(log.caster, log.casterTeam);
                 }
                 // Animer tous les alliés du même côté
@@ -463,7 +463,7 @@ class CombatController {
             case 'stealth':
                 if (log.caster && log.casterTeam) {
                     const stealthKey = `${log.casterTeam}-${log.caster}`;
-                    this.swapSprite(stealthKey, 'skill.webp', 800);
+                    this.swapSprite(stealthKey, 'skill.webp', 1400);
                     this.animateStealth(log.caster, log.casterTeam);
                 }
                 break;
@@ -485,7 +485,7 @@ class CombatController {
                     const el = this.getCharacterElement(log.target, log.targetTeam);
                     if (el) {
                         el.classList.add('hurt');
-                        setTimeout(() => el.classList.remove('hurt'), 400);
+                        setTimeout(() => el.classList.remove('hurt'), 800);
                     }
                 }
                 break;
@@ -497,7 +497,7 @@ class CombatController {
             if (key.startsWith(casterTeam)) {
                 const el = this.characterElements[key];
                 el.classList.add('buffed');
-                setTimeout(() => el.classList.remove('buffed'), 800);
+                setTimeout(() => el.classList.remove('buffed'), 1400);
             }
         });
     }
@@ -529,17 +529,17 @@ class CombatController {
 
         if (attacker) {
             const key = `${attackerTeam}-${attackerName}`;
-            this.swapSprite(key, 'attackanimation.webp', 600);
+            this.swapSprite(key, 'attackanimation.webp', 1200);
             attacker.classList.add('attacking');
-            setTimeout(() => attacker.classList.remove('attacking'), 600);
+            setTimeout(() => attacker.classList.remove('attacking'), 1200);
         }
 
         if (target) {
             setTimeout(() => {
                 target.classList.add('hurt');
                 if (isCrit) target.classList.add('crit');
-                setTimeout(() => target.classList.remove('hurt', 'crit'), 400);
-            }, 300);
+                setTimeout(() => target.classList.remove('hurt', 'crit'), 800);
+            }, 500);
         }
     }
 
@@ -550,17 +550,17 @@ class CombatController {
         if (healer) {
             const key = `${healerTeam}-${healerName}`;
             if (this.characterHasHeal[key]) {
-                this.swapSprite(key, 'healing.webp', 800);
+                this.swapSprite(key, 'healing.webp', 1500);
             } else {
-                this.swapSprite(key, 'skill.webp', 800);
+                this.swapSprite(key, 'skill.webp', 1500);
             }
             healer.classList.add('healing');
-            setTimeout(() => healer.classList.remove('healing'), 800);
+            setTimeout(() => healer.classList.remove('healing'), 1500);
         }
 
         if (target) {
             target.classList.add('healed');
-            setTimeout(() => target.classList.remove('healed'), 800);
+            setTimeout(() => target.classList.remove('healed'), 1500);
         }
     }
 
@@ -568,9 +568,9 @@ class CombatController {
         const defender = this.getCharacterElement(defenderName, defenderTeam);
         if (defender) {
             const key = `${defenderTeam}-${defenderName}`;
-            this.swapSprite(key, 'defending.webp', 1000);
+            this.swapSprite(key, 'defending.webp', 1800);
             defender.classList.add('defending');
-            setTimeout(() => defender.classList.remove('defending'), 1000);
+            setTimeout(() => defender.classList.remove('defending'), 1800);
         }
     }
 
@@ -578,7 +578,7 @@ class CombatController {
         const target = this.getCharacterElement(targetName, targetTeam);
         if (target) {
             target.classList.add('dodging');
-            setTimeout(() => target.classList.remove('dodging'), 600);
+            setTimeout(() => target.classList.remove('dodging'), 1000);
         }
     }
 

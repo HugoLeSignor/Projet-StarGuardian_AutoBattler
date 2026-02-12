@@ -22,7 +22,8 @@ final class TeamsController extends AbstractController
         $categories = [
             'Tanks' => ['icon' => 'fa-shield-alt', 'characters' => []],
             'DPS' => ['icon' => 'fa-crosshairs', 'characters' => []],
-            'Supports' => ['icon' => 'fa-hand-holding-medical', 'characters' => []],
+            'Healers' => ['icon' => 'fa-hand-holding-medical', 'characters' => []],
+            'Supports' => ['icon' => 'fa-chess-rook', 'characters' => []],
         ];
 
         foreach ($characters as $character) {
@@ -31,6 +32,8 @@ final class TeamsController extends AbstractController
                 $categories['Tanks']['characters'][] = $character;
             } elseif ($roleName === 'DPS') {
                 $categories['DPS']['characters'][] = $character;
+            } elseif (in_array($roleName, ['Support', 'Soigneur'])) {
+                $categories['Healers']['characters'][] = $character;
             } else {
                 $categories['Supports']['characters'][] = $character;
             }
@@ -59,8 +62,8 @@ final class TeamsController extends AbstractController
             return $this->redirectToRoute('app_teams');
         }
 
-        // Valider la composition : 1 Tank, 1 DPS, 1 Support
-        $roles = ['Tank' => 0, 'DPS' => 0, 'Support' => 0];
+        // Valider la composition : 1 Tank, 1 DPS, 1 Soutien (Healer ou Support)
+        $roles = ['Tank' => 0, 'DPS' => 0, 'Soutien' => 0];
         foreach ($selectedIds as $id) {
             $character = $characterRepository->find((int) $id);
             if (!$character) {
@@ -73,12 +76,12 @@ final class TeamsController extends AbstractController
             } elseif ($roleName === 'DPS') {
                 $roles['DPS']++;
             } else {
-                $roles['Support']++;
+                $roles['Soutien']++;
             }
         }
 
-        if ($roles['Tank'] !== 1 || $roles['DPS'] !== 1 || $roles['Support'] !== 1) {
-            $this->addFlash('error', 'Votre équipe doit contenir exactement 1 Tank, 1 DPS et 1 Support.');
+        if ($roles['Tank'] !== 1 || $roles['DPS'] !== 1 || $roles['Soutien'] !== 1) {
+            $this->addFlash('error', 'Votre équipe doit contenir exactement 1 Tank, 1 DPS et 1 Soutien (Healer ou Support).');
             return $this->redirectToRoute('app_teams');
         }
 
@@ -147,7 +150,7 @@ final class TeamsController extends AbstractController
         }
 
         // Valider que les personnages existent et la composition est correcte
-        $roles = ['Tank' => 0, 'DPS' => 0, 'Support' => 0];
+        $roles = ['Tank' => 0, 'DPS' => 0, 'Soutien' => 0];
         foreach ($characterIds as $id) {
             $char = $charRepo->find((int) $id);
             if (!$char) {
@@ -159,12 +162,12 @@ final class TeamsController extends AbstractController
             } elseif ($roleName === 'DPS') {
                 $roles['DPS']++;
             } else {
-                $roles['Support']++;
+                $roles['Soutien']++;
             }
         }
 
-        if ($roles['Tank'] !== 1 || $roles['DPS'] !== 1 || $roles['Support'] !== 1) {
-            return $this->json(['error' => 'Composition invalide (1 Tank, 1 DPS, 1 Support)'], 400);
+        if ($roles['Tank'] !== 1 || $roles['DPS'] !== 1 || $roles['Soutien'] !== 1) {
+            return $this->json(['error' => 'Composition invalide (1 Tank, 1 DPS, 1 Soutien)'], 400);
         }
 
         // Limiter a 10 presets par joueur

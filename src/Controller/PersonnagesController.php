@@ -17,7 +17,8 @@ final class PersonnagesController extends AbstractController
         $categories = [
             'Tanks' => ['icon' => 'fa-shield-alt', 'desc' => 'Remparts indestructibles, ils protegent leurs allies au peril de leur vie.', 'characters' => []],
             'DPS' => ['icon' => 'fa-crosshairs', 'desc' => 'Lames et projectiles, ils fauchent les ennemis sans pitie.', 'characters' => []],
-            'Supports' => ['icon' => 'fa-hand-holding-medical', 'desc' => 'Guerisseurs et strateges, ils maintiennent le groupe en vie.', 'characters' => []],
+            'Healers' => ['icon' => 'fa-hand-holding-medical', 'desc' => 'Guerisseurs devoues, ils maintiennent le groupe en vie par leurs soins.', 'characters' => []],
+            'Supports' => ['icon' => 'fa-chess-rook', 'desc' => 'Strateges et utilitaires, ils renforcent l\'equipe avec des capacites uniques.', 'characters' => []],
         ];
 
         foreach ($characters as $character) {
@@ -26,6 +27,8 @@ final class PersonnagesController extends AbstractController
                 $categories['Tanks']['characters'][] = $character;
             } elseif ($roleName === 'DPS') {
                 $categories['DPS']['characters'][] = $character;
+            } elseif (in_array($roleName, ['Support', 'Soigneur'])) {
+                $categories['Healers']['characters'][] = $character;
             } else {
                 $categories['Supports']['characters'][] = $character;
             }

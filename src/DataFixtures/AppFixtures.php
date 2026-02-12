@@ -55,11 +55,11 @@ class AppFixtures extends Fixture
             'Grave-Robber' => $this->createCharacter('Grave-Robber', $roles['DPS'], 7, 14, 10, 30, 10, 36),
             'Bounty-Hunter' => $this->createCharacter('Bounty-Hunter', $roles['DPS'], 8, 16, 7, 25, 8, 45),
             'Shieldbreaker' => $this->createCharacter('Shieldbreaker', $roles['DPS'], 9, 18, 9, 28, 10, 36),
+            'Abomination' => $this->createCharacter('Abomination', $roles['DPS'], 11, 20, 9, 27, 6, 46),
 
             // Support
-            'Abomination' => $this->createCharacter('Abomination', $roles['Support'], 11, 20, 9, 27, 6, 46),
             'Plague Doctor' => $this->createCharacter('Plague Doctor', $roles['Support'], 7, 13, 9, 20, 6, 38),
-            'Houndmaster' => $this->createCharacter('Houndmaster', $roles['Support'], 7, 13, 7, 30, 8, 37),
+            'Houndmaster' => $this->createCharacter('Houndmaster', $roles['Buffer'], 7, 13, 7, 30, 8, 37),
             'Antiquarian' => $this->createCharacter('Antiquarian', $roles['Support'], 5, 9, 7, 30, 5, 29),
             'Flagellant' => $this->createCharacter('Flagellant', $roles['Support'], 5, 11, 9, 20, 6, 38),
 
@@ -147,8 +147,6 @@ class AppFixtures extends Fixture
                 [],
                 3
             ),
-
-            // === SUPPORT ===
             $this->createAbility(
                 $characters['Abomination'],
                 'Transformation',
@@ -157,6 +155,8 @@ class AppFixtures extends Fixture
                 ['buffs' => ['damage' => 30, 'speed' => 3, 'dodge' => 0, 'crit' => 0], 'duration' => 3, 'allyDamage' => 5],
                 5
             ),
+
+            // === SUPPORT ===
             $this->createAbility(
                 $characters['Plague Doctor'],
                 'Blast Nocif',
