@@ -606,5 +606,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
         content.innerHTML = html;
     }
+    
+
+
 });
 
+
+let combatMusic = null;
+let audioUnlocked = false;
+let lastIndex = -1;
+
+const COMBAT_PLAYLIST = [
+    "/asset/audio/combat/butchersboulevardmusic.mp3",
+    "/asset/audio/combat/combatintheruins.mp3",
+];
+
+function getRandomIndex() {
+    let i;
+    do {
+        i = Math.floor(Math.random() * COMBAT_PLAYLIST.length);
+    } while (i === lastIndex);
+
+    lastIndex = i;
+    return i;
+}
+
+function playNextCombatTrack() {
+
+    if (!document.querySelector(".battle-stage")) return;
+    if (!audioUnlocked) return; // 🔥 sécurité autoplay
+
+    if (combatMusic) {
+        combatMusic.pause();
+        combatMusic = null;
+    }
+
+    const src = COMBAT_PLAYLIST[getRandomIndex()];
+
+    combatMusic = new Audio(src);
+    combatMusic.volume = 0.4;
+
+    combatMusic.addEventListener("ended", playNextCombatTrack);
+
+    combatMusic.play().catch(() => {
+        console.log("Autoplay bloqué");
+    });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    if (!document.querySelector(".battle-stage")) return;
+
+    // 🔥 UN SEUL unlock global
+    document.addEventListener("click", () => {
+
+        if (audioUnlocked) return;
+        audioUnlocked = true;
+
+        // petit hack pour débloquer audio engine
+        const unlock = new Audio();
+        unlock.play().catch(()=>{});
+
+        playNextCombatTrack();
+
+    }, { once: true });
+
+});
