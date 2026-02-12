@@ -41,6 +41,7 @@ class AttackAction implements ActionInterface
                     break;
                 }
             }
+            unset($edata);
         }
 
         $target = $targetData['char'];
@@ -707,6 +708,7 @@ class SelfBuffAction implements ActionInterface
                     ];
                 }
             }
+            unset($allyData);
         }
 
         $userData['cooldowns']['ability'] = $this->cooldownTurns;
@@ -764,6 +766,7 @@ class PartyHealAction implements ActionInterface
                 $healed[] = ['name' => $ally->getName(), 'team' => $allyData['team'], 'amount' => $amount, 'hp' => $ally->getHP(), 'maxHp' => $allyData['HP_MAX']];
             }
         }
+        unset($allyData);
 
         $logs[] = [
             'type' => 'ability_use',
@@ -812,6 +815,7 @@ class PartyBuffAction implements ActionInterface
             $allyData['tempBuffs'] = array_merge($allyData['tempBuffs'], $this->buffs);
             $allyData['tempBuffs']['turnsLeft'] = $this->duration;
         }
+        unset($allyData);
 
         $effects = [];
         if (isset($this->buffs['speed']) && $this->buffs['speed'] > 0) $effects[] = "+{$this->buffs['speed']} vitesse";
@@ -1388,6 +1392,7 @@ class CombatEngine
             $data['actions'] = $actions;
             $data['synergyFlags'] = [];
         }
+        unset($data);
 
         // Detect active synergies for this team
         $this->detectTeamSynergies($team);
@@ -1625,6 +1630,7 @@ class CombatEngine
                 }
             }
         }
+        unset($data);
     }
 
     private function attackPhase(array $turnOrder, array &$team1, array &$team2, array &$logs): void
@@ -1754,10 +1760,10 @@ class CombatEngine
 
     private function rollInitiative(array &$team1, array &$team2): array
     {
-        $all = array_merge($team1, $team2);
+        $all = array_filter(array_merge($team1, $team2), fn($d) => $d !== null);
+        $all = array_values($all);
 
         foreach ($all as &$data) {
-            if ($data === null) continue;
             $char = $data['char'];
             $roll = rand(1, 20);
             $speedBonus = $data['tempBuffs']['speed'] ?? 0;
@@ -1771,6 +1777,7 @@ class CombatEngine
             if (!isset($data['statuses']))
                 $data['statuses'] = [];
         }
+        unset($data);
 
         usort($all, fn($a, $b) => $b['initiative'] <=> $a['initiative']);
 
@@ -1860,6 +1867,7 @@ class CombatEngine
      */
     private function announceSynergies(array $team, array &$logs): void
     {
+        if (empty($team) || $team[0] === null) return;
         $activeSynergies = $team[0]['activeSynergies'] ?? [];
         if (empty($activeSynergies)) return;
 
