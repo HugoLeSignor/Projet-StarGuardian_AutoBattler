@@ -1571,7 +1571,8 @@ class CombatEngine
             if ($char->getHP() <= 0)
                 continue;
 
-            // Retrouver la donnée originale dans les tableaux d'équipe
+            // Casser les liens de référence de l'itération précédente
+            unset($actorData, $teamAllies, $teamEnemies);
             $actorData = null;
             $teamAllies = null;
             $teamEnemies = null;
