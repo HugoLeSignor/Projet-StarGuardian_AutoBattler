@@ -57,22 +57,25 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedHeroIds = [];
 
     // Composition obligatoire : 1 Tank, 1 DPS, 1 Healer, 1 Support
-    const ROLE_CATEGORIES = { 'Tank': 'Tank', 'DPS': 'DPS', 'Soigneur': 'Healer', 'Support': 'Support', 'Buffer': 'Support' };
+    // La categorie vient directement du data-category (calcule cote serveur)
+    function getCategory(portrait) {
+        return portrait.dataset.category || 'Support';
+    }
 
     function getSelectedRoles() {
         const roles = { Tank: 0, DPS: 0, Healer: 0, Support: 0 };
         selectedHeroIds.forEach(id => {
             const p = Array.from(portraits).find(pp => pp.dataset.id === id);
             if (p) {
-                const cat = ROLE_CATEGORIES[p.dataset.role] || 'Support';
+                const cat = getCategory(p);
                 roles[cat]++;
             }
         });
         return roles;
     }
 
-    function canSelectRole(role) {
-        const cat = ROLE_CATEGORIES[role] || 'Support';
+    function canSelectRole(portraitEl) {
+        const cat = getCategory(portraitEl);
         const roles = getSelectedRoles();
         return roles[cat] < 1;
     }
@@ -180,11 +183,11 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
 
             const btnRight = details.querySelector('.btn-select-right');
-            const roleCat = ROLE_CATEGORIES[role] || 'Support';
+            const roleCat = getCategory(portrait);
             const alreadySelected = selectedHeroIds.includes(id);
 
             // Désactiver le bouton si le slot de ce rôle est déjà pris
-            if (!alreadySelected && !canSelectRole(role)) {
+            if (!alreadySelected && !canSelectRole(portrait)) {
                 btnRight.disabled = true;
                 btnRight.textContent = `Slot ${roleCat} déjà pris`;
             }
@@ -195,12 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     selectedHeroes = selectedHeroes.filter(h => h !== name);
                     portrait.classList.remove('selected');
                 } else {
-                    if (!canSelectRole(role)) {
+                    if (!canSelectRole(portrait)) {
                         alert(`Vous avez déjà un ${roleCat} dans votre équipe !`);
                         return;
                     }
                     if (selectedHeroIds.length >= maxSelection) {
-                        alert("Vous pouvez sélectionner maximum 3 personnages !");
+                        alert("Vous pouvez sélectionner maximum 4 personnages !");
                         return;
                     }
                     selectedHeroIds.push(id);

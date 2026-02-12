@@ -65,6 +65,7 @@
     <div class="teams-layout">
 
         {# ===== GRILLE PORTRAITS (GAUCHE) ===== #}
+        {% set categoryMap = {'Tanks': 'Tank', 'DPS': 'DPS', 'Healers': 'Healer', 'Supports': 'Support'} %}
         <div class="team-grid">
             {% for catName, category in categories %}
             {% if category.characters|length > 0 %}
@@ -77,6 +78,7 @@
                     data-id="{{ hero.id }}"
                     data-name="{{ hero.name }}"
                     data-role="{{ hero.role ? hero.role.name : '' }}"
+                    data-category="{{ categoryMap[catName]|default('Support') }}"
                     data-dmg-min="{{ hero.DMGMIN }}"
                     data-dmg-max="{{ hero.DMGMAX }}"
                     data-speed="{{ hero.SPEED }}"

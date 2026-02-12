@@ -57,21 +57,21 @@ class AppFixtures extends Fixture
             'Shieldbreaker' => $this->createCharacter('Shieldbreaker', $roles['DPS'], 9, 18, 9, 28, 10, 36),
             'Abomination' => $this->createCharacter('Abomination', $roles['DPS'], 11, 20, 9, 27, 6, 46),
 
-            // Support
-            'Plague Doctor' => $this->createCharacter('Plague Doctor', $roles['Support'], 7, 13, 9, 20, 6, 38),
+            // Support (Buffer role → UI "Supports")
             'Houndmaster' => $this->createCharacter('Houndmaster', $roles['Buffer'], 7, 13, 7, 30, 8, 37),
-            'Antiquarian' => $this->createCharacter('Antiquarian', $roles['Support'], 5, 9, 7, 30, 5, 29),
-            'Flagellant' => $this->createCharacter('Flagellant', $roles['Support'], 5, 11, 9, 20, 6, 38),
 
-            // Soigneurs
+            // Soigneurs (Soigneur role → UI "Healers")
+            'Plague Doctor' => $this->createCharacter('Plague Doctor', $roles['Soigneur'], 7, 13, 9, 20, 6, 38),
+            'Antiquarian' => $this->createCharacter('Antiquarian', $roles['Soigneur'], 5, 9, 7, 30, 5, 29),
+            'Flagellant' => $this->createCharacter('Flagellant', $roles['Soigneur'], 5, 11, 9, 20, 6, 38),
             'Vestal' => $this->createCharacter('Vestal', $roles['Soigneur'], 7, 14, 6, 20, 5, 44),
             'Occultist' => $this->createCharacter('Occultist', $roles['Soigneur'], 7, 13, 8, 30, 10, 35),
 
             // Ranged DPS
             'Musketeer' => $this->createCharacter('Musketeer', $roles['DPS'], 7, 14, 5, 20, 10, 47),
 
-            // Melee DPS
-            'Jester' => $this->createCharacter('Jester', $roles['DPS'], 7, 14, 9, 30, 12, 36),
+            // Buffer / Support
+            'Jester' => $this->createCharacter('Jester', $roles['Buffer'], 7, 14, 9, 30, 12, 36),
         ];
 
         foreach ($characters as $character) {
