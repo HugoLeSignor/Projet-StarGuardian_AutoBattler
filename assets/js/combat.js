@@ -511,11 +511,21 @@ class CombatController {
         if (!slug) return;
         const img = el.querySelector('.character-sprite');
         if (!img) return;
+        const spriteBox = img.closest('.battle-stage__sprite');
+        const isAnimation = spriteName !== 'fightidle.webp';
+
         img.src = `/asset/img/combat/${slug}/${spriteName}`;
+        if (isAnimation && spriteBox) {
+            spriteBox.classList.add('sprite-animating');
+        }
+
         if (duration > 0) {
             setTimeout(() => {
                 if (!el.classList.contains('dead')) {
                     img.src = `/asset/img/combat/${this.characterSlugs[key]}/fightidle.webp`;
+                }
+                if (spriteBox) {
+                    spriteBox.classList.remove('sprite-animating');
                 }
             }, duration);
         }
