@@ -91,6 +91,19 @@ class CombatController {
             this.logContainer.innerHTML = '';
         }
 
+        // Audio
+        this.audioUnlocked = false;
+        this.combatMusic = null;
+        this.lastTrackIndex = -1;
+        this.isMuted = false;
+        this.volume = 0.4;
+        this.combatPlaylist = [
+            '/asset/audio/combat/butchersboulevardmusic.mp3',
+            '/asset/audio/combat/combatintheruins.mp3',
+        ];
+        this.muteBtn = this.container.querySelector('[data-audio-mute]');
+        this.volumeSlider = this.container.querySelector('[data-audio-volume]');
+
         // Event listeners
         this.bindEvents();
 
@@ -391,6 +404,26 @@ class CombatController {
         this.speedBtns.forEach(btn => {
             btn.addEventListener('click', (e) => this.setSpeed(e));
         });
+
+        // Audio controls
+        if (this.muteBtn) {
+            this.muteBtn.addEventListener('click', () => this.toggleMute());
+        }
+        if (this.volumeSlider) {
+            this.volumeSlider.addEventListener('input', (e) => {
+                this.volume = parseFloat(e.target.value);
+                if (this.combatMusic) {
+                    this.combatMusic.volume = this.isMuted ? 0 : this.volume;
+                }
+            });
+        }
+
+        // Unlock audio on first user interaction (browser autoplay policy)
+        document.addEventListener('click', () => {
+            if (this.audioUnlocked) return;
+            this.audioUnlocked = true;
+            this.playNextTrack();
+        }, { once: true });
     }
 
     play() {
@@ -1252,6 +1285,48 @@ class CombatController {
                 notif1.style.opacity = '1';
                 notif2.style.opacity = '1';
             }, 100);
+        }
+    }
+
+    // === AUDIO ===
+
+    playNextTrack() {
+        if (!this.audioUnlocked) return;
+
+        if (this.combatMusic) {
+            this.combatMusic.pause();
+            this.combatMusic = null;
+        }
+
+        const idx = this.getRandomTrackIndex();
+        this.combatMusic = new Audio(this.combatPlaylist[idx]);
+        this.combatMusic.volume = this.isMuted ? 0 : this.volume;
+        this.combatMusic.addEventListener('ended', () => this.playNextTrack());
+        this.combatMusic.play().catch(() => {});
+    }
+
+    getRandomTrackIndex() {
+        let i;
+        do {
+            i = Math.floor(Math.random() * this.combatPlaylist.length);
+        } while (i === this.lastTrackIndex && this.combatPlaylist.length > 1);
+        this.lastTrackIndex = i;
+        return i;
+    }
+
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        if (this.combatMusic) {
+            this.combatMusic.volume = this.isMuted ? 0 : this.volume;
+        }
+        if (this.muteBtn) {
+            const icon = this.muteBtn.querySelector('i');
+            if (icon) {
+                icon.className = this.isMuted ? 'fas fa-volume-mute' : 'fas fa-volume-up';
+            }
+        }
+        if (this.volumeSlider) {
+            this.volumeSlider.disabled = this.isMuted;
         }
     }
 

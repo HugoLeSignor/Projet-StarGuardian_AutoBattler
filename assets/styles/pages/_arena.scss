@@ -993,6 +993,80 @@
     }
 }
 
+// Audio controls
+.combat-controls__audio {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba($dd-brown, 0.5);
+    border-radius: 4px;
+}
+
+.audio-mute-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.4);
+    border: 2px solid $dd-brown;
+    color: $dd-parchment;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+
+    &:hover {
+        border-color: $dd-gold;
+        color: $dd-gold;
+        background: rgba($dd-gold, 0.1);
+    }
+}
+
+.audio-volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 80px;
+    height: 4px;
+    background: rgba($dd-brown, 0.6);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    transition: opacity 0.3s ease;
+
+    &::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: $dd-gold;
+        border: 2px solid rgba($dd-black, 0.5);
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+        &:hover {
+            transform: scale(1.2);
+            box-shadow: 0 0 8px rgba($dd-gold, 0.6);
+        }
+    }
+
+    &::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: $dd-gold;
+        border: 2px solid rgba($dd-black, 0.5);
+        cursor: pointer;
+    }
+
+    &:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+}
+
 .combat-panel__log {
     flex: 1;
     max-height: 300px;
