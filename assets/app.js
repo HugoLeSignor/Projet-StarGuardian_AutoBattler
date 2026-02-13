@@ -294,20 +294,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const legendActive = isLegendSelected();
 
         if (legendActive) {
-            // Easter egg: show Goku x4
+            // Easter egg: show solo Goku
             const hero = Array.from(portraits).find(p => p.dataset.id === selectedHeroIds[0]);
             if (hero) {
                 const name = hero.dataset.name;
                 const spritePath = `/asset/sprites/${hero.dataset.sprite}`;
-                for (let i = 0; i < 4; i++) {
-                    const heroEl = document.createElement('div');
-                    heroEl.classList.add('selected-hero-sprite');
-                    heroEl.innerHTML = `
-                        <img src="${spritePath}" alt="Sprite de ${name}">
-                        <span>${name}</span>
-                    `;
-                    selectedList.appendChild(heroEl);
-                }
+                const heroEl = document.createElement('div');
+                heroEl.classList.add('selected-hero-sprite');
+                heroEl.innerHTML = `
+                    <img src="${spritePath}" alt="Sprite de ${name}">
+                    <span>${name}</span>
+                `;
+                selectedList.appendChild(heroEl);
             }
         } else {
             selectedHeroIds.forEach(id => {

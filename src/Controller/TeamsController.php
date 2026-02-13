@@ -77,7 +77,7 @@ final class TeamsController extends AbstractController
             $char = $characterRepository->find((int) $selectedIds[0]);
             if ($char && $char->getRole()->getName() === 'Legend') {
                 $gokuId = (int) $selectedIds[0];
-                $request->getSession()->set('selected_team_ids', [$gokuId, $gokuId, $gokuId, $gokuId]);
+                $request->getSession()->set('selected_team_ids', [$gokuId]);
                 $this->addFlash('success', 'Ultra Instinct activated!');
                 return $this->redirectToRoute('app_matchmaking');
             }
