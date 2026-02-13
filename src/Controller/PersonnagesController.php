@@ -24,7 +24,9 @@ final class PersonnagesController extends AbstractController
 
         foreach ($characters as $character) {
             $roleName = $character->getRole()->getName();
-            if ($roleName === 'Tank') {
+            if ($roleName === 'Legend') {
+                continue;
+            } elseif ($roleName === 'Tank') {
                 $categories['Tanks']['characters'][] = $character;
             } elseif ($roleName === 'DPS') {
                 $categories['DPS']['characters'][] = $character;
