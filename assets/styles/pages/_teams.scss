@@ -278,10 +278,20 @@
   border: 2px solid #2a2218;
   transition: all 0.2s ease;
 
-  img {
-    display: block;
+  // Wrapper qui force le format carré (padding-bottom: 100%)
+  &__img {
+    position: relative;
     width: 100%;
-    aspect-ratio: 1 / 1;
+    padding-bottom: 100%; // = width → carré garanti
+    overflow: hidden;
+  }
+
+  img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
     object-position: center 15%;
     filter: brightness(0.9);
