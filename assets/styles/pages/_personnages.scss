@@ -129,8 +129,9 @@
 .personnages__grid {
     position: relative;
     z-index: 2;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1.5rem;
     max-width: 1300px;
     margin: 0 auto 2.5rem;
@@ -140,6 +141,7 @@
 // CARTE PERSONNAGE
 // ==========================================
 .char-card {
+    width: calc((1300px - 4.5rem) / 4);
     background: linear-gradient(180deg, rgba($dd-dark-brown, 0.95) 0%, rgba($dd-black, 0.97) 100%);
     border: 2px solid $dd-brown;
     position: relative;
@@ -182,13 +184,14 @@
 // Portrait (image)
 .char-card__portrait {
     position: relative;
-    height: 180px;
+    height: 220px;
     overflow: hidden;
 
     img {
         width: 100%;
         height: 100%;
         object-fit: cover;
+        object-position: top center;
         transition: transform 0.4s ease;
         filter: brightness(0.85) contrast(1.1);
     }
@@ -200,8 +203,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, transparent 30%, rgba($dd-black, 0.9) 100%);
-    opacity: 0.6;
+    background: linear-gradient(180deg, transparent 50%, rgba($dd-black, 0.8) 100%);
+    opacity: 0.5;
     transition: opacity 0.3s ease;
     pointer-events: none;
 }

@@ -283,8 +283,8 @@
     width: 100%;
     aspect-ratio: 3 / 4;
     object-fit: cover;
-    object-position: top center;
-    filter: brightness(0.8);
+    object-position: center 20%;
+    filter: brightness(0.9);
     transition: filter 0.2s ease;
     flex-shrink: 0;
   }

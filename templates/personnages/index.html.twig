@@ -36,7 +36,7 @@
             {% for character in category.characters %}
             <div class="char-card">
                 <div class="char-card__portrait">
-                    <img src="{{ asset('asset/img/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '.webp') }}" alt="{{ character.name }}" loading="lazy" width="300" height="180">
+                    <img src="{{ asset('asset/img/' ~ (character.name|lower|replace({' ':'-', '_':'-'})) ~ '.webp') }}" alt="{{ character.name }}" loading="lazy" width="300" height="220">
                     <div class="char-card__overlay"></div>
                     <span class="char-card__role-badge">{{ character.role.name }}</span>
                 </div>
