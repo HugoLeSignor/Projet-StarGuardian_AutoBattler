@@ -275,24 +275,21 @@
   @include panel-bg(0.9);
   overflow: hidden;
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
   border: 2px solid #2a2218;
   transition: all 0.2s ease;
 
   img {
+    display: block;
     width: 100%;
-    height: auto !important;
-    aspect-ratio: 1 / 1 !important;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
     object-position: center 15%;
     filter: brightness(0.9);
     transition: filter 0.2s ease;
-    flex-shrink: 0;
-    display: block;
   }
 
   span {
+    display: block;
     padding: 0.4rem 0.3rem;
     text-align: center;
     font-size: 0.75rem;
