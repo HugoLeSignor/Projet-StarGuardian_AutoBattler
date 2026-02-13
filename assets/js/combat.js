@@ -97,7 +97,7 @@ class CombatController {
         this.lastTrackIndex = -1;
         this.isMuted = false;
         this.volume = 0.05;
-        this.sfxVolume = 0.15;
+        this.sfxVolume = 0.05;
         this.combatPlaylist = [
             '/asset/audio/combat/butchersboulevardmusic.mp3',
             '/asset/audio/combat/combatintheruins.mp3',
