@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function canSelectRole(portraitEl) {
         const cat = getCategory(portraitEl);
+        if (cat === 'Legend') return true; // Legend bypasses role limits
         const roles = getSelectedRoles();
         return roles[cat] < 1;
     }
@@ -215,16 +216,17 @@ document.addEventListener('DOMContentLoaded', () => {
             const roleCat = getCategory(portrait);
             const alreadySelected = selectedHeroIds.includes(id);
 
-            // Désactiver le bouton si le slot de ce rôle est déjà pris
-            if (roleCat !== 'Legend' && !alreadySelected && !canSelectRole(portrait)) {
-                btnRight.disabled = true;
-                btnRight.textContent = `Slot ${roleCat} déjà pris`;
-            }
-
-            // Disable if a Legend is selected and this isn't that Legend
-            if (isLegendSelected() && !alreadySelected) {
+            // Legend characters are always selectable
+            if (roleCat === 'Legend') {
+                btnRight.disabled = false;
+            } else if (isLegendSelected() && !alreadySelected) {
+                // Disable normal chars if a Legend is selected
                 btnRight.disabled = true;
                 btnRight.textContent = 'Ultra Instinct actif';
+            } else if (!alreadySelected && !canSelectRole(portrait)) {
+                // Désactiver le bouton si le slot de ce rôle est déjà pris
+                btnRight.disabled = true;
+                btnRight.textContent = `Slot ${roleCat} déjà pris`;
             }
 
             btnRight.addEventListener('click', () => {
