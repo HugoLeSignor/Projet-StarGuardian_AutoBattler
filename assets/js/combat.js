@@ -103,12 +103,9 @@ class CombatController {
             '/asset/audio/combat/combatintheruins.mp3',
         ];
 
-        // Easter egg: Ultra Instinct music override when Goku is present
-        const hasGoku = Array.from(this.container.querySelectorAll('[data-character-slug]'))
+        // Easter egg: detect Goku for Ultra Instinct transformation
+        this.hasGoku = Array.from(this.container.querySelectorAll('[data-character-slug]'))
             .some(el => el.dataset.characterSlug === 'goku');
-        if (hasGoku) {
-            this.combatPlaylist = ['/asset/audio/combat/ultra-instinct.mp3'];
-        }
 
         this.endMusic = null;
         this.sfxCache = {};
@@ -571,7 +568,7 @@ class CombatController {
             case 'emergency_heal': return 2800;
             case 'protect_dodge': return 2500;
             case 'transform_damage': return 1500;
-            case 'ultra_instinct': return 3500;
+            case 'ultra_instinct': return log.isTransformation ? 4500 : 3500;
             default: return 2000;
         }
     }
@@ -896,22 +893,47 @@ class CombatController {
             case 'ultra_instinct':
                 if (log.caster && log.casterTeam) {
                     const uiKey = `${log.casterTeam}-${log.caster}`;
-                    this.swapSprite(uiKey, 'attackanimation.webp', 1800);
-                    this.playCharSfx(uiKey, 'skill');
-                    const uiCasterEl = this.getCharacterElement(log.caster, log.casterTeam);
-                    if (uiCasterEl) {
-                        uiCasterEl.classList.add('ultra-instinct-attack');
-                        setTimeout(() => uiCasterEl.classList.remove('ultra-instinct-attack'), 1800);
+
+                    // Transformation: switch sprites to UI form permanently + change music
+                    if (log.isTransformation) {
+                        this.characterSlugs[uiKey] = 'goku/ui';
+                        // Show skill sprite briefly (power-up pose), then settle into UI idle
+                        this.swapSprite(uiKey, 'skill.webp', 2000);
+                        this.playCharSfx(uiKey, 'skill');
+                        const uiCasterEl = this.getCharacterElement(log.caster, log.casterTeam);
+                        if (uiCasterEl) {
+                            uiCasterEl.classList.add('ultra-instinct-attack');
+                            setTimeout(() => uiCasterEl.classList.remove('ultra-instinct-attack'), 2000);
+                        }
+                        // Switch music to Ultra Instinct theme
+                        if (this.combatMusic) {
+                            this.combatMusic.pause();
+                            this.combatMusic = null;
+                        }
+                        this.combatPlaylist = ['/asset/audio/combat/ultra-instinct.mp3'];
+                        this.lastTrackIndex = -1;
+                        this.playNextTrack();
+                    } else {
+                        // Already transformed: Hakai attack animation
+                        this.swapSprite(uiKey, 'attackanimation.webp', 1800);
+                        this.playCharSfx(uiKey, 'skill');
+                        const uiCasterEl = this.getCharacterElement(log.caster, log.casterTeam);
+                        if (uiCasterEl) {
+                            uiCasterEl.classList.add('ultra-instinct-attack');
+                            setTimeout(() => uiCasterEl.classList.remove('ultra-instinct-attack'), 1800);
+                        }
                     }
                 }
                 if (log.target && log.targetTeam) {
+                    // Delay the hit animation more for transformation (power-up takes longer)
+                    const hitDelay = log.isTransformation ? 1200 : 600;
                     setTimeout(() => {
                         const uiTargetEl = this.getCharacterElement(log.target, log.targetTeam);
                         if (uiTargetEl) {
                             uiTargetEl.classList.add('hurt', 'crit');
                             setTimeout(() => uiTargetEl.classList.remove('hurt', 'crit'), 800);
                         }
-                    }, 600);
+                    }, hitDelay);
                 }
                 break;
         }

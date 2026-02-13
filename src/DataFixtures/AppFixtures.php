@@ -75,7 +75,8 @@ class AppFixtures extends Fixture
             'Jester' => $this->createCharacter('Jester', $roles['Buffer'], 7, 14, 9, 30, 12, 36),
 
             // === EASTER EGG: Goku Ultra Instinct (Admin only) ===
-            'Goku' => $this->createCharacter('Goku', $roles['Legend'], 9999, 9999, 99, 100, 100, 9999),
+            // Stats normales (forme de base), se transforme en UI sous 50% HP
+            'Goku' => $this->createCharacter('Goku', $roles['Legend'], 10, 18, 7, 25, 8, 50),
         ];
 
         foreach ($characters as $character) {
@@ -233,11 +234,11 @@ class AppFixtures extends Fixture
             // === EASTER EGG: Goku Ultra Instinct ===
             $this->createAbility(
                 $characters['Goku'],
-                'Hakai',
-                'Goku transcende toutes les limites. Anéantit instantanément un ennemi.',
+                'Ultra Instinct',
+                'Quand ses PV tombent sous 50%, Goku se transforme en Ultra Instinct. Stats divines, esquive tout, one-shot tout.',
                 'ultra_instinct',
-                ['oneShot' => true],
-                1
+                ['hpThreshold' => 0.5],
+                999
             ),
         ];
 

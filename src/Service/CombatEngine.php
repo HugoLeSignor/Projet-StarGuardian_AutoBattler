@@ -1286,23 +1286,65 @@ class BonusVsMarkedAction implements ActionInterface
 
 class UltraInstinctAction implements ActionInterface
 {
-    private int $cooldownTurns;
+    private float $hpThreshold;
     private string $abilityName;
 
-    public function __construct(int $cooldownTurns = 1, string $abilityName = 'Hakai')
+    public function __construct(int $cooldownTurns = 999, string $abilityName = 'Ultra Instinct', float $hpThreshold = 0.5)
     {
-        $this->cooldownTurns = $cooldownTurns;
+        $this->hpThreshold = $hpThreshold;
         $this->abilityName = $abilityName;
     }
 
     public function execute(Character $user, array &$teamAllies, array &$teamEnemies, array &$logs, array &$userData): void
     {
-        if (($userData['cooldowns']['ability'] ?? 0) > 0) {
+        // Already transformed? One-shot (Hakai)
+        if (!empty($userData['ultraInstinctActive'])) {
+            $this->hakai($user, $teamEnemies, $logs, $userData);
+            return;
+        }
+
+        // Not yet transformed: check HP threshold
+        $hpRatio = $user->getHP() / $userData['HP_MAX'];
+        if ($hpRatio > $this->hpThreshold) {
+            // Above threshold: normal attack
             $action = new AttackAction();
             $action->execute($user, $teamAllies, $teamEnemies, $logs, $userData);
             return;
         }
 
+        // === TRANSFORMATION ===
+        $userData['ultraInstinctActive'] = true;
+
+        // Boost stats to godlike
+        $user->setDMGMIN(9999);
+        $user->setDMGMAX(9999);
+        $user->setDODGE(100);
+        $user->setCRIT(100);
+        $user->setSPEED(99);
+
+        // Full heal with new max HP
+        $userData['HP_MAX'] = 9999;
+        $user->setHP(9999);
+
+        // Log the transformation
+        $logs[] = [
+            'type' => 'ability_use',
+            'subtype' => 'ultra_instinct',
+            'caster' => $user->getName(),
+            'casterTeam' => $userData['team'],
+            'abilityName' => $this->abilityName,
+            'isTransformation' => true,
+            'targetHP' => 9999,
+            'targetMaxHP' => 9999,
+            'message' => CombatEngine::colorNameStatic($userData) . " se transforme en <span class='ability-name'>Ultra Instinct</span> ! Puissance divine activée !"
+        ];
+
+        // Immediately follow with Hakai
+        $this->hakai($user, $teamEnemies, $logs, $userData);
+    }
+
+    private function hakai(Character $user, array &$teamEnemies, array &$logs, array &$userData): void
+    {
         $targetIndex = CombatEngine::getRandomAliveIndex($teamEnemies);
         if ($targetIndex === null) return;
 
@@ -1319,12 +1361,12 @@ class UltraInstinctAction implements ActionInterface
             'casterTeam' => $userData['team'],
             'target' => $target->getName(),
             'targetTeam' => $targetData['team'],
-            'abilityName' => $this->abilityName,
+            'abilityName' => 'Hakai',
             'damage' => $damage,
             'targetHP' => 0,
             'targetMaxHP' => $targetData['HP_MAX'],
             'isCrit' => true,
-            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → " . CombatEngine::colorNameStatic($targetData) . " est anéanti ! $damage dégâts (INSTANT KILL)"
+            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>Hakai</span> → " . CombatEngine::colorNameStatic($targetData) . " est anéanti ! $damage dégâts (INSTANT KILL)"
         ];
 
         if (!in_array('dead', $targetData['statuses'], true)) {
@@ -1336,8 +1378,6 @@ class UltraInstinctAction implements ActionInterface
                 'message' => CombatEngine::colorNameStatic($targetData) . " est K.O !"
             ];
         }
-
-        $userData['cooldowns']['ability'] = $this->cooldownTurns;
     }
 }
 
@@ -1438,8 +1478,6 @@ class CombatEngine
                     break;
                 case 'Legend':
                     $actions[] = new AttackAction();
-                    $actions[] = new HealAction(999);
-                    $actions[] = new DefendAllyAction();
                     break;
                 default:
                     $actions[] = new AttackAction();
@@ -1562,7 +1600,7 @@ class CombatEngine
                     $name
                 );
             case 'ultra_instinct':
-                return new UltraInstinctAction($cd, $name);
+                return new UltraInstinctAction($cd, $name, $params['hpThreshold'] ?? 0.5);
             default:
                 return null;
         }
