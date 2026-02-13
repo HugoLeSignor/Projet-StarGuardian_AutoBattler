@@ -284,21 +284,25 @@
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: center 15%;
     filter: brightness(0.9);
     transition: filter 0.2s ease;
     flex-shrink: 0;
+    display: block;
   }
 
   span {
-    padding: 0.5rem;
+    padding: 0.4rem 0.3rem;
     text-align: center;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: bold;
-    color: $dd-bone;
+    color: $dd-parchment;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.6);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   &:hover {
@@ -764,8 +768,8 @@
   }
 
   .team-portrait span {
-    font-size: 0.6rem;
-    padding: 0.3rem;
+    font-size: 0.65rem;
+    padding: 0.3rem 0.2rem;
   }
 
   .presets-bar {
