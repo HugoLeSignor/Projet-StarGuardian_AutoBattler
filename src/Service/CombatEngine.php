@@ -1297,9 +1297,16 @@ class UltraInstinctAction implements ActionInterface
 
     public function execute(Character $user, array &$teamAllies, array &$teamEnemies, array &$logs, array &$userData): void
     {
-        // Already transformed? One-shot (Hakai)
+        // Already transformed? Stay in stance (riposte handles all damage)
         if (!empty($userData['ultraInstinctActive'])) {
-            $this->hakai($user, $teamEnemies, $logs, $userData);
+            $logs[] = [
+                'type' => 'ability_use',
+                'subtype' => 'ultra_instinct',
+                'caster' => $user->getName(),
+                'casterTeam' => $userData['team'],
+                'abilityName' => 'Ultra Instinct',
+                'message' => CombatEngine::colorNameStatic($userData) . " reste en stance <span class='ability-name'>Ultra Instinct</span>... Toute attaque sera contrée."
+            ];
             return;
         }
 
@@ -1326,6 +1333,9 @@ class UltraInstinctAction implements ActionInterface
         $userData['HP_MAX'] = 9999;
         $user->setHP(9999);
 
+        // Permanent riposte (one-shot counter-attack on every hit)
+        $userData['riposte'] = ['turnsLeft' => 999, 'dmgMultiplier' => 100];
+
         // Log the transformation
         $logs[] = [
             'type' => 'ability_use',
@@ -1334,50 +1344,10 @@ class UltraInstinctAction implements ActionInterface
             'casterTeam' => $userData['team'],
             'abilityName' => $this->abilityName,
             'isTransformation' => true,
-            'targetHP' => 9999,
-            'targetMaxHP' => 9999,
-            'message' => CombatEngine::colorNameStatic($userData) . " se transforme en <span class='ability-name'>Ultra Instinct</span> ! Puissance divine activée !"
+            'casterHP' => 9999,
+            'casterMaxHP' => 9999,
+            'message' => CombatEngine::colorNameStatic($userData) . " se transforme en <span class='ability-name'>Ultra Instinct</span> ! Puissance divine activée ! Toute attaque sera contrée."
         ];
-
-        // Immediately follow with Hakai
-        $this->hakai($user, $teamEnemies, $logs, $userData);
-    }
-
-    private function hakai(Character $user, array &$teamEnemies, array &$logs, array &$userData): void
-    {
-        $targetIndex = CombatEngine::getRandomAliveIndex($teamEnemies);
-        if ($targetIndex === null) return;
-
-        $targetData =& $teamEnemies[$targetIndex];
-        $target = $targetData['char'];
-
-        $damage = $target->getHP();
-        $target->setHP(0);
-
-        $logs[] = [
-            'type' => 'ability_use',
-            'subtype' => 'ultra_instinct',
-            'caster' => $user->getName(),
-            'casterTeam' => $userData['team'],
-            'target' => $target->getName(),
-            'targetTeam' => $targetData['team'],
-            'abilityName' => 'Hakai',
-            'damage' => $damage,
-            'targetHP' => 0,
-            'targetMaxHP' => $targetData['HP_MAX'],
-            'isCrit' => true,
-            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>Hakai</span> → " . CombatEngine::colorNameStatic($targetData) . " est anéanti ! $damage dégâts (INSTANT KILL)"
-        ];
-
-        if (!in_array('dead', $targetData['statuses'], true)) {
-            $targetData['statuses'][] = 'dead';
-            $logs[] = [
-                'type' => 'death',
-                'target' => $target->getName(),
-                'targetTeam' => $targetData['team'],
-                'message' => CombatEngine::colorNameStatic($targetData) . " est K.O !"
-            ];
-        }
     }
 }
 

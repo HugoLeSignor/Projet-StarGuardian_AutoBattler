@@ -1256,6 +1256,13 @@ class CombatController {
         if (log.subtype === 'emergency_heal' && log.caster) {
             this.updateCharacterHP(log.caster, log.casterTeam, log.targetHP, log.targetMaxHP);
         }
+
+        // Ultra Instinct transformation : mettre à jour les HP du caster (Goku passe à 9999)
+        if (log.subtype === 'ultra_instinct' && log.isTransformation && log.caster) {
+            const uiKey = `${log.casterTeam}-${log.caster}`;
+            this.characterMaxHP[uiKey] = log.casterMaxHP;
+            this.updateCharacterHP(log.caster, log.casterTeam, log.casterHP, log.casterMaxHP);
+        }
     }
 
     updateCharacterHP(characterName, teamName, currentHP, maxHP) {
