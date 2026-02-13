@@ -102,6 +102,7 @@ class CombatController {
             '/asset/audio/combat/butchersboulevardmusic.mp3',
             '/asset/audio/combat/combatintheruins.mp3',
         ];
+        this.endMusic = null;
         this.sfxCache = {};
         this.muteBtn = this.container.querySelector('[data-audio-mute]');
         this.volumeSlider = this.container.querySelector('[data-audio-volume]');
@@ -417,6 +418,9 @@ class CombatController {
                 this.volume = parseFloat(e.target.value);
                 if (this.combatMusic) {
                     this.combatMusic.volume = this.isMuted ? 0 : this.volume;
+                }
+                if (this.endMusic) {
+                    this.endMusic.volume = this.isMuted ? 0 : this.volume;
                 }
             });
         }
@@ -1075,7 +1079,25 @@ class CombatController {
 
     animateDeath(targetName, targetTeam) {
         const target = this.getCharacterElement(targetName, targetTeam);
-        if (target) {
+        if (!target) return;
+
+        const key = `${targetTeam}-${targetName}`;
+        const slug = this.characterSlugs[key];
+        const img = target.querySelector('.character-sprite');
+
+        // Try to swap to corpse image
+        if (img && slug) {
+            const corpseImg = new Image();
+            corpseImg.src = `/asset/img/combat/${slug}/corpse.png`;
+            corpseImg.onload = () => {
+                img.src = corpseImg.src;
+                target.classList.add('dead', 'dead--corpse');
+            };
+            corpseImg.onerror = () => {
+                // No corpse image available, use CSS fallback
+                target.classList.add('dead');
+            };
+        } else {
             target.classList.add('dead');
         }
     }
@@ -1251,8 +1273,37 @@ class CombatController {
             }, 50);
         }
 
+        // Play victory or defeat music
+        this.playEndMusic();
+
         // Finaliser le MMR a la fin du combat
         this.finalizeRating();
+    }
+
+    playEndMusic() {
+        // Stop combat music
+        if (this.combatMusic) {
+            this.combatMusic.pause();
+            this.combatMusic = null;
+        }
+
+        // Determine outcome from overlay class
+        let track = null;
+        if (this.overlay) {
+            if (this.overlay.classList.contains('battle-stage__overlay--victory')) {
+                track = '/asset/ost/winlose/victory.mp3';
+            } else if (this.overlay.classList.contains('battle-stage__overlay--defeat')) {
+                track = '/asset/ost/winlose/defeat.mp3';
+            } else if (this.overlay.classList.contains('battle-stage__overlay--draw')) {
+                track = '/asset/ost/winlose/defeat.mp3';
+            }
+        }
+
+        if (track && !this.isMuted) {
+            this.endMusic = new Audio(track);
+            this.endMusic.volume = this.volume;
+            this.endMusic.play().catch(() => {});
+        }
     }
 
     finalizeRating() {
@@ -1344,6 +1395,9 @@ class CombatController {
         this.isMuted = !this.isMuted;
         if (this.combatMusic) {
             this.combatMusic.volume = this.isMuted ? 0 : this.volume;
+        }
+        if (this.endMusic) {
+            this.endMusic.volume = this.isMuted ? 0 : this.volume;
         }
         if (this.muteBtn) {
             const icon = this.muteBtn.querySelector('i');
