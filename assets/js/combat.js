@@ -102,6 +102,14 @@ class CombatController {
             '/asset/audio/combat/butchersboulevardmusic.mp3',
             '/asset/audio/combat/combatintheruins.mp3',
         ];
+
+        // Easter egg: Ultra Instinct music override when Goku is present
+        const hasGoku = Array.from(this.container.querySelectorAll('[data-character-slug]'))
+            .some(el => el.dataset.characterSlug === 'goku');
+        if (hasGoku) {
+            this.combatPlaylist = ['/asset/audio/combat/ultra-instinct.mp3'];
+        }
+
         this.endMusic = null;
         this.sfxCache = {};
         this.muteBtn = this.container.querySelector('[data-audio-mute]');
@@ -563,6 +571,7 @@ class CombatController {
             case 'emergency_heal': return 2800;
             case 'protect_dodge': return 2500;
             case 'transform_damage': return 1500;
+            case 'ultra_instinct': return 3500;
             default: return 2000;
         }
     }
@@ -655,6 +664,7 @@ class CombatController {
             case 'party_heal':
             case 'emergency_heal': return 400;
             case 'transform_damage': return 200;
+            case 'ultra_instinct': return 400;
             default: return 0;
         }
     }
@@ -881,6 +891,27 @@ class CombatController {
                         el.classList.add('hurt');
                         setTimeout(() => el.classList.remove('hurt'), 800);
                     }
+                }
+                break;
+            case 'ultra_instinct':
+                if (log.caster && log.casterTeam) {
+                    const uiKey = `${log.casterTeam}-${log.caster}`;
+                    this.swapSprite(uiKey, 'attackanimation.webp', 1800);
+                    this.playCharSfx(uiKey, 'skill');
+                    const uiCasterEl = this.getCharacterElement(log.caster, log.casterTeam);
+                    if (uiCasterEl) {
+                        uiCasterEl.classList.add('ultra-instinct-attack');
+                        setTimeout(() => uiCasterEl.classList.remove('ultra-instinct-attack'), 1800);
+                    }
+                }
+                if (log.target && log.targetTeam) {
+                    setTimeout(() => {
+                        const uiTargetEl = this.getCharacterElement(log.target, log.targetTeam);
+                        if (uiTargetEl) {
+                            uiTargetEl.classList.add('hurt', 'crit');
+                            setTimeout(() => uiTargetEl.classList.remove('hurt', 'crit'), 800);
+                        }
+                    }, 600);
                 }
                 break;
         }

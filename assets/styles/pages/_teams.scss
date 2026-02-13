@@ -1171,3 +1171,40 @@
   font-style: italic;
   line-height: 1.4;
 }
+
+// ==========================================
+// EASTER EGG: LEGEND (GOKU) STYLING
+// ==========================================
+.team-portrait[data-category="Legend"] {
+  border: 2px solid rgba(#ffd700, 0.6);
+  box-shadow: 0 0 12px rgba(#ffd700, 0.3),
+              inset 0 0 8px rgba(#ffd700, 0.1);
+  animation: legend-glow 2s ease-in-out infinite;
+
+  &.selected {
+    border-color: #ffd700;
+    box-shadow: 0 0 25px rgba(#ffd700, 0.6),
+                inset 0 0 12px rgba(#ffd700, 0.2);
+  }
+
+  &:hover {
+    border-color: rgba(#ffd700, 0.8);
+    box-shadow: 0 0 20px rgba(#ffd700, 0.5);
+  }
+
+  span {
+    color: #ffd700;
+    text-shadow: 0 0 6px rgba(#ffd700, 0.4);
+  }
+}
+
+@keyframes legend-glow {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(#ffd700, 0.3),
+                inset 0 0 8px rgba(#ffd700, 0.1);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(#ffd700, 0.5),
+                inset 0 0 12px rgba(#ffd700, 0.2);
+  }
+}

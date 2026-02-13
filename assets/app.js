@@ -80,6 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return roles[cat] < 1;
     }
 
+    // Check if a Legend character is currently selected
+    function isLegendSelected() {
+        if (selectedHeroIds.length !== 1) return false;
+        const p = Array.from(portraits).find(pp => pp.dataset.id === selectedHeroIds[0]);
+        return p && getCategory(p) === 'Legend';
+    }
+
     portraits.forEach(portrait => {
         portrait.addEventListener('click', () => {
             portraits.forEach(p => p.classList.remove('active'));
@@ -209,12 +216,44 @@ document.addEventListener('DOMContentLoaded', () => {
             const alreadySelected = selectedHeroIds.includes(id);
 
             // Désactiver le bouton si le slot de ce rôle est déjà pris
-            if (!alreadySelected && !canSelectRole(portrait)) {
+            if (roleCat !== 'Legend' && !alreadySelected && !canSelectRole(portrait)) {
                 btnRight.disabled = true;
                 btnRight.textContent = `Slot ${roleCat} déjà pris`;
             }
 
+            // Disable if a Legend is selected and this isn't that Legend
+            if (isLegendSelected() && !alreadySelected) {
+                btnRight.disabled = true;
+                btnRight.textContent = 'Ultra Instinct actif';
+            }
+
             btnRight.addEventListener('click', () => {
+                // EASTER EGG: Legend character fills all 4 slots
+                if (roleCat === 'Legend') {
+                    if (selectedHeroIds.includes(id)) {
+                        // Deselect Legend
+                        selectedHeroIds = [];
+                        selectedHeroes = [];
+                        portraits.forEach(p => p.classList.remove('selected'));
+                    } else {
+                        // Select Legend: clear all and select only this
+                        selectedHeroIds = [id];
+                        selectedHeroes = [name];
+                        portraits.forEach(p => p.classList.remove('selected'));
+                        portrait.classList.add('selected');
+                    }
+                    updateSelectedTeam();
+                    btnRight.textContent = selectedHeroIds.includes(id) ? 'Désélectionner' : 'Sélectionner';
+                    btnRight.disabled = false;
+                    return;
+                }
+
+                // Prevent selecting normal chars if Legend is active
+                if (isLegendSelected()) {
+                    alert('Ultra Instinct est actif ! Désélectionnez Goku d\'abord.');
+                    return;
+                }
+
                 if (selectedHeroIds.includes(id)) {
                     selectedHeroIds = selectedHeroIds.filter(hid => hid !== id);
                     selectedHeroes = selectedHeroes.filter(h => h !== name);
@@ -250,19 +289,40 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateSelectedTeam() {
         selectedList.innerHTML = '';
 
-        selectedHeroIds.forEach(id => {
-            const hero = Array.from(portraits).find(p => p.dataset.id === id);
-            if (!hero) return;
-            const name = hero.dataset.name;
-            const spritePath = `/asset/sprites/${hero.dataset.sprite}`;
-            const heroEl = document.createElement('div');
-            heroEl.classList.add('selected-hero-sprite');
-            heroEl.innerHTML = `
-                <img src="${spritePath}" alt="Sprite de ${name}">
-                <span>${name}</span>
-            `;
-            selectedList.appendChild(heroEl);
-        });
+        const legendActive = isLegendSelected();
+
+        if (legendActive) {
+            // Easter egg: show Goku x4
+            const hero = Array.from(portraits).find(p => p.dataset.id === selectedHeroIds[0]);
+            if (hero) {
+                const name = hero.dataset.name;
+                const spritePath = `/asset/sprites/${hero.dataset.sprite}`;
+                for (let i = 0; i < 4; i++) {
+                    const heroEl = document.createElement('div');
+                    heroEl.classList.add('selected-hero-sprite');
+                    heroEl.innerHTML = `
+                        <img src="${spritePath}" alt="Sprite de ${name}">
+                        <span>${name}</span>
+                    `;
+                    selectedList.appendChild(heroEl);
+                }
+            }
+        } else {
+            selectedHeroIds.forEach(id => {
+                const hero = Array.from(portraits).find(p => p.dataset.id === id);
+                if (!hero) return;
+                const name = hero.dataset.name;
+                const spritePath = `/asset/sprites/${hero.dataset.sprite}`;
+                const heroEl = document.createElement('div');
+                heroEl.classList.add('selected-hero-sprite');
+                heroEl.innerHTML = `
+                    <img src="${spritePath}" alt="Sprite de ${name}">
+                    <span>${name}</span>
+                `;
+                selectedList.appendChild(heroEl);
+            });
+        }
+
         // Mettre à jour les indicateurs de rôles
         updateRoleIndicators();
 
@@ -270,9 +330,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSynergyHighlights();
 
         if (launchBtn) {
-            const roles = getSelectedRoles();
-            const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Healer === 1 && roles.Support === 1;
-            launchBtn.disabled = !teamComplete;
+            if (legendActive) {
+                launchBtn.disabled = false;
+            } else {
+                const roles = getSelectedRoles();
+                const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Healer === 1 && roles.Support === 1;
+                launchBtn.disabled = !teamComplete;
+            }
         }
     }
 
@@ -370,12 +434,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateRoleIndicators() {
+        const legendActive = isLegendSelected();
         const roles = getSelectedRoles();
         const indicator = document.querySelector('.role-indicator');
         if (indicator) {
             indicator.querySelectorAll('.role-slot').forEach(slot => {
                 const cat = slot.dataset.role;
-                if (roles[cat] === 1) {
+                if (legendActive || roles[cat] === 1) {
                     slot.classList.add('filled');
                 } else {
                     slot.classList.remove('filled');
@@ -396,6 +461,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Mettre a jour le bouton sauvegarder selon la selection
     function updateSavePresetBtn() {
         if (savePresetBtn) {
+            // Legend teams cannot be saved as presets
+            if (isLegendSelected()) {
+                savePresetBtn.disabled = true;
+                return;
+            }
             const roles = getSelectedRoles();
             const teamComplete = roles.Tank === 1 && roles.DPS === 1 && roles.Healer === 1 && roles.Support === 1;
             savePresetBtn.disabled = !teamComplete;

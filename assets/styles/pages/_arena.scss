@@ -414,6 +414,17 @@
             opacity: 0.4;
         }
     }
+
+    // Easter egg: Ultra Instinct attack glow
+    &.ultra-instinct-attack {
+        animation: ui-pulse 0.3s ease-in-out 3;
+
+        .battle-stage__sprite {
+            filter: brightness(2)
+                    drop-shadow(0 0 20px rgba(#64b5f6, 0.8))
+                    drop-shadow(0 0 40px rgba(#e3f2fd, 0.5));
+        }
+    }
 }
 
 // Keyframes pour les animations
@@ -496,6 +507,11 @@
     0% { opacity: 1; }
     50% { opacity: 0.3; }
     100% { opacity: 0.5; }
+}
+
+@keyframes ui-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
 }
 
 .battle-stage__vs {

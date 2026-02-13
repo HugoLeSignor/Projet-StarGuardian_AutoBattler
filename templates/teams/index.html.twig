@@ -65,7 +65,7 @@
     <div class="teams-layout">
 
         {# ===== GRILLE PORTRAITS (GAUCHE) ===== #}
-        {% set categoryMap = {'Tanks': 'Tank', 'DPS': 'DPS', 'Healers': 'Healer', 'Supports': 'Support'} %}
+        {% set categoryMap = {'Tanks': 'Tank', 'DPS': 'DPS', 'Healers': 'Healer', 'Supports': 'Support', 'Legends': 'Legend'} %}
         <div class="team-grid">
             {% for catName, category in categories %}
             {% if category.characters|length > 0 %}

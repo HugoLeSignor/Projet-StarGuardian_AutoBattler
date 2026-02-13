@@ -122,6 +122,7 @@ class MatchmakingService
         foreach ($allCharacters as $char) {
             if ($char->getId() < 1) continue;
             $roleName = $char->getRole()->getName();
+            if ($roleName === 'Legend') continue; // Never include legends in bot teams
             if ($roleName === 'Tank') {
                 $tanks[] = $char;
             } elseif ($roleName === 'DPS') {

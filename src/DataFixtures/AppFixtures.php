@@ -36,6 +36,7 @@ class AppFixtures extends Fixture
             'Support' => $this->createRole('Support'),
             'Soigneur' => $this->createRole('Soigneur'),
             'Buffer' => $this->createRole('Buffer'),
+            'Legend' => $this->createRole('Legend'),
         ];
 
         foreach ($roles as $role) {
@@ -72,6 +73,9 @@ class AppFixtures extends Fixture
 
             // Buffer / Support
             'Jester' => $this->createCharacter('Jester', $roles['Buffer'], 7, 14, 9, 30, 12, 36),
+
+            // === EASTER EGG: Goku Ultra Instinct (Admin only) ===
+            'Goku' => $this->createCharacter('Goku', $roles['Legend'], 9999, 9999, 99, 100, 100, 9999),
         ];
 
         foreach ($characters as $character) {
@@ -224,6 +228,16 @@ class AppFixtures extends Fixture
                 'party_buff',
                 ['buffs' => ['speed' => 3, 'crit' => 5, 'dodge' => 0, 'damage' => 0], 'duration' => 3],
                 4
+            ),
+
+            // === EASTER EGG: Goku Ultra Instinct ===
+            $this->createAbility(
+                $characters['Goku'],
+                'Hakai',
+                'Goku transcende toutes les limites. Anéantit instantanément un ennemi.',
+                'ultra_instinct',
+                ['oneShot' => true],
+                1
             ),
         ];
 

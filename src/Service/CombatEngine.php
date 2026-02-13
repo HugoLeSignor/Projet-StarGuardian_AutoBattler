@@ -1281,6 +1281,67 @@ class BonusVsMarkedAction implements ActionInterface
 }
 
 // ============================================================
+// EASTER EGG : ULTRA INSTINCT (GOKU)
+// ============================================================
+
+class UltraInstinctAction implements ActionInterface
+{
+    private int $cooldownTurns;
+    private string $abilityName;
+
+    public function __construct(int $cooldownTurns = 1, string $abilityName = 'Hakai')
+    {
+        $this->cooldownTurns = $cooldownTurns;
+        $this->abilityName = $abilityName;
+    }
+
+    public function execute(Character $user, array &$teamAllies, array &$teamEnemies, array &$logs, array &$userData): void
+    {
+        if (($userData['cooldowns']['ability'] ?? 0) > 0) {
+            $action = new AttackAction();
+            $action->execute($user, $teamAllies, $teamEnemies, $logs, $userData);
+            return;
+        }
+
+        $targetIndex = CombatEngine::getRandomAliveIndex($teamEnemies);
+        if ($targetIndex === null) return;
+
+        $targetData =& $teamEnemies[$targetIndex];
+        $target = $targetData['char'];
+
+        $damage = $target->getHP();
+        $target->setHP(0);
+
+        $logs[] = [
+            'type' => 'ability_use',
+            'subtype' => 'ultra_instinct',
+            'caster' => $user->getName(),
+            'casterTeam' => $userData['team'],
+            'target' => $target->getName(),
+            'targetTeam' => $targetData['team'],
+            'abilityName' => $this->abilityName,
+            'damage' => $damage,
+            'targetHP' => 0,
+            'targetMaxHP' => $targetData['HP_MAX'],
+            'isCrit' => true,
+            'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → " . CombatEngine::colorNameStatic($targetData) . " est anéanti ! $damage dégâts (INSTANT KILL)"
+        ];
+
+        if (!in_array('dead', $targetData['statuses'], true)) {
+            $targetData['statuses'][] = 'dead';
+            $logs[] = [
+                'type' => 'death',
+                'target' => $target->getName(),
+                'targetTeam' => $targetData['team'],
+                'message' => CombatEngine::colorNameStatic($targetData) . " est K.O !"
+            ];
+        }
+
+        $userData['cooldowns']['ability'] = $this->cooldownTurns;
+    }
+}
+
+// ============================================================
 // MOTEUR DE COMBAT
 // ============================================================
 
@@ -1373,6 +1434,11 @@ class CombatEngine
                     break;
                 case 'Buffer':
                     $actions[] = new AttackAction();
+                    $actions[] = new DefendAllyAction();
+                    break;
+                case 'Legend':
+                    $actions[] = new AttackAction();
+                    $actions[] = new HealAction(999);
                     $actions[] = new DefendAllyAction();
                     break;
                 default:
@@ -1495,6 +1561,8 @@ class CombatEngine
                     $cd,
                     $name
                 );
+            case 'ultra_instinct':
+                return new UltraInstinctAction($cd, $name);
             default:
                 return null;
         }
@@ -1719,6 +1787,12 @@ class CombatEngine
                 // Toute autre action = signature
                 $signatureAction = $action;
             }
+        }
+
+        // Legend (Goku): always use signature when ready
+        $roleName = $actorData['char']->getRole()?->getName();
+        if ($roleName === 'Legend' && $signatureAction !== null && ($actorData['cooldowns']['ability'] ?? 0) <= 0) {
+            return $signatureAction;
         }
 
         // Priorite 1 : Signature ability si prete (70% de chance)

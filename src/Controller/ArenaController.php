@@ -57,8 +57,8 @@ final class ArenaController extends AbstractController
 
             $team1 = $this->buildTeam($team1Ids, $repo, 'Equipe 1');
             $team2 = $this->buildTeam($team2Ids, $repo, 'Equipe 2');
-            $team1 = $this->sortTeamByRole($team1, ['Support', 'Healer', 'DPS', 'Tank']);
-            $team2 = $this->sortTeamByRole($team2, ['Support', 'Healer', 'DPS', 'Tank']);
+            $team1 = $this->sortTeamByRole($team1, ['Support', 'Healer', 'DPS', 'Tank', 'Legend']);
+            $team2 = $this->sortTeamByRole($team2, ['Support', 'Healer', 'DPS', 'Tank', 'Legend']);
 
             $logs = $engine->fightBattleWithRounds($team1, $team2);
 
@@ -114,6 +114,7 @@ final class ArenaController extends AbstractController
 
         foreach ($allCharacters as $char) {
             $roleName = $char->getRole()->getName();
+            if ($roleName === 'Legend') continue;
             if ($roleName === 'Tank') {
                 $tanks[] = $char;
             } elseif ($roleName === 'DPS') {
@@ -159,27 +160,31 @@ final class ArenaController extends AbstractController
 
         $team1 = $this->buildTeam($battle->getTeam1CharacterIds(), $charRepo, 'Equipe 1');
         $team2 = $this->buildTeam($battle->getTeam2CharacterIds(), $charRepo, 'Equipe 2');
-        $team1 = $this->sortTeamByRole($team1, ['Support', 'Healer', 'DPS', 'Tank']);
-        $team2 = $this->sortTeamByRole($team2, ['Support', 'Healer', 'DPS', 'Tank']);
+        $team1 = $this->sortTeamByRole($team1, ['Support', 'Healer', 'DPS', 'Tank', 'Legend']);
+        $team2 = $this->sortTeamByRole($team2, ['Support', 'Healer', 'DPS', 'Tank', 'Legend']);
+
+        $healNames = ['Antiquarian', 'Flagellant', 'Occultist', 'Plague Doctor', 'Vestal', 'Goku'];
 
         $composition = [
             'Equipe 1' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
+                'slug' => strtolower(str_replace(' ', '-', $this->getBaseCharacterName($d['char']->getName()))),
                 'hp' => $d['char']->getHP(),
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
-                'hasHeal' => in_array($d['char']->getName(), ['Antiquarian', 'Flagellant', 'Occultist', 'Plague Doctor', 'Vestal']),
+                'hasHeal' => in_array($this->getBaseCharacterName($d['char']->getName()), $healNames),
             ], $team1),
             'Equipe 2' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
+                'slug' => strtolower(str_replace(' ', '-', $this->getBaseCharacterName($d['char']->getName()))),
                 'hp' => $d['char']->getHP(),
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
-                'hasHeal' => in_array($d['char']->getName(), ['Antiquarian', 'Flagellant', 'Occultist', 'Plague Doctor', 'Vestal']),
+                'hasHeal' => in_array($this->getBaseCharacterName($d['char']->getName()), $healNames),
             ], $team2),
         ];
 
@@ -339,27 +344,31 @@ final class ArenaController extends AbstractController
     {
         $team1 = $this->buildTeam($team1Ids, $repo, 'Equipe 1');
         $team2 = $this->buildTeam($team2Ids, $repo, 'Equipe 2');
-        $team1 = $this->sortTeamByRole($team1, ['Support', 'Healer', 'DPS', 'Tank']);
-        $team2 = $this->sortTeamByRole($team2, ['Support', 'Healer', 'DPS', 'Tank']);
+        $team1 = $this->sortTeamByRole($team1, ['Support', 'Healer', 'DPS', 'Tank', 'Legend']);
+        $team2 = $this->sortTeamByRole($team2, ['Support', 'Healer', 'DPS', 'Tank', 'Legend']);
+
+        $healNames = ['Antiquarian', 'Flagellant', 'Occultist', 'Plague Doctor', 'Vestal', 'Goku'];
 
         $composition = [
             'Equipe 1' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
+                'slug' => strtolower(str_replace(' ', '-', $this->getBaseCharacterName($d['char']->getName()))),
                 'hp' => $d['char']->getHP(),
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
-                'hasHeal' => in_array($d['char']->getName(), ['Antiquarian', 'Flagellant', 'Occultist', 'Plague Doctor', 'Vestal']),
+                'hasHeal' => in_array($this->getBaseCharacterName($d['char']->getName()), $healNames),
             ], $team1),
             'Equipe 2' => array_map(fn($d) => [
                 'name' => $d['char']->getName(),
+                'slug' => strtolower(str_replace(' ', '-', $this->getBaseCharacterName($d['char']->getName()))),
                 'hp' => $d['char']->getHP(),
                 'role' => $this->getRoleCategory($d['char']->getRole()->getName()),
                 'abilityName' => $d['char']->getAbility()?->getName(),
                 'abilityDesc' => $d['char']->getAbility()?->getDescription(),
                 'abilityCd' => $d['char']->getAbility()?->getCooldown(),
-                'hasHeal' => in_array($d['char']->getName(), ['Antiquarian', 'Flagellant', 'Occultist', 'Plague Doctor', 'Vestal']),
+                'hasHeal' => in_array($this->getBaseCharacterName($d['char']->getName()), $healNames),
             ], $team2),
         ];
 
@@ -413,14 +422,24 @@ final class ArenaController extends AbstractController
     private function buildTeam(array $ids, CharacterRepository $repo, string $teamName): array
     {
         $team = [];
+        $nameCount = [];
         foreach ($ids as $id) {
             $char = $repo->find($id);
             if (!$char) {
                 throw $this->createNotFoundException("Character $id introuvable");
             }
 
+            $cloned = clone $char;
+            $originalName = $cloned->getName();
+
+            // Handle duplicate names (e.g. Goku x4)
+            $nameCount[$originalName] = ($nameCount[$originalName] ?? 0) + 1;
+            if ($nameCount[$originalName] > 1) {
+                $cloned->setName($originalName . ' ' . $nameCount[$originalName]);
+            }
+
             $team[] = [
-                'char' => clone $char,
+                'char' => $cloned,
                 'team' => $teamName,
                 'statuses' => []
             ];
@@ -435,8 +454,14 @@ final class ArenaController extends AbstractController
             'DPS' => 'DPS',
             'Soigneur' => 'Healer',
             'Support', 'Buffer' => 'Support',
+            'Legend' => 'Legend',
             default => 'Support',
         };
+    }
+
+    private function getBaseCharacterName(string $name): string
+    {
+        return preg_replace('/ \d+$/', '', $name);
     }
 
     private function findActiveSynergies(array $names, array $synergyMap): array

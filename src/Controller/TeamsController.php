@@ -19,6 +19,7 @@ final class TeamsController extends AbstractController
     public function index(CharacterRepository $characterRepository, TeamPresetRepository $presetRepo): Response
     {
         $characters = $characterRepository->findAll();
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
 
         $categories = [
             'Tanks' => ['icon' => 'fa-shield-alt', 'characters' => []],
@@ -27,8 +28,19 @@ final class TeamsController extends AbstractController
             'Supports' => ['icon' => 'fa-chess-rook', 'characters' => []],
         ];
 
+        // Easter egg: Legends category visible only to admin
+        if ($isAdmin) {
+            $categories['Legends'] = ['icon' => 'fa-dragon', 'characters' => []];
+        }
+
         foreach ($characters as $character) {
             $roleName = $character->getRole()->getName();
+            if ($roleName === 'Legend') {
+                if ($isAdmin) {
+                    $categories['Legends']['characters'][] = $character;
+                }
+                continue;
+            }
             if ($roleName === 'Tank') {
                 $categories['Tanks']['characters'][] = $character;
             } elseif ($roleName === 'DPS') {
@@ -51,6 +63,7 @@ final class TeamsController extends AbstractController
             'categories' => $categories,
             'presets' => $presets,
             'synergyMap' => json_encode(SynergyConfig::getSynergyMap()),
+            'isAdmin' => $isAdmin,
         ]);
     }
 
@@ -58,6 +71,17 @@ final class TeamsController extends AbstractController
     public function select(Request $request, CharacterRepository $characterRepository): Response
     {
         $selectedIds = $request->request->all('character_ids');
+
+        // Easter egg: Admin selecting a Legend character fills all 4 slots
+        if (count($selectedIds) === 1 && $this->isGranted('ROLE_ADMIN')) {
+            $char = $characterRepository->find((int) $selectedIds[0]);
+            if ($char && $char->getRole()->getName() === 'Legend') {
+                $gokuId = (int) $selectedIds[0];
+                $request->getSession()->set('selected_team_ids', [$gokuId, $gokuId, $gokuId, $gokuId]);
+                $this->addFlash('success', 'Ultra Instinct activated!');
+                return $this->redirectToRoute('app_matchmaking');
+            }
+        }
 
         if (count($selectedIds) !== 4) {
             $this->addFlash('error', 'Veuillez sélectionner exactement 4 personnages');
