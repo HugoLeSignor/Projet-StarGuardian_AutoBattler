@@ -63,6 +63,36 @@ class AttackAction implements ActionInterface
                 'targetTeam' => $targetData['team'],
                 'message' => CombatEngine::colorNameStatic($targetData) . " esquive l'attaque de " . CombatEngine::colorNameStatic($userData)
             ];
+
+            // Ultra Instinct: counter-attack on dodge
+            if (!empty($targetData['dodgeCounter']) && $user->getHP() > 0) {
+                $counterDmg = rand($target->getDMGMIN(), $target->getDMGMAX());
+                $counterHP = max(0, $user->getHP() - $counterDmg);
+                $user->setHP($counterHP);
+
+                $logs[] = [
+                    'type' => 'dodge_counter',
+                    'attacker' => $target->getName(),
+                    'attackerTeam' => $targetData['team'],
+                    'target' => $user->getName(),
+                    'targetTeam' => $userData['team'],
+                    'damage' => $counterDmg,
+                    'targetHP' => $counterHP,
+                    'targetMaxHP' => $userData['HP_MAX'],
+                    'message' => CombatEngine::colorNameStatic($targetData) . " contre-attaque ! → $counterDmg dégâts à " . CombatEngine::colorNameStatic($userData) . " (HP: $counterHP)"
+                ];
+
+                if ($counterHP === 0 && !in_array('dead', $userData['statuses'], true)) {
+                    $userData['statuses'][] = 'dead';
+                    $logs[] = [
+                        'type' => 'death',
+                        'target' => $user->getName(),
+                        'targetTeam' => $userData['team'],
+                        'message' => CombatEngine::colorNameStatic($userData) . " est K.O !"
+                    ];
+                }
+            }
+
             return;
         }
 
@@ -107,6 +137,9 @@ class AttackAction implements ActionInterface
             unset($targetData['marked']);
             $targetData['statuses'] = array_values(array_filter($targetData['statuses'], fn($s) => $s !== 'marked'));
         }
+
+        // Ultra Instinct: instant transformation when HP drops below threshold
+        CombatEngine::checkUltraInstinctTransformation($target, $targetData, $logs);
 
         // Riposte : la cible contre-attaque
         if ($newHP > 0 && isset($targetData['riposte']) && $targetData['riposte']['turnsLeft'] > 0) {
@@ -339,6 +372,8 @@ class BleedAttackAction implements ActionInterface
             'bleedTurns' => $this->bleedTurns,
             'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> sur " . CombatEngine::colorNameStatic($targetData) . " → $damage dégâts + Saignement ({$this->bleedDamage}/tour, {$this->bleedTurns} tours)"
         ];
+
+        CombatEngine::checkUltraInstinctTransformation($target, $targetData, $logs);
 
         if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
             $targetData['statuses'][] = 'dead';
@@ -941,6 +976,8 @@ class ArmorPierceAction implements ActionInterface
             'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → Transperce " . CombatEngine::colorNameStatic($targetData) . " ! $damage dégâts (HP: $newHP)" . ($isCrit ? " (CRIT!)" : "")
         ];
 
+        CombatEngine::checkUltraInstinctTransformation($target, $targetData, $logs);
+
         if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
             $targetData['statuses'][] = 'dead';
             $logs[] = [
@@ -1089,6 +1126,8 @@ class BacklineStrikeAction implements ActionInterface
             'isCrit' => $isCrit,
             'message' => CombatEngine::colorNameStatic($userData) . " utilise <span class='ability-name'>{$this->abilityName}</span> → Frappe " . CombatEngine::colorNameStatic($targetData) . " ! $damage dégâts (HP: $newHP)" . ($isCrit ? " (CRIT!)" : "")
         ];
+
+        CombatEngine::checkUltraInstinctTransformation($target, $targetData, $logs);
 
         if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
             $targetData['statuses'][] = 'dead';
@@ -1266,6 +1305,8 @@ class BonusVsMarkedAction implements ActionInterface
             $targetData['statuses'] = array_values(array_filter($targetData['statuses'], fn($s) => $s !== 'marked'));
         }
 
+        CombatEngine::checkUltraInstinctTransformation($target, $targetData, $logs);
+
         if ($newHP === 0 && !in_array('dead', $targetData['statuses'], true)) {
             $targetData['statuses'][] = 'dead';
             $logs[] = [
@@ -1297,7 +1338,7 @@ class UltraInstinctAction implements ActionInterface
 
     public function execute(Character $user, array &$teamAllies, array &$teamEnemies, array &$logs, array &$userData): void
     {
-        // Already transformed? Stay in stance (riposte handles all damage)
+        // Already transformed? Stay in stance (dodge-counter handles all damage)
         if (!empty($userData['ultraInstinctActive'])) {
             $logs[] = [
                 'type' => 'ability_use',
@@ -1310,44 +1351,9 @@ class UltraInstinctAction implements ActionInterface
             return;
         }
 
-        // Not yet transformed: check HP threshold
-        $hpRatio = $user->getHP() / $userData['HP_MAX'];
-        if ($hpRatio > $this->hpThreshold) {
-            // Above threshold: normal attack
-            $action = new AttackAction();
-            $action->execute($user, $teamAllies, $teamEnemies, $logs, $userData);
-            return;
-        }
-
-        // === TRANSFORMATION ===
-        $userData['ultraInstinctActive'] = true;
-
-        // Boost stats to godlike
-        $user->setDMGMIN(9999);
-        $user->setDMGMAX(9999);
-        $user->setDODGE(100);
-        $user->setCRIT(100);
-        $user->setSPEED(99);
-
-        // Full heal with new max HP
-        $userData['HP_MAX'] = 9999;
-        $user->setHP(9999);
-
-        // Permanent riposte (one-shot counter-attack on every hit)
-        $userData['riposte'] = ['turnsLeft' => 999, 'dmgMultiplier' => 100];
-
-        // Log the transformation
-        $logs[] = [
-            'type' => 'ability_use',
-            'subtype' => 'ultra_instinct',
-            'caster' => $user->getName(),
-            'casterTeam' => $userData['team'],
-            'abilityName' => $this->abilityName,
-            'isTransformation' => true,
-            'casterHP' => 9999,
-            'casterMaxHP' => 9999,
-            'message' => CombatEngine::colorNameStatic($userData) . " se transforme en <span class='ability-name'>Ultra Instinct</span> ! Puissance divine activée ! Toute attaque sera contrée."
-        ];
+        // Not yet transformed: normal attack (transformation is instant on damage taken)
+        $action = new AttackAction();
+        $action->execute($user, $teamAllies, $teamEnemies, $logs, $userData);
     }
 }
 
@@ -1448,6 +1454,8 @@ class CombatEngine
                     break;
                 case 'Legend':
                     $actions[] = new AttackAction();
+                    $data['ultraInstinctPending'] = true;
+                    $data['ultraInstinctThreshold'] = 0.5;
                     break;
                 default:
                     $actions[] = new AttackAction();
@@ -1915,6 +1923,48 @@ class CombatEngine
         }
 
         return "<span style='color:#ff4d4d;'>$name</span>";
+    }
+
+    /**
+     * Check if a character should instantly transform into Ultra Instinct.
+     * Called after any damage is dealt to a Legend character.
+     */
+    public static function checkUltraInstinctTransformation(Character $target, array &$targetData, array &$logs): void
+    {
+        if (!empty($targetData['ultraInstinctActive'])) return;
+        if (empty($targetData['ultraInstinctPending'])) return;
+        if ($target->getHP() <= 0) return;
+
+        $hpRatio = $target->getHP() / $targetData['HP_MAX'];
+        if ($hpRatio > $targetData['ultraInstinctThreshold']) return;
+
+        // === INSTANT TRANSFORMATION ===
+        $targetData['ultraInstinctActive'] = true;
+        unset($targetData['ultraInstinctPending']);
+
+        $target->setDMGMIN(9999);
+        $target->setDMGMAX(9999);
+        $target->setDODGE(100);
+        $target->setCRIT(100);
+        $target->setSPEED(99);
+
+        $targetData['HP_MAX'] = 9999;
+        $target->setHP(9999);
+
+        // Dodge counter: counter-attack when dodging
+        $targetData['dodgeCounter'] = true;
+
+        $logs[] = [
+            'type' => 'ability_use',
+            'subtype' => 'ultra_instinct',
+            'caster' => $target->getName(),
+            'casterTeam' => $targetData['team'],
+            'abilityName' => 'Ultra Instinct',
+            'isTransformation' => true,
+            'casterHP' => 9999,
+            'casterMaxHP' => 9999,
+            'message' => self::colorNameStatic($targetData) . " se transforme en <span class='ability-name'>Ultra Instinct</span> ! Puissance divine activée ! Toute attaque sera contrée."
+        ];
     }
 
     // ============================================================

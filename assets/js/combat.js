@@ -537,6 +537,7 @@ class CombatController {
             case 'blight_tick': return 1500;
             case 'stunned_skip': return 1800;
             case 'riposte_activate': return 2000;
+            case 'dodge_counter': return 3500;
             case 'ability_use': return this.getAbilityDelay(log);
             // Synergies
             case 'synergy_announce': return 2000;
@@ -644,6 +645,7 @@ class CombatController {
             case 'bleed_tick': return 200;
             case 'blight_tick': return 200;
             case 'riposte_activate': return 350;
+            case 'dodge_counter': return 800;
             case 'ability_use': return this.getAbilityHPDelay(log);
             case 'synergy_trigger': return 800;
             default: return 0;
@@ -696,6 +698,9 @@ class CombatController {
             case 'riposte_activate':
                 this.animateAttack(log.attacker, log.attackerTeam, log.target, log.targetTeam, false);
                 break;
+            case 'dodge_counter':
+                this.animateDodgeCounter(log);
+                break;
             case 'ability_use':
                 this.playAbilityAnimation(log);
                 break;
@@ -724,6 +729,28 @@ class CombatController {
         if (target) {
             target.classList.add('stunned');
             setTimeout(() => target.classList.remove('stunned'), 1400);
+        }
+    }
+
+    animateDodgeCounter(log) {
+        // Goku dodges then instantly counter-attacks
+        const counterEl = this.getCharacterElement(log.attacker, log.attackerTeam);
+        const targetEl = this.getCharacterElement(log.target, log.targetTeam);
+
+        if (counterEl) {
+            // Show attack animation sprite for the counter
+            const counterKey = `${log.attackerTeam}-${log.attacker}`;
+            this.swapSprite(counterKey, 'attackanimation.webp', 1500);
+            this.playCharSfx(counterKey, 'attack');
+            counterEl.classList.add('ultra-instinct-attack');
+            setTimeout(() => counterEl.classList.remove('ultra-instinct-attack'), 1500);
+        }
+
+        if (targetEl) {
+            setTimeout(() => {
+                targetEl.classList.add('hurt', 'crit');
+                setTimeout(() => targetEl.classList.remove('hurt', 'crit'), 800);
+            }, 400);
         }
     }
 
@@ -914,13 +941,12 @@ class CombatController {
                         this.lastTrackIndex = -1;
                         this.playNextTrack();
                     } else {
-                        // Already transformed: Hakai attack animation
-                        this.swapSprite(uiKey, 'attackanimation.webp', 1800);
-                        this.playCharSfx(uiKey, 'skill');
+                        // Already transformed: stance pose (dodge-counter handles attacks)
+                        this.swapSprite(uiKey, 'defending.webp', 2000);
                         const uiCasterEl = this.getCharacterElement(log.caster, log.casterTeam);
                         if (uiCasterEl) {
                             uiCasterEl.classList.add('ultra-instinct-attack');
-                            setTimeout(() => uiCasterEl.classList.remove('ultra-instinct-attack'), 1800);
+                            setTimeout(() => uiCasterEl.classList.remove('ultra-instinct-attack'), 2000);
                         }
                     }
                 }
@@ -1181,6 +1207,8 @@ class CombatController {
             entry.classList.add('combat-log__entry--stun');
         } else if (log.type === 'riposte_activate') {
             entry.classList.add('combat-log__entry--riposte');
+        } else if (log.type === 'dodge_counter') {
+            entry.classList.add('combat-log__entry--riposte');
         } else if (log.type === 'synergy_announce') {
             entry.classList.add('combat-log__entry--synergy-announce');
         } else if (log.type === 'synergy_trigger') {
@@ -1199,7 +1227,7 @@ class CombatController {
         let maxHP = null;
 
         // Déterminer les données selon le type de log
-        if (log.type === 'attack' || log.type === 'riposte_activate') {
+        if (log.type === 'attack' || log.type === 'riposte_activate' || log.type === 'dodge_counter') {
             characterName = log.target;
             teamName = log.targetTeam;
             currentHP = log.targetHP;
