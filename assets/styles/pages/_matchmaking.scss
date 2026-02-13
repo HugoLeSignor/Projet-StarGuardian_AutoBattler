@@ -245,6 +245,14 @@
 
     .matchmaking__panel {
         padding: 2rem 1.5rem;
+
+        .btn-dd {
+            max-width: 100%;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+            padding: 0.8rem 1.5rem;
+            letter-spacing: 0.1em;
+        }
     }
 
     .matchmaking__title {
@@ -259,5 +267,23 @@
         i {
             font-size: 1.4rem;
         }
+    }
+}
+
+@media (max-width: 480px) {
+    .matchmaking__panel {
+        padding: 1.5rem 1rem;
+
+        .btn-dd {
+            font-size: 0.85rem;
+            padding: 0.7rem 1rem;
+            letter-spacing: 0.08em;
+            width: 100%;
+        }
+    }
+
+    .matchmaking__title {
+        font-size: 1.3rem;
+        letter-spacing: 0.08em;
     }
 }

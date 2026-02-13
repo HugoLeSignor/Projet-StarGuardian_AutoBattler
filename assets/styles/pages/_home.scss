@@ -23,6 +23,9 @@
     transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
+    box-sizing: border-box;
+    max-width: 100%;
+    text-align: center;
 
     &--primary {
         color: $dd-gold;
@@ -556,13 +559,28 @@
         font-size: 1.6rem;
     }
 
+    .btn-dd {
+        font-size: 0.95rem;
+        padding: 0.8rem 1.5rem;
+        letter-spacing: 0.1em;
+    }
+
     .btn-dd--large {
-        font-size: 1.1rem;
-        padding: 0.9rem 2rem;
+        font-size: 1rem;
+        padding: 0.8rem 1.5rem;
+    }
+
+    .home-cta__panel {
+        padding: 2.5rem 1.5rem;
     }
 }
 
 @media (max-width: 480px) {
+    .home-hero__content {
+        margin: 0 0.5rem;
+        padding: 1.5rem 1rem;
+    }
+
     .home-hero__logo img {
         max-width: 200px;
     }
@@ -573,13 +591,19 @@
 
     .home-hero__actions {
         flex-direction: column;
-        align-items: center;
+        align-items: stretch;
     }
 
     .btn-dd {
+        font-size: 0.85rem;
+        padding: 0.7rem 1rem;
+        letter-spacing: 0.08em;
         width: 100%;
-        max-width: 280px;
-        text-align: center;
+    }
+
+    .btn-dd--large {
+        font-size: 0.9rem;
+        padding: 0.8rem 1rem;
     }
 
     .home-steps__title,
@@ -602,6 +626,10 @@
     }
 
     .home-cta__panel {
-        padding: 2rem 1.5rem;
+        padding: 2rem 1rem;
+    }
+
+    .home-cta__text {
+        font-size: 0.95rem;
     }
 }
